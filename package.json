@@ -28,10 +28,8 @@
   "dependencies": {
     "@atproto/api": "^0.13.35",
     "@pm2/io": "^6.1.0",
-    "@the-convocation/twitter-scraper": "^0.14.1",
-    "@types/node": "^20.19.14",
+    "@the-convocation/twitter-scraper": "^0.18.3",
     "cli-spinners": "^3.2.0",
-    "dotenv": "^16.6.1",
     "html-entities": "^2.6.0",
     "html-escaper": "^3.0.3",
     "image-size": "^1.2.1",
@@ -45,6 +43,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@types/bun": "^1.2.22",
     "@types/html-escaper": "^3.0.4",
     "@types/mime": "^3.0.4",
     "@types/tough-cookie": "^4.0.5",

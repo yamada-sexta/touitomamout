@@ -1,7 +1,7 @@
 import { accessSync, constants } from "node:fs";
 import { join } from "node:path";
 
-import dotenv from "dotenv";
+// import dotenv from "dotenv";
 
 import buildInfo from "./buildInfo.json" assert { type: "json" };
 
@@ -17,7 +17,7 @@ if (process.env.NODE_ENV !== "test") {
     // throw new Error("No suitable .env file found.");
     console.log("No suitable .env file found.")
   }
-  dotenv.config({ path: envPath });
+  // dotenv.config({ path: envPath });
 }
 
 const trimTwitterHandle = (handle: string) => {

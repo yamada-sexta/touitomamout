@@ -47,7 +47,7 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.created=${{ github.event.head_commit.timestamp }}
-            org.opencontainers.image.licenses=MIT
+            org.opencontainers.image.licenses=AGPL
             maintainer=yamada-sexta
 
           cache-from: type=gha
