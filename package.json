@@ -30,7 +30,6 @@
     "@the-convocation/twitter-scraper": "^0.18.3",
     "cli-spinners": "^3.2.0",
     "html-entities": "^2.6.0",
-    "image-size": "^1.2.1",
     "masto": "^7.2.0",
     "ora": "^8.2.0",
     "sharp": "^0.34.3",
@@ -40,7 +39,6 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@types/bun": "^1.2.22",
-    "@types/html-escaper": "^3.0.4",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitest/coverage-v8": "^2.1.9",
@@ -51,9 +49,6 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "husky": "^9.1.7",
     "prettier": "3.6.2",
-    "typescript": "^5.9.2",
-    "vite": "^5.4.20",
-    "vite-plugin-dts": "^4.5.4",
-    "vitest": "^2.1.9"
+    "typescript": "^5.9.2"
   }
 }
