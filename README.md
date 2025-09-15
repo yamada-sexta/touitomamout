@@ -27,13 +27,13 @@ Pipelines:
 
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=yamada-sexta_touitomamout&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=yamada-sexta_touitomamout) -->
 
-Tools:
+<!-- Tools:
 
 [![Eslint](https://img.shields.io/badge/eslint-3A33D1?logo=eslint&logoColor=white)](https://github.com/eslint/eslint)
 [![Prettier](https://img.shields.io/badge/prettier-1A2C34?logo=prettier&logoColor=white)](https://github.com/prettier/prettier)
-![Sonarlint](https://img.shields.io/badge/sonarlint-CB2029?logo=sonarlint&logoColor=white)
+![Sonarlint](https://img.shields.io/badge/sonarlint-CB2029?logo=sonarlint&logoColor=white) -->
 
-![touitomamout banner](./.github/docs/touitomamout-banner.jpg)
+<!-- ![touitomamout banner](./.github/docs/touitomamout-banner.jpg) -->
 
 ## Documentation
 
