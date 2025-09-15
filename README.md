@@ -9,15 +9,10 @@
 An easy way to synchronize your posts on 𝕏 to Mastodon & Bluesky. 𝕏 → 🦣+☁️.
 
 [![Release](https://img.shields.io/github/package-json/v/yamada-sexta/touitomamout/main?label=release&color=#4c1)](https://github.com/yamada-sexta/touitomamout/releases)
-
 [![License](https://img.shields.io/github/license/yamada-sexta/touitomamout?color=#4c1)](https://github.com/yamada-sexta/touitomamout/blob/main/LICENSE)
-
 [![Contributors](https://img.shields.io/github/contributors/yamada-sexta/touitomamout)](https://github.com/yamada-sexta/touitomamout/graphs/contributors)
-
 [![Issues](https://img.shields.io/github/issues/yamada-sexta/touitomamout)](https://github.com/yamada-sexta/touitomamout/issues)
-
 [![Github Stars](https://img.shields.io/github/stars/yamada-sexta/touitomamout?color=ffe34e)](https://github.com/yamada-sexta/touitomamout)
-
 [![GHCR](https://img.shields.io/badge/GHCR-ghcr.io%2Fyamada--sexta%2Ftouitomamout-086dd7?logo=github)](https://ghcr.io/yamada-sexta/touitomamout)
 
 Pipelines:
