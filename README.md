@@ -1,4 +1,4 @@
-# A Fork of the [touitomamout](https://github.com/louisgrasset/touitomamout)
+# A Fork of the [Touitomamout](https://github.com/louisgrasset/touitomamout)
 
 <p align="center">
   <a href="https://yamada-sexta.github.io/touitomamout/docs/discover">
