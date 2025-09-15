@@ -41,7 +41,7 @@ export const INSTANCE_ID = (TWITTER_HANDLE ?? "instance")
   .replaceAll(" ", "_");
 export const STORAGE_DIR = process.env.STORAGE_DIR ?? process.cwd();
 export const CACHE_PATH = `${STORAGE_DIR}/cache.${INSTANCE_ID}.json`;
-export const COOKIES_PATH = `${STORAGE_DIR}/cookies.${INSTANCE_ID}.json`;
+export const COOKIES_PATH = `${STORAGE_DIR}/cookies.v6.${INSTANCE_ID}.json`;
 export const SYNC_MASTODON = (process.env.SYNC_MASTODON ?? "false") === "true";
 export const SYNC_BLUESKY = (process.env.SYNC_BLUESKY ?? "false") === "true";
 export const BACKDATE_BLUESKY_POSTS =

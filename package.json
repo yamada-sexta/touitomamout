@@ -27,26 +27,20 @@
   },
   "dependencies": {
     "@atproto/api": "^0.16.9",
-    "@pm2/io": "^6.1.0",
     "@the-convocation/twitter-scraper": "^0.18.3",
     "cli-spinners": "^3.2.0",
     "html-entities": "^2.6.0",
-    "html-escaper": "^3.0.3",
     "image-size": "^1.2.1",
-    "masto": "^6.10.4",
-    "mime": "^4.1.0",
-    "node-html-parser": "^6.1.13",
+    "masto": "^7.2.0",
     "ora": "^8.2.0",
     "sharp": "^0.33.5",
-    "tough-cookie": "^4.1.4"
+    "tough-cookie": "^6.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@types/bun": "^1.2.22",
     "@types/html-escaper": "^3.0.4",
-    "@types/mime": "^4.0.0",
-    "@types/tough-cookie": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
     "@vitest/coverage-v8": "^2.1.9",

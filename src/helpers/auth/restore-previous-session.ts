@@ -9,7 +9,8 @@ export const restorePreviousSession = async (
   try {
     const cookies = await getCookies();
     if (cookies) {
-      await client.setCookies(cookies);
+      // weird issue
+      await client.setCookies(cookies.map(v => v.toString()));
     } else {
       throw new Error("Unable to restore cookies");
     }
