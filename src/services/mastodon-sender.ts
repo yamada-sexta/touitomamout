@@ -7,7 +7,7 @@ import { oraProgress } from "../helpers/logs";
 import { getPostExcerpt } from "../helpers/post/get-post-excerpt";
 import { MastodonCacheChunk, Media, Platform } from "../types";
 import { MastodonPost } from "../types/post";
-import { downloadMedia } from "./";
+import { downloadMedia } from ".";
 
 const MASTODON_MEDIA_IMAGES_MAX_COUNT = 4;
 

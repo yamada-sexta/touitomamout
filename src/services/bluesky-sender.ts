@@ -18,7 +18,7 @@ import {
   Platform,
 } from "../types";
 import { BlueskyPost } from "../types/post";
-import { downloadMedia } from "./";
+import { downloadMedia } from ".";
 
 const BLUESKY_MEDIA_IMAGES_MAX_COUNT = 4;
 

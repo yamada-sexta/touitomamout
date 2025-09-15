@@ -16,7 +16,7 @@ import { uploadBlueskyMedia } from "../helpers/medias/upload-bluesky-media";
 import { buildProfileUpdate } from "../helpers/profile/build-profile-update";
 import { shortenedUrlsReplacer } from "../helpers/url/shortened-urls-replacer";
 import { Platform, ProfileCache } from "../types";
-import { downloadMedia } from "./media-downloader.service";
+import { downloadMedia } from "./download-media";
 
 /**
  * An async method in charge of dispatching profile synchronization tasks.

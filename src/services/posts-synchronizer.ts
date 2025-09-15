@@ -9,9 +9,9 @@ import { getCachedPosts } from "../helpers/cache/get-cached-posts";
 import { oraPrefixer } from "../helpers/logs";
 import { makePost } from "../helpers/post/make-post";
 import { Media, Metrics } from "../types";
-import { blueskySenderService } from "./bluesky-sender.service";
-import { mastodonSenderService } from "./mastodon-sender.service";
-import { tweetsGetterService } from "./tweets-getter.service";
+import { blueskySenderService } from "./bluesky-sender";
+import { mastodonSenderService } from "./mastodon-sender";
+import { tweetsGetterService } from "./tweets-getter";
 
 /**
  * An async method in charge of dispatching posts synchronization tasks for each received tweets.
