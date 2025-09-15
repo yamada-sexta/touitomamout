@@ -1,15 +1,14 @@
-import { readFile } from "node:fs/promises";
-
 import { CACHE_PATH } from "../../constants";
 import { Cache } from "../../types";
 
 /**
  * A method to get the cache.
  */
-export const getCache = async (): Promise<Cache> => {
+export async function getCache(): Promise<Cache> {
   try {
-    const fileContent = await readFile(CACHE_PATH, "utf-8");
-    return JSON.parse(fileContent);
+    // const fileContent = await readFile(CACHE_PATH, "utf-8");
+    // return JSON.parse(fileContent);
+    return await Bun.file(CACHE_PATH).json();
   } catch {
     return {
       instance: { id: "" },

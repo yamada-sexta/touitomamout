@@ -19,7 +19,7 @@ export const updateCacheEntry = async <T extends keyof Cache>(
     ) as Cache;
 
     // Update the cache file
-    writeToCacheFile(updatedCacheData);
+    await writeToCacheFile(updatedCacheData);
   } catch (err) {
     console.error("Error updating cache file:", err);
   }

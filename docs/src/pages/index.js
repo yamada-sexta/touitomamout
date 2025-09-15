@@ -11,7 +11,7 @@ function HomepageHeader() {
     <header className="hero hero--primary">
       <div className="container">
         <h1 className="hero__title">
-          🦤 → 🦣+☁️
+          𝕏 → 🦣+☁️
           <br />
           {siteConfig.title}
         </h1>

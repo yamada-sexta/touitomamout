@@ -1,7 +1,7 @@
 # A Fork of the [touitomamout](https://github.com/louisgrasset/touitomamout)
 [<img src="https://github.com/louisgrasset/touitomamout/raw/main/.github/docs/touitomamout.svg"  width="150px"/>](https://louisgrasset.github.io/touitomamout/docs/discover)
 
-An easy way to synchronize your Twitter's tweets to Mastodon & Bluesky posts. 🦤 → 🦣+☁️.
+An easy way to synchronize your Twitter's tweets to Mastodon & Bluesky posts. 𝕏 → 🦣+☁️.
 
 [![Release](https://img.shields.io/github/package-json/v/louisgrasset/touitomamout/main?label=release&color=#4c1)](https://github.com/louisgrasset/touitomamout/releases)
 [![License](https://img.shields.io/github/license/louisgrasset/touitomamout?color=#4c1)](https://github.com/louisgrasset/touitomamout/blob/main/LICENSE)
@@ -36,7 +36,7 @@ Please find the project documentation here:
 
 ## Dependencies
 Kudos to the following projects that made Touitomamout project possible 🙏
-- 🦤 [twitter-scraper](https://github.com/the-convocation/twitter-scraper)
+- 𝕏 [twitter-scraper](https://github.com/the-convocation/twitter-scraper)
 - 🦣 [masto.js](https://github.com/neet/masto.js)
 - ☁️ [atproto](https://github.com/bluesky-social/atproto)
 

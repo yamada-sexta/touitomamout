@@ -17,7 +17,7 @@ export const runMigrations = async () => {
   for (const migration of migrations) {
     const outdatedCache = await getCache();
     await migration(outdatedCache)
-      .then(async (updatedCache) => writeToCacheFile(updatedCache as Cache))
+      .then(async (updatedCache) => (await writeToCacheFile(updatedCache as Cache)))
       .catch((err) => {
         throw new Error(`Error running migration ${migration.name}: ${err}`);
       });

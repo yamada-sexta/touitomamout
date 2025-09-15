@@ -9,7 +9,7 @@ import { restorePreviousSession } from "./restore-previous-session";
 export const handleTwitterAuth = async (client: Scraper) => {
   const log = ora({
     color: "gray",
-    prefixText: oraPrefixer("🦤 client"),
+    prefixText: oraPrefixer("𝕏 client"),
   }).start("connecting to twitter...");
 
   if (!TWITTER_USERNAME || !TWITTER_PASSWORD) {

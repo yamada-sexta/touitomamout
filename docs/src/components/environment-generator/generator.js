@@ -59,7 +59,7 @@ const Generator = ({ setConfiguration }) => {
       ],
     },
     authentication: {
-      name: "🦤 Twitter authentication",
+      name: "𝕏 Twitter authentication",
       required: false,
       warning: twitterSourceWarning,
       fields: [
