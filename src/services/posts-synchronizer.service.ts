@@ -8,7 +8,7 @@ import { SYNC_DRY_RUN } from "../constants";
 import { getCachedPosts } from "../helpers/cache/get-cached-posts";
 import { oraPrefixer } from "../helpers/logs";
 import { makePost } from "../helpers/post/make-post";
-import { Media, Metrics, SynchronizerResponse } from "../types";
+import { Media, Metrics } from "../types";
 import { blueskySenderService } from "./bluesky-sender.service";
 import { mastodonSenderService } from "./mastodon-sender.service";
 import { tweetsGetterService } from "./tweets-getter.service";
@@ -21,7 +21,7 @@ export const postsSynchronizerService = async (
   mastodonClient: mastodon.rest.Client | null,
   blueskyClient: AtpAgent | null,
   synchronizedPostsCountThisRun: Counter.default,
-): Promise<SynchronizerResponse & { metrics: Metrics }> => {
+): Promise< { metrics: Metrics }> => {
   const tweets = await tweetsGetterService(twitterClient);
 
   try {
@@ -58,9 +58,6 @@ export const postsSynchronizerService = async (
     }
 
     return {
-      twitterClient,
-      mastodonClient,
-      blueskyClient,
       metrics: {
         totalSynced: Object.keys(await getCachedPosts()).length,
         justSynced: tweets.length,
@@ -70,9 +67,6 @@ export const postsSynchronizerService = async (
     console.error(err);
 
     return {
-      twitterClient,
-      mastodonClient,
-      blueskyClient,
       metrics: {
         totalSynced: Object.keys(await getCachedPosts()).length,
         justSynced: 0,

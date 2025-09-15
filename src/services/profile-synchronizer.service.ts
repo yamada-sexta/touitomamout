@@ -15,7 +15,7 @@ import { oraPrefixer } from "../helpers/logs";
 import { uploadBlueskyMedia } from "../helpers/medias/upload-bluesky-media";
 import { buildProfileUpdate } from "../helpers/profile/build-profile-update";
 import { shortenedUrlsReplacer } from "../helpers/url/shortened-urls-replacer";
-import { Platform, ProfileCache, SynchronizerResponse } from "../types";
+import { Platform, ProfileCache } from "../types";
 import { downloadMedia } from "./media-downloader.service";
 
 /**
@@ -25,7 +25,7 @@ export const profileSynchronizerService = async (
   twitterClient: Scraper,
   mastodonClient: mastodon.rest.Client | null,
   blueskyClient: AtpAgent | null,
-): Promise<SynchronizerResponse> => {
+): Promise<void> => {
   const log = ora({
     color: "cyan",
     prefixText: oraPrefixer("profile-sync"),
@@ -170,9 +170,9 @@ export const profileSynchronizerService = async (
 
   log.succeed("task finished");
 
-  return {
-    twitterClient,
-    mastodonClient,
-    blueskyClient,
-  };
+  // return {
+  //   twitterClient,
+  //   mastodonClient,
+  //   blueskyClient,
+  // };
 };
