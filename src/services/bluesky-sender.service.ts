@@ -18,19 +18,19 @@ import {
   Platform,
 } from "../types";
 import { BlueskyPost } from "../types/post";
-import { mediaDownloaderService } from "./";
+import { downloadMedia } from "./";
 
 const BLUESKY_MEDIA_IMAGES_MAX_COUNT = 4;
 
 /**
  * An async method in charge of handling Bluesky posts computation & uploading.
  */
-export const blueskySenderService = async (
+export async function blueskySenderService(
   client: AtpAgent | null,
   post: BlueskyPost | null,
   medias: Media[],
   log: Ora,
-) => {
+) {
   if (!client || !post) {
     return;
   }
@@ -48,10 +48,9 @@ export const blueskySenderService = async (
       (media.type === "video" && mediaAttachments.length === 0)
     ) {
       // Download
-      log.text = `medias: ↓ (${mediaAttachments.length + 1}/${
-        medias.length
-      }) downloading`;
-      const mediaBlob = await mediaDownloaderService(media.url);
+      log.text = `medias: ↓ (${mediaAttachments.length + 1}/${medias.length
+        }) downloading`;
+      const mediaBlob = await downloadMedia(media.url);
       if (!mediaBlob) {
         continue;
       }
@@ -61,8 +60,7 @@ export const blueskySenderService = async (
           console.log(err);
         }
         log.warn(
-          `medias: ↯ (${mediaAttachments.length + 1}/${
-            medias.length
+          `medias: ↯ (${mediaAttachments.length + 1}/${medias.length
           }) skipped for ☁️ bluesky : ${err}`,
         );
         return null;
@@ -73,9 +71,8 @@ export const blueskySenderService = async (
       }
 
       // Upload
-      log.text = `medias: ↑ (${mediaAttachments.length + 1}/${
-        medias.length
-      }) uploading`;
+      log.text = `medias: ↑ (${mediaAttachments.length + 1}/${medias.length
+        }) uploading`;
 
       await client
         .uploadBlob(blueskyBlob.blobData, { encoding: blueskyBlob.mimeType })
@@ -140,12 +137,12 @@ export const blueskySenderService = async (
      */
     const quoteRecord = post.quotePost
       ? {
-          record: {
-            $type: "app.bsky.embed.record",
-            cid: post.quotePost.cid,
-            uri: post.quotePost.uri,
-          },
-        }
+        record: {
+          $type: "app.bsky.embed.record",
+          cid: post.quotePost.cid,
+          uri: post.quotePost.uri,
+        },
+      }
       : {};
 
     const mediaType = medias[0]?.type;
@@ -154,14 +151,14 @@ export const blueskySenderService = async (
     const card = await getBlueskyChunkLinkMetadata(richText, client);
     const externalRecord = card
       ? {
-          external: {
-            uri: card.url,
-            title: card.title,
-            description: card.description,
-            thumb: card.image?.data.blob.original,
-            $type: "app.bsky.embed.external",
-          },
-        }
+        external: {
+          uri: card.url,
+          title: card.title,
+          description: card.description,
+          thumb: card.image?.data.blob.original,
+          $type: "app.bsky.embed.external",
+        },
+      }
       : {};
 
     /**
@@ -251,10 +248,9 @@ export const blueskySenderService = async (
         // If this is the last chunk, save the all chunks ID to the cache.
         if (chunkIndex === post.chunks.length - 1) {
           log.succeed(
-            `☁️ | post sent: ${getPostExcerpt(post.tweet.text ?? VOID)}${
-              chunkReferences.length > 1
-                ? ` (${chunkReferences.length} chunks)`
-                : ""
+            `☁️ | post sent: ${getPostExcerpt(post.tweet.text ?? VOID)}${chunkReferences.length > 1
+              ? ` (${chunkReferences.length} chunks)`
+              : ""
             }`,
           );
 

@@ -7,10 +7,10 @@ import { BlueskyMediaAttachment } from "../../types";
  * @param {BlueskyMediaAttachment[]} mediaAttachments - The media attachments to include in the record.
  * @returns {Object} The media record object tailored to the media type.
  */
-export const createMediaRecord = (
+export function createMediaRecord(
   mediaType: "image" | "video" | undefined,
   mediaAttachments: BlueskyMediaAttachment[],
-) => {
+) {
   switch (mediaType) {
     case "image":
       return {

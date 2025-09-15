@@ -8,8 +8,14 @@ import {
   SYNC_MASTODON,
   TWITTER_HANDLE,
 } from "../constants";
-
-export const buildConfigurationRules = () => {
+export interface Rule {
+  name: string;
+  platformEnabled: boolean;
+  value: string;
+  message: string;
+  details: string[];
+}
+export function buildConfigurationRules(): Rule[] {
   return [
     {
       name: "TWITTER_HANDLE",

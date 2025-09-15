@@ -16,7 +16,7 @@ import { uploadBlueskyMedia } from "../helpers/medias/upload-bluesky-media";
 import { buildProfileUpdate } from "../helpers/profile/build-profile-update";
 import { shortenedUrlsReplacer } from "../helpers/url/shortened-urls-replacer";
 import { Platform, ProfileCache, SynchronizerResponse } from "../types";
-import { mediaDownloaderService } from "./media-downloader.service";
+import { downloadMedia } from "./media-downloader.service";
 
 /**
  * An async method in charge of dispatching profile synchronization tasks.
@@ -37,11 +37,11 @@ export const profileSynchronizerService = async (
   // Get profile images
   log.text = `avatar: ↓ downloading`;
   const avatarBlob = profile.avatar
-    ? await mediaDownloaderService(profile.avatar.replace("_normal", ""))
+    ? await downloadMedia(profile.avatar.replace("_normal", ""))
     : null;
   log.text = `banner: ↓ downloading`;
   const bannerBlob = profile.banner
-    ? await mediaDownloaderService(profile.banner)
+    ? await downloadMedia(profile.banner)
     : null;
 
   // Build profile update

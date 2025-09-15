@@ -7,7 +7,7 @@ import { oraProgress } from "../helpers/logs";
 import { getPostExcerpt } from "../helpers/post/get-post-excerpt";
 import { MastodonCacheChunk, Media, Platform } from "../types";
 import { MastodonPost } from "../types/post";
-import { mediaDownloaderService } from "./";
+import { downloadMedia } from "./";
 
 const MASTODON_MEDIA_IMAGES_MAX_COUNT = 4;
 
@@ -39,7 +39,7 @@ export const mastodonSenderService = async (
       log.text = `medias: ↓ (${mediaAttachments.length + 1}/${
         medias.length
       }) downloading`;
-      const mediaBlob = await mediaDownloaderService(media.url);
+      const mediaBlob = await downloadMedia(media.url);
 
       if (mediaBlob) {
         // Upload
