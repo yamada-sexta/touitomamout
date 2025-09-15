@@ -1,16 +1,4 @@
-> [!warning]
-> 
-> **The Touitomamout project is now archived.**
->
-> I consider Twitter/X as a danger for our democracies. Its owner's posts, the encouraged & promoted content are, in my opinion, not compatible with my values of sharing, tolerance and humanism. Thus, I do not want to support this platform nor encourage people to use it, here as a source of content.
->
-> Therefore, no future update will be published.
->
-> - 🐳 **Docker** images stay available both on docker hub & github packages.
-> - 📋 **Repository** stays online here, on github, in read-only.
-> - 🤝 **Thanks** for your understanding.
-
-# [touitomamout](https://github.com/louisgrasset/touitomamout)
+# A Fork of the [touitomamout](https://github.com/louisgrasset/touitomamout)
 [<img src="https://github.com/louisgrasset/touitomamout/raw/main/.github/docs/touitomamout.svg"  width="150px"/>](https://louisgrasset.github.io/touitomamout/docs/discover)
 
 An easy way to synchronize your Twitter's tweets to Mastodon & Bluesky posts. 🦤 → 🦣+☁️.
