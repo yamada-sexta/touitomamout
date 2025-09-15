@@ -27,13 +27,13 @@ import { TouitomamoutError } from "../helpers/error";
 import { oraPrefixer } from "../helpers/logs";
 import { buildConfigurationRules } from "./build-configuration-rules";
 
-export const configuration = async (): Promise<{
+export async function configuration(): Promise<{
   synchronizedPostsCountAllTime: Gauge;
   synchronizedPostsCountThisRun: Counter;
   twitterClient: Scraper;
   mastodonClient: null | mastodon.rest.Client;
   blueskyClient: null | AtpAgent;
-}> => {
+}> {
   // Error handling
   const rules = buildConfigurationRules();
   rules.forEach(({ name, value, message, details, platformEnabled }) => {
