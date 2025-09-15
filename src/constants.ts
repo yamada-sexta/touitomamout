@@ -62,7 +62,7 @@ export const SYNC_PROFILE_HEADER =
   (process.env.SYNC_PROFILE_HEADER ?? "false") === "true";
 export const SYNC_DRY_RUN = (process.env.SYNC_DRY_RUN ?? "false") === "true";
 export const DEBUG = (process.env.TOUITOMAMOUT_DEBUG ?? "false") === "true";
-export const DAEMON = (process.env.DAEMON ?? "false") === "true";
+export const DAEMON = (process.env.DAEMON ?? "true") === "true";
 export const VOID = "∅";
 export const API_RATE_LIMIT = parseInt(process.env.API_RATE_LIMIT ?? "30");
 export const TOUITOMAMOUT_VERSION = buildInfo.version ?? "0.0.0";
