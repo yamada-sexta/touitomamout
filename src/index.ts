@@ -31,7 +31,7 @@ const touitomamout = async () => {
     throw new Error("Can't connect to Bluesky ☁️");
   }
   if (!twitterClient) {
-    throw new Error("Can't connect to Twitter 🦤");
+    throw new Error("Can't connect to Twitter 𝕏");
   }
 
   /* Profile sync */
@@ -50,18 +50,18 @@ const touitomamout = async () => {
   );
   synchronizedPostsCountAllTime.set(postsSyncResponse.metrics.totalSynced);
 
-  console.log("\n🦤 → 🦣+☁️");
+  console.log("\n𝕏 → 🦣+☁️");
   console.log(`Touitomamout sync | v${TOUITOMAMOUT_VERSION}`);
   console.log(`| Twitter handle: @${TWITTER_HANDLE}`);
   console.log(
     `| ${postsSyncResponse.metrics.justSynced
       .toString()
-      .padStart(5, "0")}  ʲᵘˢᵗ ˢʸⁿᶜᵉᵈ ᵖᵒˢᵗˢ`,
+      .padStart(5, "0")} just synced posts`,
   );
   console.log(
     `| ${postsSyncResponse.metrics.totalSynced
       .toString()
-      .padStart(5, "0")}  ˢʸⁿᶜᵉᵈ ᵖᵒˢᵗˢ ˢᵒ ᶠᵃʳ`,
+      .padStart(5, "0")} synced posts so far`,
   );
 };
 
