@@ -1,7 +1,7 @@
 # A Fork of the [touitomamout](https://github.com/louisgrasset/touitomamout)
 [<img src="https://github.com/louisgrasset/touitomamout/raw/main/.github/docs/touitomamout.svg"  width="150px"/>](https://louisgrasset.github.io/touitomamout/docs/discover)
 
-An easy way to synchronize your Twitter's tweets to Mastodon & Bluesky posts. 𝕏 → 🦣+☁️.
+An easy way to synchronize your posts on 𝕏 to Mastodon & Bluesky. 𝕏 → 🦣+☁️.
 
 [![Release](https://img.shields.io/github/package-json/v/louisgrasset/touitomamout/main?label=release&color=#4c1)](https://github.com/louisgrasset/touitomamout/releases)
 [![License](https://img.shields.io/github/license/louisgrasset/touitomamout?color=#4c1)](https://github.com/louisgrasset/touitomamout/blob/main/LICENSE)
