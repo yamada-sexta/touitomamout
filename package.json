@@ -45,7 +45,7 @@
     "@commitlint/config-conventional": "^19.8.1",
     "@types/bun": "^1.2.22",
     "@types/html-escaper": "^3.0.4",
-    "@types/mime": "^3.0.4",
+    "@types/mime": "^4.0.0",
     "@types/tough-cookie": "^4.0.5",
     "@typescript-eslint/eslint-plugin": "^7.18.0",
     "@typescript-eslint/parser": "^7.18.0",
