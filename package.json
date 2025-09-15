@@ -35,7 +35,7 @@
     "image-size": "^1.2.1",
     "masto": "^6.10.4",
     "mime": "^4.1.0",
-    "node-html-parser": "^6.1.13",
+    "node-html-parser": "^7.0.1",
     "ora": "^8.2.0",
     "sharp": "^0.33.5",
     "tough-cookie": "^4.1.4"
