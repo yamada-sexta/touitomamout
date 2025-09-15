@@ -1,9 +1,6 @@
 import { accessSync, constants } from "node:fs";
 import { join } from "node:path";
-
-// import dotenv from "dotenv";
-
-import buildInfo from "./buildInfo.json" assert { type: "json" };
+import packageInfo from "../package.json" assert { type: "json" };
 
 if (process.env.NODE_ENV !== "test") {
   const envPath = process.argv[2] ?? join(process.cwd(), ".env");
@@ -65,7 +62,7 @@ export const DEBUG = (process.env.TOUITOMAMOUT_DEBUG ?? "false") === "true";
 export const DAEMON = (process.env.DAEMON ?? "true") === "true";
 export const VOID = "∅";
 export const API_RATE_LIMIT = parseInt(process.env.API_RATE_LIMIT ?? "30");
-export const TOUITOMAMOUT_VERSION = buildInfo.version ?? "0.0.0";
+export const TOUITOMAMOUT_VERSION = packageInfo.version ?? "0.0.0";
 export const MASTODON_MAX_POST_LENGTH = 500;
 export const BLUESKY_MAX_POST_LENGTH = 300;
 export const BLUESKY_MEDIA_MAX_SIZE_BYTES = 976560;
