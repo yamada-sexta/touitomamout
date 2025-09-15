@@ -38,7 +38,7 @@
     "node-html-parser": "^6.1.13",
     "ora": "^8.2.0",
     "sharp": "^0.33.5",
-    "tough-cookie": "^4.1.4"
+    "tough-cookie": "^6.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
