@@ -96,7 +96,7 @@ export const compressMedia = async (
       }kB`,
     );
   }
-  return new Blob([compressedBuffer.buffer], {
+  return new Blob([new Uint8Array(compressedBuffer.buffer)], {
     type: compressedBuffer.format,
   });
 };
