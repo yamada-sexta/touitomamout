@@ -1,0 +1,67 @@
+import { Scraper } from "@the-convocation/twitter-scraper";
+import * as Counter from "@pm2/io/build/main/utils/metrics/counter";
+import { PostSynchronizer } from "./post-sender";
+import { tweetsGetterService as getTweets } from "services/tweets-getter";
+import ora from "ora";
+import { oraPrefixer } from "helpers/logs/ora-prefixer";
+import { getCachedPosts } from "helpers/cache/get-cached-posts";
+import { getTweetMedia } from "./get-tweet-media";
+
+export type SyncPostMetrics = {
+    totalSynced: number;
+    justSynced: number;
+};
+
+
+export async function syncPosts(args: {
+    twitterClient: Scraper,
+    synchronizers: PostSynchronizer[],
+    syncCount: Counter.default,
+}): Promise<{ metrics: SyncPostMetrics }> {
+    try {
+        const { twitterClient, synchronizers, syncCount } = args;
+        const tweets = await getTweets(twitterClient);
+        for (let i = 0; i < tweets.length; i++) {
+            const log = ora({
+                color: "cyan",
+                prefixText: oraPrefixer("content-sync"),
+            }).start();
+            const tweet = tweets[i];
+
+            try {
+
+
+                const mediaList = await getTweetMedia(tweet);
+
+                await Promise.all<void>(
+                    synchronizers.map(
+                        s => s.syncPost({
+                            tweet, mediaList, log
+                        })
+                    )
+                )
+                syncCount.inc();
+                log.stop();
+            }
+            catch (error) {
+                const msg = (error instanceof Error) ? error.message : String(error)
+                log.fail(`Error during synchronization post [${i}]: ${msg}`)
+            }
+        }
+        return {
+            metrics: {
+                totalSynced: Object.keys(await getCachedPosts()).length,
+                justSynced: tweets.length,
+            },
+        };
+    } catch (error) {
+        const msg = (error instanceof Error) ? error.message : String(error)
+        console.warn(`Error during synchronization posts: ${msg}`)
+        return {
+            metrics: {
+                totalSynced: Object.keys(await getCachedPosts()).length,
+                justSynced: 0,
+            },
+        };
+    }
+}

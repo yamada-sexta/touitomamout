@@ -6,7 +6,7 @@
   </a>
 </p>
 
-An easy way to synchronize your posts on 𝕏 to Mastodon & Bluesky. 𝕏 → 🦣+☁️.
+An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 [![Release](https://img.shields.io/github/package-json/v/yamada-sexta/touitomamout/main?label=release&color=#4c1)](https://github.com/yamada-sexta/touitomamout/releases)
 [![License](https://img.shields.io/github/license/yamada-sexta/touitomamout?color=#4c1)](https://github.com/yamada-sexta/touitomamout/blob/main/LICENSE)

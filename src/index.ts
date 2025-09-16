@@ -6,12 +6,16 @@ import {
   TOUITOMAMOUT_VERSION,
   TWITTER_HANDLE,
 } from "./env";
-import {
-  postsSynchronizerService,
-} from "./services";
-import { MastodonSynchronizer } from "services/profile/mastodon";
-import { BlueskySynchronizer } from "services/profile/bluesky";
+// import {
+//   postsSynchronizerService,
+// } from "./services";
+import { MastodonProfileSynchronizer } from "services/profile/mastodon";
+import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
 import { syncProfile } from "services/profile/sync";
+import { syncPosts } from "services/posts/sync";
+import { PostSynchronizer } from "services/posts/post-sender";
+import { MastodonPostSynchronizer } from "services/posts/mastodon-sender";
+import { BlueskyPostSynchronizer } from "services/posts/bluesky";
 
 const {
   twitterClient,
@@ -27,11 +31,15 @@ if (!twitterClient) {
 }
 
 const profileSynchronizers: ProfileSynchronizer[] = []
+const postSynchronizers: PostSynchronizer[]=[]
 const emojis: string[] = []
 
 if (mastodonClient) {
   profileSynchronizers.push(
-    new MastodonSynchronizer(mastodonClient)
+    new MastodonProfileSynchronizer(mastodonClient)
+  )
+  postSynchronizers.push(
+    new MastodonPostSynchronizer(mastodonClient)
   )
   emojis.push("🦣")
 } else {
@@ -40,7 +48,10 @@ if (mastodonClient) {
 
 if (blueskyClient) {
   profileSynchronizers.push(
-    new BlueskySynchronizer(blueskyClient)
+    new BlueskyProfileSynchronizer(blueskyClient)
+  )
+  postSynchronizers.push(
+    new BlueskyPostSynchronizer(blueskyClient)
   )
   emojis.push("☁️")
 } else {
@@ -50,18 +61,21 @@ if (blueskyClient) {
 /**
  * Main syncing loop
  */
-const touitomamout = async () => {
+const syncAll = async () => {
   await syncProfile(
-    twitterClient, profileSynchronizers
+    { twitterClient, synchronizers: profileSynchronizers }
   )
-
   /* Posts sync */
-  const postsSyncResponse = await postsSynchronizerService(
-    twitterClient,
-    mastodonClient,
-    blueskyClient,
-    synchronizedPostsCountThisRun,
-  );
+  const postsSyncResponse = await syncPosts({
+    twitterClient, syncCount: synchronizedPostsCountThisRun, synchronizers: postSynchronizers
+  })
+
+  // await postsSynchronizerService(
+  //   twitterClient,
+  //   mastodonClient,
+  //   blueskyClient,
+  //   synchronizedPostsCountThisRun,
+  // );
   synchronizedPostsCountAllTime.set(postsSyncResponse.metrics.totalSynced);
 
   console.log(`\n𝕏 -> ${emojis.join("+")}`);
@@ -79,21 +93,24 @@ const touitomamout = async () => {
   );
 };
 
+
 // Register event
 process.on('SIGINT', () => {
   console.log('\nReceived SIGINT (Ctrl+C). Exiting...');
   process.exit(0);
 });
 
-await touitomamout();
-
-
 if (DAEMON) {
   console.log(`Run daemon every ${SYNC_FREQUENCY_MIN}min`);
   setInterval(
     async () => {
-      await touitomamout();
+      await syncAll();
     },
     SYNC_FREQUENCY_MIN * 60 * 1000,
   );
 }
+
+
+
+await syncAll();
+

@@ -5,17 +5,19 @@ import { updateCacheEntry } from "helpers/cache/update-cache-entry";
 import { oraPrefixer } from "helpers/logs";
 import { buildProfileUpdate } from "helpers/profile/build-profile-update";
 import { ProfileCache } from "types";
-import { downloadMedia } from "../../helpers/download-media";
+// import { downloadMedia } from "../../helpers/download-media";
 import { ProfileSynchronizer } from "./profile-synchronizer";
+import { downloadMedia } from "helpers/download-media";
 
 /**
  * An async method that fetches a Twitter profile and dispatches 
  * synchronization tasks to configured platforms.
  */
 export async function syncProfile(
-    twitterClient: Scraper,
-    synchronizers: ProfileSynchronizer[]
+    args: {twitterClient: Scraper,
+    synchronizers: ProfileSynchronizer[]}
 ): Promise<void> {
+    const {twitterClient, synchronizers} = args;
     const log = ora({
         color: "cyan",
         prefixText: oraPrefixer("profile-sync"),

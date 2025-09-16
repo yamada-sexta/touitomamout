@@ -12,7 +12,7 @@ import { uploadBlueskyMedia } from "helpers/medias/upload-bluesky-media";
 import { ProfileSynchronizer } from "./profile-synchronizer";
 import { shortenedUrlsReplacer } from "helpers/url/shortened-urls-replacer";
 
-export class BlueskySynchronizer implements ProfileSynchronizer {
+export class BlueskyProfileSynchronizer implements ProfileSynchronizer {
     constructor(private client: AtpAgent) { }
 
     public async sync(args: {

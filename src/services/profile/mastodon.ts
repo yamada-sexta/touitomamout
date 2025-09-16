@@ -17,7 +17,7 @@ import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
 type Writeable<T> = { -readonly [K in keyof T]: T[K] };
 type MutableCredentialsParams = Writeable<UpdateCredentialsParams>;
 
-export class MastodonSynchronizer implements ProfileSynchronizer {
+export class MastodonProfileSynchronizer implements ProfileSynchronizer {
     constructor(private client: mastodon.rest.Client) { }
 
     public async sync(args: {

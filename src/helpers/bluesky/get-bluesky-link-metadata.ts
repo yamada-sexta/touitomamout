@@ -1,9 +1,8 @@
 import { AtpAgent } from "@atproto/api";
-
-import { downloadMedia } from "../../services";
 import { BlueskyLinkMetadata } from "../../types/link-metadata";
 import { parseBlobForBluesky } from "../medias/parse-blob-for-bluesky";
 import { fetchLinkMetadata } from "./fetch-link-metadata";
+import { downloadMedia } from "helpers/download-media";
 
 /**
  * Retrieves Bluesky Link metadata asynchronously.
