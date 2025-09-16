@@ -82,6 +82,8 @@ const syncAll = async () => {
   }
 
   for await (const client of clients) {
+    console.log(`\n𝕏 -> ${client.emojis.join("+")}`);
+    console.log(`| Twitter handle: @${client.twitterHandle.handle}`);
     await syncProfile(
       { twitterClient: client.twitter, synchronizers: client.profileSynchronizers, twitterHandle: client.twitterHandle }
     )
@@ -94,10 +96,6 @@ const syncAll = async () => {
     })
 
     client.allTimeCount.set(postsSyncResponse.metrics.totalSynced);
-
-    console.log(`\n𝕏 -> ${client.emojis.join("+")}`);
-    console.log(`Touitomamout sync | v${TOUITOMAMOUT_VERSION}`);
-    console.log(`| Twitter handle: @${client.twitterHandle.handle}`);
     console.log(
       `| just synced ${postsSyncResponse.metrics.justSynced} post(s)`,
     );
