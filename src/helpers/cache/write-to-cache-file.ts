@@ -1,4 +1,4 @@
-import { CACHE_PATH } from "../../constants";
+import { CACHE_PATH } from "../../env";
 import { Cache } from "../../types";
 import { TouitomamoutError } from "../error";
 

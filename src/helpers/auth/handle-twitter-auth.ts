@@ -1,7 +1,7 @@
 import { Scraper } from "@the-convocation/twitter-scraper";
 import ora from "ora";
 
-import { TWITTER_PASSWORD, TWITTER_USERNAME } from "../../constants";
+import { TWITTER_PASSWORD, TWITTER_USERNAME } from "../../env";
 import { saveCookies } from "../cookies/save-cookies";
 import { oraPrefixer } from "../logs";
 import { restorePreviousSession } from "./restore-previous-session";

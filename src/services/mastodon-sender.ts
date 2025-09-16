@@ -1,7 +1,7 @@
 import { mastodon } from "masto";
 import { Ora } from "ora";
 
-import { DEBUG, VOID } from "../constants";
+import { DEBUG, VOID } from "../env";
 import { savePostToCache } from "../helpers/cache/save-post-to-cache";
 import { oraProgress } from "../helpers/logs";
 import { getPostExcerpt } from "../helpers/post/get-post-excerpt";

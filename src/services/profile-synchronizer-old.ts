@@ -9,14 +9,14 @@ import {
   SYNC_PROFILE_NAME,
   SYNC_PROFILE_PICTURE,
   TWITTER_HANDLE,
-} from "../constants";
+} from "../env";
 import { updateCacheEntry } from "../helpers/cache/update-cache-entry";
 import { oraPrefixer } from "../helpers/logs";
 import { uploadBlueskyMedia } from "../helpers/medias/upload-bluesky-media";
 import { buildProfileUpdate } from "../helpers/profile/build-profile-update";
 import { shortenedUrlsReplacer } from "../helpers/url/shortened-urls-replacer";
 import { Platform, ProfileCache } from "../types";
-import { downloadMedia } from "./download-media";
+import { downloadMedia } from "../helpers/download-media";
 
 /**
  * An async method in charge of dispatching profile synchronization tasks.

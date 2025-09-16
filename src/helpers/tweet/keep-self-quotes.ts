@@ -1,6 +1,6 @@
 import { Tweet } from "@the-convocation/twitter-scraper";
 
-import { TWITTER_HANDLE } from "../../constants";
+import { TWITTER_HANDLE } from "../../env";
 
 export const keepSelfQuotes = async (tweet: Tweet) => {
   if (tweet.isQuoted) {

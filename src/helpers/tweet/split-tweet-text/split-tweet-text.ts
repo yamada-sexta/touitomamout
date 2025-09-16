@@ -3,7 +3,7 @@ import { Tweet } from "@the-convocation/twitter-scraper";
 import {
   BLUESKY_MAX_POST_LENGTH,
   MASTODON_MAX_POST_LENGTH,
-} from "../../../constants";
+} from "../../../env";
 import { Platform } from "../../../types";
 import { buildChunksFromSplitterEntries } from "./build-chunks-from-splitter-entries";
 import { extractWordsAndSpacers } from "./extract-words-and-spacers";

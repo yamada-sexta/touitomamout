@@ -1,7 +1,7 @@
 import { AtpAgent, RichText } from "@atproto/api";
 import { Tweet } from "@the-convocation/twitter-scraper";
 
-import { BLUESKY_IDENTIFIER } from "../../constants";
+import { BLUESKY_IDENTIFIER } from "../../env";
 import { BlueskyCacheChunk, Platform } from "../../types";
 import { BlueskyPost } from "../../types/post";
 import { getCachedPostChunk } from "../cache/get-cached-post-chunk";

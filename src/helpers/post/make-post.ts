@@ -3,7 +3,7 @@ import { Tweet } from "@the-convocation/twitter-scraper";
 import { mastodon } from "masto";
 import { Ora } from "ora";
 
-import { VOID } from "../../constants";
+import { VOID } from "../../env";
 import { BlueskyPost, MastodonPost, Post } from "../../types/post";
 import { oraProgress } from "../logs";
 import { getPostExcerpt } from "./get-post-excerpt";

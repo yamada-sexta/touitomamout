@@ -4,12 +4,12 @@ import { ProfileType, ProfileUpdate } from "../../types/profile";
 import { getCachedProfile } from "../cache/get-cached-profile";
 import { computeBlobHash } from "../medias/compute-blob-hash";
 
-const getBlobHashOrNull = async (blob: Blob | null): Promise<string | null> => {
+const getBlobHashOrNull = async (blob: Blob | null | undefined): Promise<string | null> => {
   return blob ? computeBlobHash(blob) : null;
 };
 
 export const buildProfileUpdate = async (
-  blobs: Record<ProfileType, Blob | null>,
+  blobs: Record<ProfileType, Blob | null | undefined>,
   log: Ora,
 ): Promise<ProfileUpdate> => {
   log.text = "checking images hashes...";

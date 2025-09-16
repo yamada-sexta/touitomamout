@@ -1,6 +1,6 @@
 import { unlink } from "node:fs/promises";
 import { Cookie } from "tough-cookie";
-import { COOKIES_PATH } from "../../constants";
+import { COOKIES_PATH } from "../../env";
 
 export const getCookies = async (): Promise<Cookie[] | null> => {
   try {

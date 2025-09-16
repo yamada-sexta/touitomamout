@@ -1,6 +1,6 @@
 import { Tweet } from "@the-convocation/twitter-scraper";
 
-import { DEBUG } from "../../constants";
+import { DEBUG } from "../../env";
 import { getPostExcerpt } from "../post/get-post-excerpt";
 import { keepRecentTweets, keepSelfQuotes, keepSelfReplies } from "./";
 

@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 
 import { Cookie } from "tough-cookie";
 
-import { COOKIES_PATH } from "../../constants";
+import { COOKIES_PATH } from "../../env";
 
 export const saveCookies = async (cookies: Cookie[]): Promise<void> => {
   try {

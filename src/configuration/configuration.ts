@@ -18,7 +18,7 @@ import {
   SYNC_MASTODON,
   TOUITOMAMOUT_VERSION,
   TWITTER_HANDLE,
-} from "../constants";
+} from "../env";
 import { handleTwitterAuth } from "../helpers/auth/handle-twitter-auth";
 import { createCacheFile } from "../helpers/cache/create-cache";
 import { getCachedPosts } from "../helpers/cache/get-cached-posts";

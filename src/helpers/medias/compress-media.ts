@@ -1,6 +1,6 @@
 import sharp from "sharp";
 
-import { DEBUG } from "../../constants";
+import { DEBUG } from "../../env";
 
 const findSmallerBuffer = (
   compressedBuffers: CompressedBuffer[],

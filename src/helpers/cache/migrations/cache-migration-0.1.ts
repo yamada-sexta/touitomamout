@@ -1,4 +1,4 @@
-import { INSTANCE_ID } from "../../../constants";
+import { INSTANCE_ID } from "../../../env";
 import { Platform } from "../../../types";
 import { preventMigrationOnWrongVersion } from "./helpers/prevent-migration-on-wrong-version";
 

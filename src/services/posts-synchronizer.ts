@@ -4,7 +4,7 @@ import { Scraper } from "@the-convocation/twitter-scraper";
 import { mastodon } from "masto";
 import ora from "ora";
 
-import { SYNC_DRY_RUN } from "../constants";
+import { SYNC_DRY_RUN } from "../env";
 import { getCachedPosts } from "../helpers/cache/get-cached-posts";
 import { oraPrefixer } from "../helpers/logs";
 import { makePost } from "../helpers/post/make-post";

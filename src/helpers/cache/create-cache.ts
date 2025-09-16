@@ -1,6 +1,6 @@
 import { access, constants } from "node:fs/promises";
 
-import { CACHE_PATH, INSTANCE_ID } from "../../constants";
+import { CACHE_PATH, INSTANCE_ID } from "../../env";
 import { writeToCacheFile } from "./write-to-cache-file";
 
 export async function createCacheFile() {

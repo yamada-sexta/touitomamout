@@ -1,4 +1,4 @@
-import { MASTODON_INSTANCE } from "../../../constants";
+import { MASTODON_INSTANCE } from "../../../env";
 import { MastodonCacheChunk, Platform } from "../../../types";
 import { getCachedPostChunk } from "../../cache/get-cached-post-chunk";
 

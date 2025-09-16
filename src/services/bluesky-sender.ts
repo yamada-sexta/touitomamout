@@ -1,7 +1,7 @@
 import { AtpAgent, RichText } from "@atproto/api";
 import { Ora } from "ora";
 
-import { BACKDATE_BLUESKY_POSTS, DEBUG, VOID } from "../constants";
+import { BACKDATE_BLUESKY_POSTS, DEBUG, VOID } from "../env";
 import {
   buildReplyEntry,
   getBlueskyChunkLinkMetadata,

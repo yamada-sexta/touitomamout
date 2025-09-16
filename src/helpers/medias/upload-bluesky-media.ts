@@ -1,6 +1,6 @@
 import { AtpAgent, ComAtprotoRepoUploadBlob } from "@atproto/api";
 
-import { DEBUG } from "../../constants";
+import { DEBUG } from "../../env";
 import { parseBlobForBluesky } from "./parse-blob-for-bluesky";
 
 /**

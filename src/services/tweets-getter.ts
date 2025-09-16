@@ -1,7 +1,7 @@
 import { Scraper, Tweet } from "@the-convocation/twitter-scraper";
 import ora from "ora";
 
-import { API_RATE_LIMIT, TWITTER_HANDLE } from "../constants";
+import { API_RATE_LIMIT, TWITTER_HANDLE } from "../env";
 import { getCachedPosts } from "../helpers/cache/get-cached-posts";
 import { oraPrefixer, oraProgress } from "../helpers/logs";
 import { isTweetCached, tweetFormatter } from "../helpers/tweet";

@@ -7,7 +7,7 @@ import {
   SYNC_BLUESKY,
   SYNC_MASTODON,
   TWITTER_HANDLE,
-} from "../constants";
+} from "../env";
 export interface Rule {
   name: string;
   platformEnabled: boolean;

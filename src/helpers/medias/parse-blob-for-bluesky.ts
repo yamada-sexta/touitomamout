@@ -1,4 +1,4 @@
-import { BLUESKY_MEDIA_MAX_SIZE_BYTES } from "../../constants";
+import { BLUESKY_MEDIA_MAX_SIZE_BYTES } from "../../env";
 import { compressMedia } from "./compress-media";
 
 interface BlueskyBlob {
