@@ -3,3 +3,4 @@ node_modules/
 deployment/
 docs/
 Dockerfile
+__test__
