@@ -6,7 +6,6 @@
   </a>
 </p>
 
-
 [![Release](https://img.shields.io/github/package-json/v/yamada-sexta/touitomamout/main?label=release&color=#4c1)](https://github.com/yamada-sexta/touitomamout/releases)
 [![License](https://img.shields.io/github/license/yamada-sexta/touitomamout?color=#4c1)](https://github.com/yamada-sexta/touitomamout/blob/main/LICENSE)
 [![Contributors](https://img.shields.io/github/contributors/yamada-sexta/touitomamout)](https://github.com/yamada-sexta/touitomamout/graphs/contributors)
@@ -21,23 +20,6 @@ An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 - 🦣 Mastodon
 - ☁️ Bluesky
-
-<!-- 
-[![CD](https://img.shields.io/github/actions/workflow/status/yamada-sexta/touitomamout/cd.yml?label=cd)](https://github.com/yamada-sexta/touitomamout/actions/workflows/cd.yml)
-
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/yamada-sexta/touitomamout/codeql.yml?label=codeql)](https://github.com/yamada-sexta/touitomamout/actions/workflows/codeql.yml)
-
-[![Release](https://img.shields.io/github/actions/workflow/status/yamada-sexta/touitomamout/release.yml?label=release)](https://github.com/yamada-sexta/touitomamout/actions/workflows/release.yml)
-
-[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=yamada-sexta_touitomamout&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=yamada-sexta_touitomamout) -->
-
-<!-- Tools:
-
-[![Eslint](https://img.shields.io/badge/eslint-3A33D1?logo=eslint&logoColor=white)](https://github.com/eslint/eslint)
-[![Prettier](https://img.shields.io/badge/prettier-1A2C34?logo=prettier&logoColor=white)](https://github.com/prettier/prettier)
-![Sonarlint](https://img.shields.io/badge/sonarlint-CB2029?logo=sonarlint&logoColor=white) -->
-
-<!-- ![touitomamout banner](./.github/docs/touitomamout-banner.jpg) -->
 
 ## Documentation
 
