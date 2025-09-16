@@ -100,9 +100,7 @@ const syncAll = async () => {
       `| just synced ${postsSyncResponse.metrics.justSynced} post(s)`,
     );
     console.log(
-      `| ${postsSyncResponse.metrics.totalSynced
-        .toString()
-        .padStart(5, "_")} synced posts so far`,
+      `| ${postsSyncResponse.metrics.totalSynced} post(s) synced so far`,
     );
   }
 };

@@ -32,7 +32,7 @@ let _twitterHandleKey: TwitterHandleKey<"" | number> = `TWITTER_HANDLE`
 export const INSTANCE_IDS: string[] = []
 while (process.env[_twitterHandleKey]) {
   const handle = trimTwitterHandle(process.env[_twitterHandleKey] as string)
-  console.log(`${_twitterHandleKey}: @${handle}`);
+  console.log(`Found ${_twitterHandleKey}: @${handle}`);
   TWITTER_HANDLES.push(
     {
       env: _twitterHandleKey,
