@@ -8,7 +8,8 @@ export const getEligibleTweet = async (
   tweet: Tweet,
   twitterHandle: string,
 ): Promise<Tweet | void> => {
-  if (!tweet.isRetweet) {
+  if (tweet.isRetweet) {
+    // console.log("Is retweet");
     return;
   }
 
@@ -31,6 +32,8 @@ export const getEligibleTweet = async (
         : true
     )
   ) {
+    console.log("Isn't self quote");
+
     return;
   }
 
@@ -53,13 +56,13 @@ export const getEligibleTweet = async (
   //   quotedStatusId: isSelfQuote ? tweet.quotedStatusId : undefined,
   // };
 
-  if (DEBUG) {
-    console.log(
-      `✅ : ${tweet.id}: from:@${tweet.username}: ${getPostExcerpt(
-        tweet.text ?? "",
-      )}`,
-    );
-  }
+  // if (DEBUG) {
+  console.log(
+    `✅ : ${tweet.id}: from:@${tweet.username}: ${getPostExcerpt(
+      tweet.text ?? "",
+    )}`,
+  );
+  // }
 
   // return keep ? eligibleTweet : undefined;
   return tweet
