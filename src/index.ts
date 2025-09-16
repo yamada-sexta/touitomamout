@@ -35,11 +35,7 @@ import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
 const factories = [BlueskySynchronizerFactory] as const;
 
 
-for (const factory of factories) {
-  // const db = db
-  // console.log(db);
-  
-}
+
 
 interface MetaClient {
   twitter: Scraper;
@@ -52,7 +48,39 @@ interface MetaClient {
 }
 const clients: MetaClient[] = [];
 
-for await (const handle of TWITTER_HANDLES) {
+for (const handle of TWITTER_HANDLES) {
+
+
+  for (const factory of factories) {
+    const envKeys = factory.ENV_KEYS;
+    const fallback = factory.FALLBACK_ENV ?? {}
+    const env: typeof factory.FALLBACK_ENV = {};
+    let skip = false;
+    for (const key of envKeys) {
+      const osKey = key + handle.postFix;
+      const val = process.env[osKey] || fallback[key];
+      if (!val) {
+        console.warn(`Unable to setup for ${factory.NAME} for user ${handle.handle}.`)
+        console.warn(`Because ${osKey} is not set.`)
+        skip = true;
+        break;
+      }
+      env[key] = val;
+    }
+    if (skip) {
+      continue;
+    }
+
+    const s = await factory.create(
+      {
+        
+      }
+    )
+
+
+  }
+
+
   const {
     twitterClient,
     // mastodonClient,

@@ -15,6 +15,7 @@ type ProfileArgs = SyncArgs & {
 };
 
 export interface SynchronizerFactory<K extends readonly string[]> {
+    NAME: string,
     ENV_KEYS: K;
     // Fallback environments. Used to set default values.
     FALLBACK_ENV?: Partial<Record<K[number], string>>;

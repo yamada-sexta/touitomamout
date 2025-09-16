@@ -1,11 +1,9 @@
 import type { Scraper } from "@the-convocation/twitter-scraper";
 import ora from "ora";
-// import { TWITTER_HANDLE } from "env";
 import { updateCacheEntry } from "helpers/cache/update-cache-entry";
 import { oraPrefixer } from "helpers/logs";
 import { buildProfileUpdate } from "helpers/profile/build-profile-update";
 import { ProfileCache } from "types";
-// import { downloadMedia } from "../../helpers/download-media";
 import { ProfileSynchronizer } from "./profile-synchronizer";
 import { downloadMedia } from "helpers/download-media";
 import { TwitterHandle } from "env";

@@ -9,6 +9,7 @@ const KEYS = [
 ] as const;
 
 export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
+  NAME: "Bluesky",
   ENV_KEYS: KEYS,
   FALLBACK_ENV: {
     BLUESKY_INSTANCE: "bsky.social",
@@ -74,7 +75,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
       },
 
       syncPost: async (args) => {
-        
+
       },
     };
   },
