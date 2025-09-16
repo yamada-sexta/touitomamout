@@ -2,15 +2,12 @@ import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
 import { configuration } from "./configuration/configuration";
 import {
   DAEMON,
-  SYNC_BLUESKY,
   SYNC_FREQUENCY_MIN,
-  SYNC_MASTODON,
   TOUITOMAMOUT_VERSION,
   TWITTER_HANDLE,
 } from "./env";
 import {
   postsSynchronizerService,
-  profileSynchronizerService,
 } from "./services";
 import { MastodonSynchronizer } from "services/profile/mastodon";
 import { BlueskySynchronizer } from "services/profile/bluesky";
