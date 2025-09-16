@@ -33,6 +33,28 @@ import { PostSynchronizer } from "services/posts/post-sender";
 import { Scraper } from "@the-convocation/twitter-scraper";
 import Gauge from "@pm2/io/build/main/utils/metrics/gauge";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
+import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
+import { drizzle } from "drizzle-orm/bun-sqlite";
+import { Database } from "bun:sqlite";
+import * as schema from "db/schema";
+
+const factories = [
+  BlueskySynchronizerFactory,
+] as const;
+
+const sqlite = new Database("sqlite.db", {
+  create: true,
+  safeIntegers: true,
+  strict: true
+});
+export const db = drizzle(sqlite, {
+  schema
+});
+
+for (const factory of factories) {
+
+}
+// .ENV_KEYS;
 
 interface MetaClient {
   twitter: Scraper,

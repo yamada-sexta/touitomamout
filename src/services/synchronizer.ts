@@ -1,70 +1,57 @@
 import {
-  Profile,
-  Tweet,
-  Scraper as XClient,
+    Profile,
+    Tweet,
+    Scraper as XClient,
 } from "@the-convocation/twitter-scraper";
+import { BunSQLiteDatabase, drizzle } from "drizzle-orm/bun-sqlite";
 import { Ora } from "ora";
 import { Media } from "types";
 import { ProfileUpdate } from "types/profile";
 
 type SyncArgs = { log: Ora };
 type ProfileArgs = SyncArgs & {
-  profile: Profile;
-  profileUpdate: ProfileUpdate;
+    readonly profile: Profile;
+    readonly profileUpdate: ProfileUpdate;
 };
 
 export interface SynchronizerFactory<K extends readonly string[]> {
-  ENV_KEYS: K;
-  // Fallback environments. Used to set default values.
-  FALLBACK_ENV?: Partial<Record<K[number], string>>;
-  // Create a Synchronizer. May throw errors
-  create(args: {
-    xClient: XClient;
-    env: Record<K[number], string>;
-    envKeys: K;
-    slot: number;
-    log: Ora;
-  }): Promise<Synchronizer>;
+    ENV_KEYS: K;
+    // Fallback environments. Used to set default values.
+    FALLBACK_ENV?: Partial<Record<K[number], string>>;
+    // Create a Synchronizer. May throw errors
+    create(args: {
+        readonly xClient: XClient;
+        readonly env: Record<K[number], string>;
+        readonly envKeys: K;
+        readonly db: BunSQLiteDatabase;
+        readonly slot: number;
+        readonly log: Ora;
+    }): Promise<Synchronizer>;
 }
 
 export interface SynchronizerBase {
-  syncBio(
-    args: ProfileArgs & {
-      bio: string;
-      formattedBio: string;
-    }
-  ): Promise<void>;
+    syncBio(
+        args: ProfileArgs & {
+            readonly bio: string;
+            readonly formattedBio: string;
+        }
+    ): Promise<void>;
 
-  syncUserName({
-    log,
-    profile,
-    name,
-    profileUpdate,
-  }: ProfileArgs & { name: string }): Promise<void>;
+    syncUserName(args: ProfileArgs & { readonly name: string }): Promise<void>;
 
-  syncProfilePic({
-    log,
-    profile,
-    pfpBlob,
-    profileUpdate,
-  }: ProfileArgs & { pfpBlob: Blob }): Promise<void>;
+    syncProfilePic(args: ProfileArgs & { readonly pfpBlob: Blob }): Promise<void>;
 
-  syncBanner({
-    log,
-    profile,
-    bannerBlob,
-    profileUpdate,
-  }: ProfileArgs & { bannerBlob: Blob }): Promise<void>;
+    syncBanner(args: ProfileArgs & { readonly bannerBlob: Blob }): Promise<void>;
 
-  syncPost(
-    args: SyncArgs & {
-      tweet: Tweet;
-      mediaList: Media[];
-    }
-  ): Promise<void>;
+    syncPost(
+        args: SyncArgs & {
+            readonly tweet: Tweet;
+            readonly mediaList: Media[];
+        }
+    ): Promise<void>;
 }
 
 export type Synchronizer = Partial<SynchronizerBase> & {
-  name: string;
-  icon: string;
+    name: string;
+    icon: string;
 };

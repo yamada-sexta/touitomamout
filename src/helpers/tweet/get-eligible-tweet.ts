@@ -1,6 +1,4 @@
 import { Tweet } from "@the-convocation/twitter-scraper";
-
-import { DEBUG } from "../../env";
 import { getPostExcerpt } from "../post/get-post-excerpt";
 import { isRecentTweet } from "./";
 
@@ -8,6 +6,7 @@ export const getEligibleTweet = async (
   tweet: Tweet,
   twitterHandle: string,
 ): Promise<Tweet | void> => {
+  // Don't post retweet
   if (tweet.isRetweet) {
     // console.log("Is retweet");
     return;
@@ -32,7 +31,7 @@ export const getEligibleTweet = async (
         : true
     )
   ) {
-    console.log("Isn't self quote");
+    // console.log("Isn't self quote");
 
     return;
   }
@@ -40,21 +39,6 @@ export const getEligibleTweet = async (
   if (!isRecentTweet(tweet)) {
     return;
   }
-
-  // const isRecentTweet = isRecentTweet(tweet);
-
-  // const keep = notRetweet && isSelfReply && isSelfQuote && isRecentTweet;
-
-  // Remove quote & reply tweets data if not self-made
-  // const eligibleTweet = {
-  //   ...tweet,
-  //   inReplyToStatus: isSelfReply ? tweet.inReplyToStatus : undefined,
-  //   inReplyToStatusId: isSelfReply
-  //     ? (tweet.inReplyToStatusId ?? tweet.inReplyToStatus?.id)
-  //     : undefined,
-  //   quotedStatus: isSelfQuote ? tweet.quotedStatus : undefined,
-  //   quotedStatusId: isSelfQuote ? tweet.quotedStatusId : undefined,
-  // };
 
   // if (DEBUG) {
   console.log(
