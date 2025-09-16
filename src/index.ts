@@ -17,6 +17,12 @@ import { PostSynchronizer } from "services/posts/post-sender";
 import { MastodonPostSynchronizer } from "services/posts/mastodon-sender";
 import { BlueskyPostSynchronizer } from "services/posts/bluesky";
 
+// Register event
+process.on('SIGINT', () => {
+  console.log('\nReceived SIGINT (Ctrl+C). Exiting...');
+  process.exit(0);
+});
+
 const {
   twitterClient,
   mastodonClient,
@@ -70,12 +76,6 @@ const syncAll = async () => {
     twitterClient, syncCount: synchronizedPostsCountThisRun, synchronizers: postSynchronizers
   })
 
-  // await postsSynchronizerService(
-  //   twitterClient,
-  //   mastodonClient,
-  //   blueskyClient,
-  //   synchronizedPostsCountThisRun,
-  // );
   synchronizedPostsCountAllTime.set(postsSyncResponse.metrics.totalSynced);
 
   console.log(`\n𝕏 -> ${emojis.join("+")}`);
@@ -93,12 +93,6 @@ const syncAll = async () => {
   );
 };
 
-
-// Register event
-process.on('SIGINT', () => {
-  console.log('\nReceived SIGINT (Ctrl+C). Exiting...');
-  process.exit(0);
-});
 
 if (DAEMON) {
   console.log(`Run daemon every ${SYNC_FREQUENCY_MIN}min`);
