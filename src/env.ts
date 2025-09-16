@@ -68,7 +68,7 @@ export const SYNC_BLUESKY = (process.env.SYNC_BLUESKY ?? "false") === "true";
 export const BACKDATE_BLUESKY_POSTS =
   (process.env.BACKDATE_BLUESKY_POSTS ?? "true") === "true";
 export const SYNC_FREQUENCY_MIN = parseInt(
-  process.env.SYNC_FREQUENCY_MIN ?? "5",
+  process.env.SYNC_FREQUENCY_MIN ?? "30",
 );
 export const SYNC_PROFILE_DESCRIPTION =
   (process.env.SYNC_PROFILE_DESCRIPTION ?? "false") === "true";
