@@ -31,8 +31,6 @@ import { Scraper } from "@the-convocation/twitter-scraper";
 import Gauge from "@pm2/io/build/main/utils/metrics/gauge";
 import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
-import { db } from "db";
-
 
 const factories = [BlueskySynchronizerFactory] as const;
 
