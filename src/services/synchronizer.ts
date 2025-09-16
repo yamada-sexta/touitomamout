@@ -3,7 +3,7 @@ import {
     Tweet,
     Scraper as XClient,
 } from "@the-convocation/twitter-scraper";
-import { BunSQLiteDatabase, drizzle } from "drizzle-orm/bun-sqlite";
+import { DBType } from "db";
 import { Ora } from "ora";
 import { Media } from "types";
 import { ProfileUpdate } from "types/profile";
@@ -23,7 +23,7 @@ export interface SynchronizerFactory<K extends readonly string[]> {
         readonly xClient: XClient;
         readonly env: Record<K[number], string>;
         readonly envKeys: K;
-        readonly db: BunSQLiteDatabase;
+        readonly db: DBType;
         readonly slot: number;
         readonly log: Ora;
     }): Promise<Synchronizer>;
