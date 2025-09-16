@@ -2,7 +2,7 @@ import { unlink } from "node:fs/promises";
 import { Cookie } from "tough-cookie";
 import { COOKIES_PATH } from "../../env";
 
-export const getCookies = async (): Promise<Cookie[] | null> => {
+export async function getCookies(args?: { cookiePath: string }): Promise<Cookie[] | null> {
   try {
     const cookieStore = await Bun.file(COOKIES_PATH).json();
     return Object.values(cookieStore).reduce((acc: Cookie[], c: any) => {
@@ -14,7 +14,7 @@ export const getCookies = async (): Promise<Cookie[] | null> => {
   } catch (err) {
     // If parsing fails, the file is incompatible or corrupt.
     console.error("Incompatible or corrupt cookie file detected. Deleting it.", err);
-    
+
     try {
       // Add this line to delete the file
       await unlink(COOKIES_PATH);

@@ -1,4 +1,4 @@
-import { AppBskyActorProfile, AtpAgent, Un$Typed } from "@atproto/api";
+import { Agent, AppBskyActorProfile, Un$Typed } from "@atproto/api";
 import { Profile } from "@the-convocation/twitter-scraper";
 import { Ora } from "ora";
 import {
@@ -13,7 +13,7 @@ import { ProfileSynchronizer } from "./profile-synchronizer";
 import { shortenedUrlsReplacer } from "helpers/url/shortened-urls-replacer";
 
 export class BlueskyProfileSynchronizer implements ProfileSynchronizer {
-    constructor(private client: AtpAgent) { }
+    constructor(private client: Agent) { }
 
     public async sync(args: {
         profile: Profile;

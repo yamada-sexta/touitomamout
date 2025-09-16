@@ -1,4 +1,4 @@
-import { AtpAgent, ComAtprotoRepoUploadBlob } from "@atproto/api";
+import { Agent, AtpAgent, ComAtprotoRepoUploadBlob } from "@atproto/api";
 
 import { DEBUG } from "../../env";
 import { parseBlobForBluesky } from "./parse-blob-for-bluesky";
@@ -9,12 +9,8 @@ import { parseBlobForBluesky } from "./parse-blob-for-bluesky";
  */
 export const uploadBlueskyMedia = async (
   mediaBlob: Blob,
-  blueskyClient: AtpAgent | null,
+  blueskyClient: Agent,
 ): Promise<ComAtprotoRepoUploadBlob.Response | null> => {
-  if (!blueskyClient) {
-    return null;
-  }
-
   return await parseBlobForBluesky(mediaBlob)
     .then(({ blobData, mimeType }) =>
       blueskyClient?.uploadBlob(blobData, {

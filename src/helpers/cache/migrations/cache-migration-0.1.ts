@@ -1,29 +1,31 @@
-import { INSTANCE_ID } from "../../../env";
+// import { INSTANCE_ID } from "../../../env";
 import { Platform } from "../../../types";
 import { preventMigrationOnWrongVersion } from "./helpers/prevent-migration-on-wrong-version";
 
 export const migration = async (
+  args: {
+    instanceId: string
+  },
   outdatedCache: NonNullable<{
     [key: string]:
-      | string
-      | {
-          [key: string]: {
-            mastodon: string;
-            bluesky: {
-              cid: string;
-              rkey: string;
-            };
-          };
+    | string
+    | {
+      [key: string]: {
+        mastodon: string;
+        bluesky: {
+          cid: string;
+          rkey: string;
         };
+      };
+    };
   }>,
 ) => {
   if (preventMigrationOnWrongVersion(outdatedCache, "0.0")) {
     return outdatedCache;
   }
-
   // Convert old refs to arrays of refs, considering the old ref as both first and last chunk
   const updatedInstanceCache = Object.entries(
-    outdatedCache[INSTANCE_ID],
+    outdatedCache[args.instanceId],
   ).reduce((update, [tweetId, refs]) => {
     return {
       ...update,
@@ -36,7 +38,7 @@ export const migration = async (
 
   return {
     ...outdatedCache,
-    [INSTANCE_ID]: updatedInstanceCache,
+    [args.instanceId]: updatedInstanceCache,
     version: "0.1",
   };
 };

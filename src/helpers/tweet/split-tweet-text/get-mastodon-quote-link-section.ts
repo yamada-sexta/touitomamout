@@ -1,20 +1,22 @@
-import { MASTODON_INSTANCE } from "../../../env";
+// import { MASTODON_INSTANCE } from "../../../env";
 import { MastodonCacheChunk, Platform } from "../../../types";
 import { getCachedPostChunk } from "../../cache/get-cached-post-chunk";
 
-export const getMastodonQuoteLinkSection = async (
-  quotedTweetId?: string,
-  mastodonUsername?: string,
-) => {
-  if (!quotedTweetId || !mastodonUsername) {
-    return "";
-  }
+export async function getMastodonQuoteLinkSection(args: {
+  quotedTweetId: string,
+  mastodonUsername: string,
+  mastodonInstance: string
+}
+) {
+  // if (!quotedTweetId || !mastodonUsername) {
+  // return "";
+  // }
 
   const mastodonQuotedId = await getCachedPostChunk<MastodonCacheChunk>(
     Platform.MASTODON,
     "last",
-    quotedTweetId,
+    args.quotedTweetId,
   );
 
-  return `\n\nhttps://${MASTODON_INSTANCE}/@${mastodonUsername}/${mastodonQuotedId}`;
+  return `\n\nhttps://${args.mastodonInstance}/@${args.mastodonUsername}/${mastodonQuotedId}`;
 };

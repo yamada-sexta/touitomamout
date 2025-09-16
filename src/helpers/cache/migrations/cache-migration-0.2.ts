@@ -1,17 +1,19 @@
 import { preventMigrationOnWrongVersion } from "./helpers/prevent-migration-on-wrong-version";
 
-export const migration = async (outdatedCache: {
+export const migration = async (args: {
+  instanceId: string
+}, outdatedCache: {
   [key: string]:
-    | string
-    | {
-        [key: string]: {
-          mastodon: string[];
-          bluesky: {
-            cid: string;
-            rkey: string;
-          }[];
-        };
-      };
+  | string
+  | {
+    [key: string]: {
+      mastodon: string[];
+      bluesky: {
+        cid: string;
+        rkey: string;
+      }[];
+    };
+  };
 }) => {
   if (preventMigrationOnWrongVersion(outdatedCache, "0.1")) {
     return outdatedCache;

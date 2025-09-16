@@ -5,12 +5,13 @@ import { PostSynchronizer } from "./post-sender";
 import { mastodon } from "masto";
 import { makeMastodonPost } from "helpers/post/make-mastodon-post";
 import { getPostExcerpt } from "helpers/post/get-post-excerpt";
-import { DEBUG, VOID } from "env";
+import { DEBUG, TwitterHandle, VOID } from "env";
 import { oraProgress } from "helpers/logs";
 import { savePostToCache } from "helpers/cache/save-post-to-cache";
+import { getCachePath } from "configuration/configuration";
 
 export class MastodonPostSynchronizer implements PostSynchronizer {
-    constructor(private client: mastodon.rest.Client) { }
+    constructor(private client: mastodon.rest.Client, private twitterHandle: TwitterHandle) { }
 
     async syncPost(args: { tweet: Tweet; mediaList: Media[]; log: Ora; }): Promise<void> {
         const { tweet, mediaList, log } = args;
@@ -86,6 +87,7 @@ export class MastodonPostSynchronizer implements PostSynchronizer {
                     tweetId: post.tweet.id,
                     data: chunkReferences,
                     platform: Platform.MASTODON,
+                    cachePath: getCachePath(this.twitterHandle)
                 });
             }
         }

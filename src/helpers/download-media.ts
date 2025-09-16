@@ -22,8 +22,9 @@ export async function downloadMedia(url: string): Promise<Blob> {
       throw new Error('Response body is not readable.');
     }
 
-
+    const contentType = res.headers.get("content-type") || "application/octet-stream";
     const contentLength = Number(res.headers.get("content-length")) || 0;
+
     const reader = res.body.getReader();
 
     let received = 0;
@@ -46,7 +47,7 @@ export async function downloadMedia(url: string): Promise<Blob> {
         );
       }
     }
-    const blob = new Blob(chunks);
+    const blob = new Blob(chunks, { type: contentType });
     spinner.succeed("Media downloaded successfully");
     return blob;
   } catch (err) {

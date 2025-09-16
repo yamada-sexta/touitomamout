@@ -7,7 +7,7 @@ import {
     SYNC_PROFILE_HEADER,
     SYNC_PROFILE_NAME,
     SYNC_PROFILE_PICTURE,
-} from "../../env";
+} from "env";
 import { shortenedUrlsReplacer } from "../../helpers/url/shortened-urls-replacer";
 import { ProfileSynchronizer } from "./profile-synchronizer";
 import { ProfileUpdate } from "types/profile";

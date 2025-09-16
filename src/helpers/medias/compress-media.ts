@@ -18,7 +18,14 @@ type CompressedBuffer = {
 export const compressMedia = async (
   inputBlob: Blob,
   targetSizeInBytes: number,
-): Promise<Blob> => {
+): Promise<Blob | void> => {
+  // console.log("compressing", inputBlob.type);
+
+  if (inputBlob.type.startsWith("video/")) {
+    console.log("Unable to compress videos");
+    return;
+  }
+
   // Get buffer from input blob
   const inputBuffer = await inputBlob
     .arrayBuffer()
@@ -91,8 +98,7 @@ export const compressMedia = async (
 
   if (DEBUG) {
     console.log(
-      `Compression results : ${inputBuffer.length / 1000}kB -> ${
-        compressedBuffer.buffer.length / 1000
+      `Compression results : ${inputBuffer.length / 1000}kB -> ${compressedBuffer.buffer.length / 1000
       }kB`,
     );
   }

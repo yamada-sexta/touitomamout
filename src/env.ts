@@ -18,27 +18,51 @@ const trimTwitterHandle = (handle: string) => {
   return handle.toLowerCase().trim().replaceAll("@", "");
 };
 
-export const TWITTER_HANDLE = trimTwitterHandle(
-  process.env.TWITTER_HANDLE ?? "",
-);
+export const TWITTER_HANDLES: TwitterHandle[] = []
+type TwitterHandleKey<T extends number | ""> = `TWITTER_HANDLE${T}`
+export interface TwitterHandle<T extends number | "" = "" | number> {
+  env: TwitterHandleKey<T>,
+  postFix: T,
+  handle: string,
+}
+
+
+let _handleCounter = 0
+let _twitterHandleKey: TwitterHandleKey<"" | number> = `TWITTER_HANDLE`
+export const INSTANCE_IDS: string[] = []
+while (process.env[_twitterHandleKey]) {
+  const handle = trimTwitterHandle(process.env[_twitterHandleKey] as string)
+  console.log(`${_twitterHandleKey}: @${handle}`);
+  TWITTER_HANDLES.push(
+    {
+      env: _twitterHandleKey,
+      handle,
+      postFix: _handleCounter ? _handleCounter : ""
+    }
+  )
+  INSTANCE_IDS.push(
+    handle.toLocaleLowerCase().replaceAll(" ", "_")
+  )
+  _handleCounter += 1
+  _twitterHandleKey = `TWITTER_HANDLE${_handleCounter}`
+}
+
 export const TWITTER_USERNAME = trimTwitterHandle(
   process.env.TWITTER_USERNAME ?? "",
 );
 export const TWITTER_PASSWORD = (process.env.TWITTER_PASSWORD ?? "").trim();
-export const MASTODON_INSTANCE = (process.env.MASTODON_INSTANCE ?? "").trim();
-export const MASTODON_ACCESS_TOKEN = (
-  process.env.MASTODON_ACCESS_TOKEN ?? ""
-).trim();
-export const BLUESKY_INSTANCE = (process.env.BLUESKY_INSTANCE ?? "").trim();
-export const BLUESKY_IDENTIFIER = (process.env.BLUESKY_IDENTIFIER ?? "").trim();
-export const BLUESKY_PASSWORD = (process.env.BLUESKY_PASSWORD ?? "").trim();
-export const INSTANCE_ID = (TWITTER_HANDLE ?? "instance")
-  .toLowerCase()
-  .trim()
-  .replaceAll(" ", "_");
+
+// export const MASTODON_INSTANCE = (process.env.MASTODON_INSTANCE ?? "").trim();
+// export const MASTODON_ACCESS_TOKEN = (
+  // process.env.MASTODON_ACCESS_TOKEN ?? ""
+// ).trim();
+// export const BLUESKY_INSTANCE = (process.env.BLUESKY_INSTANCE ?? "").trim();
+// export const BLUESKY_IDENTIFIER = (process.env.BLUESKY_IDENTIFIER ?? "").trim();
+// export const BLUESKY_PASSWORD = (process.env.BLUESKY_PASSWORD ?? "").trim();
+
 export const STORAGE_DIR = process.env.STORAGE_DIR ?? process.cwd();
-export const CACHE_PATH = `${STORAGE_DIR}/cache.${INSTANCE_ID}.json`;
-export const COOKIES_PATH = `${STORAGE_DIR}/cookies.v6.${INSTANCE_ID}.json`;
+// export const CACHE_PATH = `${STORAGE_DIR}/cache.${INSTANCE_ID}.json`;
+export const COOKIES_PATH = `${STORAGE_DIR}/cookies.v6.${TWITTER_USERNAME}.json`;
 export const SYNC_MASTODON = (process.env.SYNC_MASTODON ?? "false") === "true";
 export const SYNC_BLUESKY = (process.env.SYNC_BLUESKY ?? "false") === "true";
 export const BACKDATE_BLUESKY_POSTS =

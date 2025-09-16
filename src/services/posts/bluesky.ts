@@ -2,24 +2,32 @@ import { PostSynchronizer } from "./post-sender";
 import { Tweet } from "@the-convocation/twitter-scraper";
 import { Ora } from "ora";
 import { BlueskyCacheChunk, BlueskyMediaAttachment, Media, Platform } from "types";
-import AtpAgent, { AppBskyFeedPost, RichText } from "@atproto/api";
+import { Agent, AppBskyFeedPost, RichText } from "@atproto/api";
 import { makeBlueskyPost } from "helpers/post/make-bluesky-post";
 import { parseBlobForBluesky } from "helpers/medias/parse-blob-for-bluesky";
-import { BACKDATE_BLUESKY_POSTS, DEBUG, VOID } from "env";
+import { BACKDATE_BLUESKY_POSTS, DEBUG, TwitterHandle, VOID } from "env";
 import { createMediaRecord } from "helpers/bluesky/create-media-record";
 import { buildReplyEntry, getBlueskyChunkLinkMetadata } from "helpers/bluesky";
 import { getPostExcerpt } from "helpers/post/get-post-excerpt";
 import { oraProgress } from "helpers/logs";
 import { savePostToCache } from "helpers/cache/save-post-to-cache";
+import { getCachePath } from "configuration/configuration";
 
 const BLUESKY_MEDIA_IMAGES_MAX_COUNT = 4;
 const RKEY_REGEX = /\/(?<rkey>\w+)$/;
 
 export class BlueskyPostSynchronizer implements PostSynchronizer {
-    constructor(private client: AtpAgent) { }
+    constructor(private client: Agent, private tweeterHandle: TwitterHandle, private blueskyIdentifier: string) { }
     async syncPost(args: { tweet: Tweet; mediaList: Media[]; log: Ora; }): Promise<void> {
+        // console.log("Bluesky is syncing ", args);
+
         const { tweet, mediaList, log } = args;
-        const post = await makeBlueskyPost(this.client, args.tweet)
+        const post = await makeBlueskyPost({
+            client: this.client,
+
+            tweet: args.tweet,
+            blueskyIdentifier: this.blueskyIdentifier
+        })
 
         const mediaAttachments: BlueskyMediaAttachment[] = [];
         for (const media of mediaList) {
@@ -34,15 +42,19 @@ export class BlueskyPostSynchronizer implements PostSynchronizer {
 
             log.text = `media: ↑ (${mediaAttachments.length + 1}/${mediaList.length}) uploading`;
 
-            const blueskyBlob = await parseBlobForBluesky(media.blob);
-            const res = await this.client
-                .uploadBlob(blueskyBlob.blobData, { encoding: blueskyBlob.mimeType })
-            mediaAttachments.push(
-                {
-                    ...res,
-                    alt_text: (media.type === "image" && media.photo.alt_text) ? media.photo.alt_text : undefined
-                } as BlueskyMediaAttachment
-            )
+            try {
+                const blueskyBlob = await parseBlobForBluesky(media.blob);
+                const res = await this.client
+                    .uploadBlob(blueskyBlob.blobData, { encoding: blueskyBlob.mimeType })
+                mediaAttachments.push(
+                    {
+                        ...res,
+                        alt_text: (media.type === "image" && media.photo.alt_text) ? media.photo.alt_text : undefined
+                    } as BlueskyMediaAttachment
+                )
+            } catch (e) {
+                console.warn("Failed to parse", media, "for bluesky")
+            }
         }
 
         if (!mediaAttachments.length && !post.tweet.text) {
@@ -207,6 +219,7 @@ export class BlueskyPostSynchronizer implements PostSynchronizer {
                 );
 
                 await savePostToCache({
+                    cachePath: getCachePath(this.tweeterHandle),
                     tweetId: post.tweet.id,
                     data: chunkReferences.map((ref) => ({
                         rkey: ref.rkey,

@@ -1,4 +1,4 @@
-import { AtpAgent } from "@atproto/api";
+import { Agent, AtpAgent } from "@atproto/api";
 import { BlueskyLinkMetadata } from "../../types/link-metadata";
 import { parseBlobForBluesky } from "../medias/parse-blob-for-bluesky";
 import { fetchLinkMetadata } from "./fetch-link-metadata";
@@ -13,7 +13,7 @@ import { downloadMedia } from "helpers/download-media";
  */
 export const getBlueskyLinkMetadata = async (
   url: string,
-  client: AtpAgent,
+  client: Agent,
 ): Promise<BlueskyLinkMetadata | null> => {
   const data = await fetchLinkMetadata(url);
 

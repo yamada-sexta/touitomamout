@@ -1,6 +1,6 @@
 import { subtle } from "node:crypto";
 
-import { DEBUG } from "../../env";
+import { DEBUG } from "env";
 
 export const computeBlobHash = async (blob: Blob): Promise<string> => {
   const buffer = await blob.arrayBuffer();

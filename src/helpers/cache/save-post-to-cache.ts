@@ -6,12 +6,14 @@ interface PostToCache {
   data: MastodonCache | BlueskyCache;
   tweetId?: string;
   platform: Platform;
+  cachePath: string
 }
 
 export const savePostToCache = async ({
   tweetId = "",
   data,
   platform,
+  cachePath
 }: PostToCache) => {
   const cachedPosts = await getCachedPosts();
   const currentPostData = cachedPosts[tweetId] || {};
@@ -21,5 +23,9 @@ export const savePostToCache = async ({
       ...currentPostData,
       [platform]: data,
     },
-  });
+  },
+    {
+      cachePath
+    }
+  );
 };

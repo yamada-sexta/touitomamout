@@ -1,55 +1,44 @@
-import { AtpAgent } from "@atproto/api";
-import { ResponseType } from "@atproto/xrpc";
 import pm2 from "@pm2/io";
 import type Counter from "@pm2/io/build/main/utils/metrics/counter";
 import type Gauge from "@pm2/io/build/main/utils/metrics/gauge";
 import { Scraper } from "@the-convocation/twitter-scraper";
-import { createRestAPIClient, mastodon } from "masto";
 import ora from "ora";
-
 import {
-  BLUESKY_IDENTIFIER,
-  BLUESKY_INSTANCE,
-  BLUESKY_PASSWORD,
-  MASTODON_ACCESS_TOKEN,
-  MASTODON_INSTANCE,
-  SYNC_BLUESKY,
+  STORAGE_DIR,
   SYNC_DRY_RUN,
-  SYNC_MASTODON,
-  TOUITOMAMOUT_VERSION,
-  TWITTER_HANDLE,
+  TwitterHandle,
 } from "../env";
 import { handleTwitterAuth } from "../helpers/auth/handle-twitter-auth";
 import { createCacheFile } from "../helpers/cache/create-cache";
 import { getCachedPosts } from "../helpers/cache/get-cached-posts";
 import { runMigrations } from "../helpers/cache/run-migrations";
-import { TouitomamoutError } from "../helpers/error";
 import { oraPrefixer } from "../helpers/logs";
-import { buildConfigurationRules } from "./build-configuration-rules";
+import { createBlueskyClient } from "./bluesky";
+import { createMastodonClient } from "./mastodon";
+import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
+import { PostSynchronizer } from "services/posts/post-sender";
+import { MastodonProfileSynchronizer } from "services/profile/mastodon";
+import { MastodonPostSynchronizer } from "services/posts/mastodon";
+import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
+import { BlueskyPostSynchronizer } from "services/posts/bluesky";
 
-export async function configuration(): Promise<{
+export function getCachePath(twitterHandle: TwitterHandle) {
+  return `${STORAGE_DIR}/cache.${twitterHandle.handle}.json`;
+}
+
+export async function configuration(args: {
+  twitterHandle: TwitterHandle,
+}): Promise<{
   synchronizedPostsCountAllTime: Gauge;
   synchronizedPostsCountThisRun: Counter;
   twitterClient: Scraper;
-  mastodonClient: null | mastodon.rest.Client;
-  blueskyClient: null | AtpAgent;
+  profileSynchronizers: ProfileSynchronizer[]
+  postSynchronizers: PostSynchronizer[]
+  emojis: string[]
 }> {
-  // Error handling
-  const rules = buildConfigurationRules();
-  rules.forEach(({ name, value, message, details, platformEnabled }) => {
-    if (platformEnabled) {
-      if (!value || value === "") {
-        throw new Error(
-          TouitomamoutError(message, [
-            ...details,
-            `Please check '${name}' in your .env settings.`,
-          ]),
-        );
-      }
-    }
-  });
-
-  console.log(`\nTouitomamout@v${TOUITOMAMOUT_VERSION}\n`);
+  const profileSynchronizers: ProfileSynchronizer[] = []
+  const postSynchronizers: PostSynchronizer[] = []
+  const emojis: string[] = [];
 
   if (SYNC_DRY_RUN) {
     ora({
@@ -59,8 +48,13 @@ export async function configuration(): Promise<{
   }
 
   // Init configuration
-  await createCacheFile();
-  await runMigrations();
+  const cachePath = getCachePath(args.twitterHandle)
+  await createCacheFile({
+    cachePath, instanceId: args.twitterHandle.handle
+  });
+  await runMigrations({
+    cachePath, instanceId: args.twitterHandle.handle
+  });
 
   const synchronizedPostsCountThisRun = pm2.counter({
     name: "Synced posts this run",
@@ -77,94 +71,45 @@ export async function configuration(): Promise<{
     name: "User handle",
     id: "app/schema/username",
   });
-  synchronizedHandle.set(`@${TWITTER_HANDLE}`);
+  synchronizedHandle.set(`@${args.twitterHandle}`);
 
   const twitterClient = new Scraper();
 
   await handleTwitterAuth(twitterClient);
 
-  let mastodonClient = null;
-  if (SYNC_MASTODON) {
-    const log = ora({
-      color: "gray",
-      prefixText: oraPrefixer("🦣 client"),
-    }).start("connecting to mastodon...");
+  const mastodonClient = await createMastodonClient({ handle: args.twitterHandle });
 
-    mastodonClient = createRestAPIClient({
-      url: `https://${MASTODON_INSTANCE}`,
-      accessToken: MASTODON_ACCESS_TOKEN,
-    });
-
-    await mastodonClient.v1.accounts
-      .verifyCredentials()
-      .then(() => log.succeed("connected"))
-      .catch(() => {
-        log.fail("authentication failure");
-        throw new Error(
-          TouitomamoutError(
-            "Touitomamout was unable to connect to mastodon with the given credentials",
-            ["Please check your .env settings."],
-          ),
-        );
-      });
+  if (mastodonClient) {
+    profileSynchronizers.push(
+      new MastodonProfileSynchronizer(mastodonClient)
+    )
+    postSynchronizers.push(
+      new MastodonPostSynchronizer(mastodonClient, args.twitterHandle)
+    )
+    emojis.push("🦣")
+  } else {
+    console.log(`🦣 Mastodon will not be synced for ${args.twitterHandle.handle}`)
   }
 
-  let blueskyClient = null;
-  if (SYNC_BLUESKY) {
-    const log = ora({
-      color: "gray",
-      prefixText: oraPrefixer("☁️ client"),
-    }).start("connecting to bluesky...");
-
-    blueskyClient = new AtpAgent({
-      service: `https://${BLUESKY_INSTANCE}`,
-    });
-    await blueskyClient
-      .login({
-        identifier: BLUESKY_IDENTIFIER,
-        password: BLUESKY_PASSWORD,
-      })
-      .then(() => {
-        log.succeed("connected");
-      })
-      .catch(({ error }) => {
-        log.fail("authentication failure");
-        switch (error) {
-          case ResponseType[ResponseType.AuthenticationRequired]:
-            throw new Error(
-              TouitomamoutError(
-                "Touitomamout was unable to connect to bluesky with the given credentials",
-                ["Please check your .env settings."],
-              ),
-            );
-          case ResponseType[ResponseType.XRPCNotSupported]:
-            throw new Error(
-              TouitomamoutError(
-                "The bluesky instance you have provided is not a bluesky instance",
-                [
-                  "Please check your .env settings.",
-                  "A common error is to provide a bluesky web-client domain instead of the actual bluesky instance",
-                ],
-              ),
-            );
-          case ResponseType[ResponseType.RateLimitExceeded]:
-            throw new Error(
-              TouitomamoutError(
-                "You are currently rate limited by the bluesky instance you have provided",
-                [],
-              ),
-            );
-          default:
-            console.log(error);
-        }
-      });
+  const [blueskyClient, identifier] = await createBlueskyClient({ handle: args.twitterHandle }) || [undefined, undefined];
+  if (blueskyClient) {
+    profileSynchronizers.push(
+      new BlueskyProfileSynchronizer(blueskyClient)
+    )
+    postSynchronizers.push(
+      new BlueskyPostSynchronizer(blueskyClient, args.twitterHandle, identifier)
+    )
+    emojis.push("☁️")
+  } else {
+    console.log(`☁️ Bluesky will not be synced ${args.twitterHandle.handle}`)
   }
 
   return {
-    mastodonClient,
     twitterClient,
-    blueskyClient,
     synchronizedPostsCountAllTime,
     synchronizedPostsCountThisRun,
+    profileSynchronizers,
+    postSynchronizers,
+    emojis
   };
 };

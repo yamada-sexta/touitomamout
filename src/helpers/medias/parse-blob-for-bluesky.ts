@@ -6,38 +6,43 @@ interface BlueskyBlob {
   blobData: Uint8Array;
 }
 
+const allowedMimeTypes = [
+  "image/gif",
+  "image/png",
+  "image/jpg",
+  "image/jpeg",
+  "image/webp",
+  "video/mp4",
+];
+
 /**
  * An async method to convert a Blob to an upload-compatible Bluesky Blob.
  * @returns BlueskyBlob
  */
-export const parseBlobForBluesky = async (
+export async function parseBlobForBluesky(
   inputBlob: Blob,
-): Promise<BlueskyBlob> => {
+): Promise<BlueskyBlob> {
+  // console.log("Parsing blob for bluesky");
+
   const blob = await compressMedia(
     inputBlob,
     BLUESKY_MEDIA_MAX_SIZE_BYTES,
-  ).catch(() => inputBlob);
+  ).catch(() => inputBlob) || inputBlob;
 
-  return new Promise<BlueskyBlob>((resolve, reject) => {
-    const allowedMimeTypes = [
-      "image/gif",
-      "image/png",
-      "image/jpg",
-      "image/jpeg",
-      "image/webp",
-      "video/mp4",
-    ];
-    const mimeType = blob.type;
+  const ab = await blob.arrayBuffer();
+  const data = new Uint8Array(ab);
 
-    blob.arrayBuffer().then((ab) => {
-      const buffer = Buffer.from(ab);
-      const data = new Uint8Array(buffer);
+  const mimeType = blob.type || inputBlob.type;
 
-      if (!mimeType || !allowedMimeTypes.includes(mimeType)) {
-        reject(`Media type not supported (${mimeType})`);
-      } else {
-        resolve({ mimeType, blobData: data });
-      }
-    });
-  });
+  if (!mimeType) {
+    throw new Error("Empty media type!")
+  }
+
+  if (!allowedMimeTypes.includes(mimeType)) {
+    throw new Error(`Media type not supported (${mimeType})`)
+  }
+
+  return {
+    mimeType, blobData: data
+  }
 };

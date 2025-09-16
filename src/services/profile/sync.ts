@@ -1,6 +1,6 @@
 import type { Scraper } from "@the-convocation/twitter-scraper";
 import ora from "ora";
-import { TWITTER_HANDLE } from "env";
+// import { TWITTER_HANDLE } from "env";
 import { updateCacheEntry } from "helpers/cache/update-cache-entry";
 import { oraPrefixer } from "helpers/logs";
 import { buildProfileUpdate } from "helpers/profile/build-profile-update";
@@ -8,16 +8,21 @@ import { ProfileCache } from "types";
 // import { downloadMedia } from "../../helpers/download-media";
 import { ProfileSynchronizer } from "./profile-synchronizer";
 import { downloadMedia } from "helpers/download-media";
+import { TwitterHandle } from "env";
+import { getCachePath } from "configuration/configuration";
 
 /**
  * An async method that fetches a Twitter profile and dispatches 
  * synchronization tasks to configured platforms.
  */
 export async function syncProfile(
-    args: {twitterClient: Scraper,
-    synchronizers: ProfileSynchronizer[]}
+    args: {
+        twitterHandle: TwitterHandle,
+        twitterClient: Scraper,
+        synchronizers: ProfileSynchronizer[]
+    }
 ): Promise<void> {
-    const {twitterClient, synchronizers} = args;
+    const { twitterClient, synchronizers } = args;
     const log = ora({
         color: "cyan",
         prefixText: oraPrefixer("profile-sync"),
@@ -25,7 +30,7 @@ export async function syncProfile(
     log.text = "parsing";
 
     // --- COMMON LOGIC: FETCH ---
-    const profile = await twitterClient.getProfile(TWITTER_HANDLE);
+    const profile = await twitterClient.getProfile(args.twitterHandle.handle);
 
     // --- COMMON LOGIC: MEDIA PREP ---
     log.text = `avatar: ↓ downloading`;
@@ -83,7 +88,11 @@ export async function syncProfile(
                 };
             }
             return updated;
-        }, {} as ProfileCache),
+        }, {} as ProfileCache,
+        ),
+        {
+            cachePath: getCachePath(args.twitterHandle)
+        }
     );
 
     log.succeed("task finished");

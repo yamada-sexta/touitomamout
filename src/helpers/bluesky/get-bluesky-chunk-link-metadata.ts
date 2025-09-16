@@ -1,4 +1,4 @@
-import { AtpAgent, RichText } from "@atproto/api";
+import { Agent, AtpAgent, RichText } from "@atproto/api";
 
 import { BlueskyLinkMetadata } from "../../types/link-metadata";
 import { getBlueskyLinkMetadata } from "./get-bluesky-link-metadata";
@@ -12,7 +12,7 @@ import { getBlueskyLinkMetadata } from "./get-bluesky-link-metadata";
  */
 export const getBlueskyChunkLinkMetadata = async (
   richText: RichText,
-  client: AtpAgent,
+  client: Agent,
 ): Promise<BlueskyLinkMetadata | null> => {
   let card = null;
   for (const seg of richText.segments()) {

@@ -1,4 +1,6 @@
-export const migration = async (outdatedCache: NonNullable<unknown>) => {
+export const migration = async (args: {
+  instanceId: string
+}, outdatedCache: NonNullable<unknown>) => {
   if (Object.hasOwn(outdatedCache, "version")) {
     return outdatedCache;
   }

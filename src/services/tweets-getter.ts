@@ -1,7 +1,7 @@
 import { Scraper, Tweet } from "@the-convocation/twitter-scraper";
 import ora from "ora";
 
-import { API_RATE_LIMIT, TWITTER_HANDLE } from "../env";
+import { API_RATE_LIMIT } from "../env";
 import { getCachedPosts } from "../helpers/cache/get-cached-posts";
 import { oraPrefixer, oraProgress } from "../helpers/logs";
 import { isTweetCached, tweetFormatter } from "../helpers/tweet";
@@ -24,9 +24,12 @@ const pullContentStats = (tweets: Tweet[], title: string) => {
   );
 };
 
-export const tweetsGetterService = async (
-  twitterClient: Scraper,
-): Promise<Tweet[]> => {
+export async function getTweets(
+  args: {
+    twitterClient: Scraper,
+    twitterHandle: string,
+  }
+): Promise<Tweet[]> {
   const cachedPosts = await getCachedPosts();
   const log = ora({
     color: "cyan",
@@ -43,8 +46,8 @@ export const tweetsGetterService = async (
    * Pull the ${LATEST_TWEETS_COUNT}, filter eligible ones.
    * This optimization prevents the post sync if the latest eligible tweet is cached.
    */
-  const latestTweets = twitterClient.getTweets(
-    TWITTER_HANDLE,
+  const latestTweets = args.twitterClient.getTweets(
+    args.twitterHandle,
     LATEST_TWEETS_COUNT,
   );
 
@@ -52,7 +55,7 @@ export const tweetsGetterService = async (
     log.text = "post: → checking for synchronization needs";
     if (!preventPostsSynchronization) {
       // Only consider eligible tweets.
-      const tweet = await getEligibleTweet(tweetFormatter(latestTweet));
+      const tweet = await getEligibleTweet(tweetFormatter(latestTweet), args.twitterHandle);
 
       if (tweet) {
         // If the latest eligible tweet is cached, mark sync as unneeded.
@@ -72,7 +75,7 @@ export const tweetsGetterService = async (
   if (preventPostsSynchronization) {
     log.succeed("task finished (unneeded sync)");
   } else {
-    const tweetsIds = twitterClient.getTweets(TWITTER_HANDLE, 200);
+    const tweetsIds = args.twitterClient.getTweets(args.twitterHandle, 200);
 
     let hasRateLimitReached = false;
     let tweetIndex = 0;
@@ -91,7 +94,7 @@ export const tweetsGetterService = async (
 
       const t: Tweet = tweetFormatter(tweet);
 
-      const eligibleTweet = await getEligibleTweet(t);
+      const eligibleTweet = await getEligibleTweet(t, args.twitterHandle);
       if (eligibleTweet) {
         tweets.unshift(eligibleTweet);
       }

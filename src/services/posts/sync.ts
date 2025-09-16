@@ -1,7 +1,7 @@
 import { Scraper } from "@the-convocation/twitter-scraper";
 import * as Counter from "@pm2/io/build/main/utils/metrics/counter";
 import { PostSynchronizer } from "./post-sender";
-import { tweetsGetterService as getTweets } from "services/tweets-getter";
+import { getTweets as getTweets } from "services/tweets-getter";
 import ora from "ora";
 import { oraPrefixer } from "helpers/logs/ora-prefixer";
 import { getCachedPosts } from "helpers/cache/get-cached-posts";
@@ -17,10 +17,11 @@ export async function syncPosts(args: {
     twitterClient: Scraper,
     synchronizers: PostSynchronizer[],
     syncCount: Counter.default,
+    twitterHandle: string,
 }): Promise<{ metrics: SyncPostMetrics }> {
     try {
         const { twitterClient, synchronizers, syncCount } = args;
-        const tweets = await getTweets(twitterClient);
+        const tweets = await getTweets({ twitterClient, twitterHandle: args.twitterHandle });
         for (let i = 0; i < tweets.length; i++) {
             const log = ora({
                 color: "cyan",
@@ -29,10 +30,10 @@ export async function syncPosts(args: {
             const tweet = tweets[i];
 
             try {
-
-
                 const mediaList = await getTweetMedia(tweet);
-
+                // for (const media of mediaList){
+                //     console.log("media type", media.blob.type)
+                // }
                 await Promise.all<void>(
                     synchronizers.map(
                         s => s.syncPost({

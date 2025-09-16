@@ -5,10 +5,11 @@ import { writeToCacheFile } from "./write-to-cache-file";
 export const updateCacheEntry = async <T extends keyof Cache>(
   key: T,
   update: Cache[T],
+  args: { cachePath: string }
 ) => {
   try {
     // Get the current cache
-    const cache = await getCache();
+    const cache = await getCache(args);
 
     // Update cache data
     const updatedCacheData = Object.entries(cache).reduce(
@@ -19,7 +20,7 @@ export const updateCacheEntry = async <T extends keyof Cache>(
     ) as Cache;
 
     // Update the cache file
-    await writeToCacheFile(updatedCacheData);
+    await writeToCacheFile({ cache: updatedCacheData, cachePath: args.cachePath });
   } catch (err) {
     console.error("Error updating cache file:", err);
   }

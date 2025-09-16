@@ -1,18 +1,22 @@
-import { AtpAgent, RichText } from "@atproto/api";
+import { Agent, AtpAgent, RichText } from "@atproto/api";
 import { Tweet } from "@the-convocation/twitter-scraper";
 
-import { BLUESKY_IDENTIFIER } from "../../env";
+// import { BLUESKY_IDENTIFIER } from "../../env";
 import { BlueskyCacheChunk, Platform } from "../../types";
 import { BlueskyPost } from "../../types/post";
 import { getCachedPostChunk } from "../cache/get-cached-post-chunk";
 import { splitTextForBluesky } from "../tweet/split-tweet-text";
 
-export const makeBlueskyPost = async (
-  client: AtpAgent,
+export const makeBlueskyPost = async (args: {
+  client: Agent,
   tweet: Tweet,
+  blueskyIdentifier: string,
+}
 ): Promise<BlueskyPost> => {
+  const { client, tweet } = args;
+
   const username = await client
-    .getProfile({ actor: BLUESKY_IDENTIFIER })
+    .getProfile({ actor: args.blueskyIdentifier })
     .then((account) => account.data.handle);
 
   // Get quoted post references
@@ -26,10 +30,10 @@ export const makeBlueskyPost = async (
 
     quotePost = quoteData
       ? await client.getPost({
-          cid: quoteData.cid,
-          rkey: quoteData.rkey,
-          repo: username,
-        })
+        cid: quoteData.cid,
+        rkey: quoteData.rkey,
+        repo: username,
+      })
       : undefined;
   }
 
@@ -43,13 +47,13 @@ export const makeBlueskyPost = async (
     );
     replyPost = replyData
       ? await client
-          .getPost({
-            cid: replyData.cid,
-            rkey: replyData.rkey,
-            repo: username,
-          })
-          .then((p) => p)
-          .catch(() => undefined)
+        .getPost({
+          cid: replyData.cid,
+          rkey: replyData.rkey,
+          repo: username,
+        })
+        .then((p) => p)
+        .catch(() => undefined)
       : undefined;
   }
 

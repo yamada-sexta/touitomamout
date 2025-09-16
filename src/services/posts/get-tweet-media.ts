@@ -10,7 +10,7 @@ export async function getTweetMedia(tweet: Tweet): Promise<Media[]> {
                 .map(
                     async photo => {
                         return {
-                            type: "image", photo: photo, blob: await downloadMedia(photo.url)
+                            type: "image", photo: photo, blob: await downloadMedia(photo.url!)
                         } as Media
                     }
                 ),
