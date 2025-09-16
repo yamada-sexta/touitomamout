@@ -1,14 +1,13 @@
 let interval: NodeJS.Timeout | null = null;
-process.on("exit", code => {
+process.on("exit", (code) => {
   console.log(`Process exited with code ${code}`);
 });
 // Register event
-process.on('SIGINT', () => {
-  console.log('\nReceived SIGINT (Ctrl+C). Exiting...');
+process.on("SIGINT", () => {
+  console.log("\nReceived SIGINT (Ctrl+C). Exiting...");
   if (interval) clearInterval(interval); // stop daemon loop
   process.exit(0);
 });
-
 
 process.on("SIGTERM", () => {
   console.log("Received SIGTERM. Exiting...");
@@ -16,7 +15,6 @@ process.on("SIGTERM", () => {
 });
 
 console.log(`\nTouitomamout@v${TOUITOMAMOUT_VERSION}\n`);
-
 import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
 import { configuration } from "./configuration/configuration";
 import {
@@ -25,7 +23,6 @@ import {
   TOUITOMAMOUT_VERSION,
   TWITTER_HANDLES,
   TwitterHandle,
-  // TWITTER_HANDLE,
 } from "./env";
 import { syncProfile } from "services/profile/sync";
 import { syncPosts } from "services/posts/sync";
@@ -36,36 +33,36 @@ import Counter from "@pm2/io/build/main/utils/metrics/counter";
 import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 import { Database } from "bun:sqlite";
+import { migrate } from "db/migration";
+
 import * as schema from "db/schema";
 
-const factories = [
-  BlueskySynchronizerFactory,
-] as const;
+const factories = [BlueskySynchronizerFactory] as const;
 
 const sqlite = new Database("sqlite.db", {
   create: true,
   safeIntegers: true,
-  strict: true
+  strict: true,
 });
-export const db = drizzle(sqlite, {
-  schema
+export const db = drizzle<typeof schema>({
+  client: sqlite,
 });
+await migrate(db);
 
 for (const factory of factories) {
-
 }
 // .ENV_KEYS;
 
 interface MetaClient {
-  twitter: Scraper,
-  twitterHandle: TwitterHandle,
-  profileSynchronizers: ProfileSynchronizer[]
-  postSynchronizers: PostSynchronizer[]
-  emojis: string[]
-  allTimeCount: Gauge
-  thisRunCount: Counter
+  twitter: Scraper;
+  twitterHandle: TwitterHandle;
+  profileSynchronizers: ProfileSynchronizer[];
+  postSynchronizers: PostSynchronizer[];
+  emojis: string[];
+  allTimeCount: Gauge;
+  thisRunCount: Counter;
 }
-const clients: MetaClient[] = []
+const clients: MetaClient[] = [];
 
 for await (const handle of TWITTER_HANDLES) {
   const {
@@ -76,53 +73,54 @@ for await (const handle of TWITTER_HANDLES) {
     // blueskyClient,
     profileSynchronizers,
     postSynchronizers,
-    emojis
+    emojis,
   } = await configuration({ twitterHandle: handle });
 
   if (!twitterClient) {
     throw new Error("Can't connect to Twitter 𝕏");
   }
 
-  clients.push(
-    {
-      twitter: twitterClient,
-      twitterHandle: handle,
-      allTimeCount: synchronizedPostsCountAllTime,
-      thisRunCount: synchronizedPostsCountThisRun,
-      postSynchronizers, profileSynchronizers, emojis
-    }
-  )
+  clients.push({
+    twitter: twitterClient,
+    twitterHandle: handle,
+    allTimeCount: synchronizedPostsCountAllTime,
+    thisRunCount: synchronizedPostsCountThisRun,
+    postSynchronizers,
+    profileSynchronizers,
+    emojis,
+  });
 }
-
 
 /**
  * Main syncing loop
  */
 const syncAll = async () => {
   if (!clients) {
-    throw Error("No usable client...")
+    throw Error("No usable client...");
   }
 
   for await (const client of clients) {
     console.log(`\n𝕏 -> ${client.emojis.join("+")}`);
     console.log(`| Twitter handle: @${client.twitterHandle.handle}`);
-    await syncProfile(
-      { twitterClient: client.twitter, synchronizers: client.profileSynchronizers, twitterHandle: client.twitterHandle }
-    )
+    await syncProfile({
+      twitterClient: client.twitter,
+      synchronizers: client.profileSynchronizers,
+      twitterHandle: client.twitterHandle,
+    });
     /* Posts sync */
     const postsSyncResponse = await syncPosts({
       twitterClient: client.twitter,
       syncCount: client.thisRunCount,
       synchronizers: client.postSynchronizers,
-      twitterHandle: client.twitterHandle.handle
-    })
+      twitterHandle: client.twitterHandle.handle,
+    });
 
     client.allTimeCount.set(postsSyncResponse.metrics.totalSynced);
     console.log(
-      `| just synced ${postsSyncResponse.metrics.justSynced} post(s)`,
+      `| just synced ${postsSyncResponse.metrics.justSynced} post(s)`
     );
     console.log(
-      `| ${postsSyncResponse.metrics.totalSynced} post(s) synced so far`,
+      `| ${postsSyncResponse.metrics.totalSynced} post(s) synced so far`
     );
   }
 };
@@ -135,6 +133,6 @@ if (DAEMON) {
     async () => {
       await syncAll();
     },
-    SYNC_FREQUENCY_MIN * 60 * 1000,
+    SYNC_FREQUENCY_MIN * 60 * 1000
   );
 }
