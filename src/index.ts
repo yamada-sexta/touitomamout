@@ -1,6 +1,16 @@
+let interval: NodeJS.Timeout | null = null;
+process.on("exit", code => {
+  console.log(`Process exited with code ${code}`);
+});
 // Register event
 process.on('SIGINT', () => {
   console.log('\nReceived SIGINT (Ctrl+C). Exiting...');
+  if (interval) clearInterval(interval); // stop daemon loop
+  process.exit(0);
+});
+
+process.on("SIGTERM", () => {
+  console.log("Received SIGTERM. Exiting...");
   process.exit(0);
 });
 
@@ -17,7 +27,7 @@ import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
 import { syncProfile } from "services/profile/sync";
 import { syncPosts } from "services/posts/sync";
 import { PostSynchronizer } from "services/posts/post-sender";
-import { MastodonPostSynchronizer } from "services/posts/mastodon-sender";
+import { MastodonPostSynchronizer } from "services/posts/mastodon";
 import { BlueskyPostSynchronizer } from "services/posts/bluesky";
 
 const {
@@ -34,7 +44,7 @@ if (!twitterClient) {
 }
 
 const profileSynchronizers: ProfileSynchronizer[] = []
-const postSynchronizers: PostSynchronizer[]=[]
+const postSynchronizers: PostSynchronizer[] = []
 const emojis: string[] = []
 
 if (mastodonClient) {
@@ -94,12 +104,10 @@ await syncAll();
 
 if (DAEMON) {
   console.log(`Run daemon every ${SYNC_FREQUENCY_MIN}min`);
-  setInterval(
+  interval = setInterval(
     async () => {
       await syncAll();
     },
     SYNC_FREQUENCY_MIN * 60 * 1000,
   );
 }
-
-
