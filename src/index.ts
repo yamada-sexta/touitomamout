@@ -1,3 +1,9 @@
+// Register event
+process.on('SIGINT', () => {
+  console.log('\nReceived SIGINT (Ctrl+C). Exiting...');
+  process.exit(0);
+});
+
 import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
 import { configuration } from "./configuration/configuration";
 import {
@@ -6,9 +12,6 @@ import {
   TOUITOMAMOUT_VERSION,
   TWITTER_HANDLE,
 } from "./env";
-// import {
-//   postsSynchronizerService,
-// } from "./services";
 import { MastodonProfileSynchronizer } from "services/profile/mastodon";
 import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
 import { syncProfile } from "services/profile/sync";
@@ -16,12 +19,6 @@ import { syncPosts } from "services/posts/sync";
 import { PostSynchronizer } from "services/posts/post-sender";
 import { MastodonPostSynchronizer } from "services/posts/mastodon-sender";
 import { BlueskyPostSynchronizer } from "services/posts/bluesky";
-
-// Register event
-process.on('SIGINT', () => {
-  console.log('\nReceived SIGINT (Ctrl+C). Exiting...');
-  process.exit(0);
-});
 
 const {
   twitterClient,
@@ -93,6 +90,7 @@ const syncAll = async () => {
   );
 };
 
+await syncAll();
 
 if (DAEMON) {
   console.log(`Run daemon every ${SYNC_FREQUENCY_MIN}min`);
@@ -104,7 +102,4 @@ if (DAEMON) {
   );
 }
 
-
-
-await syncAll();
 
