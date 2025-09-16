@@ -1,12 +1,10 @@
-version: '3.9'
-
 services:
   touitomamout:
     container_name: "touitomamout"
-    image: louisgrasset/touitomamout:latest  # Or "ghcr.io/louisgrasset/touitomamout:latest"
+    image: ghcr.io/yamada-sexta/touitomamout-next:latest
     restart: unless-stopped
+    env_file: ".env"
     environment:
-      - ENV_FILE=/data/.env
       - STORAGE_DIR=/data
     volumes:
       - ./data:/data
