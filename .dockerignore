@@ -4,3 +4,5 @@ deployment/
 docs/
 Dockerfile
 __test__
+/.github
+/.vscode
