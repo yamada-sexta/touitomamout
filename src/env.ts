@@ -7,14 +7,11 @@ if (process.env.NODE_ENV !== "test") {
   if (envPath.endsWith("example")) {
     throw new Error("You should not use the example configuration file.");
   }
-
   try {
     accessSync(envPath, constants.F_OK);
   } catch (err) {
-    // throw new Error("No suitable .env file found.");
     console.log("No suitable .env file found.")
   }
-  // dotenv.config({ path: envPath });
 }
 
 const trimTwitterHandle = (handle: string) => {

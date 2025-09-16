@@ -23,15 +23,13 @@ An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 ## Documentation
 
-You'll find everything you need from the project's discovery to its deployment, by the way of its configuration and some technical deep dives.
-
-Please find the project documentation here:
+You'll find everything you need, from the project's discovery to its deployment, as well as its configuration and some technical deep dives.
 
 [<img src="https://github.com/louisgrasset/touitomamout/raw/main/.github/docs/documentation-center.svg"  width="300px"/>](https://github.com/yamada-sexta/touitomamout/wiki)
 
 ## Dependencies
 
-Kudos to the following projects that made Touitomamout project possible 🙏
+Kudos to the following projects that made the Touitomamout project possible 🙏
 
 - 𝕏 [twitter-scraper](https://github.com/the-convocation/twitter-scraper)
 - 🦣 [masto.js](https://github.com/neet/masto.js)
