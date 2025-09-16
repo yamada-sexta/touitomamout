@@ -18,8 +18,8 @@ An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 ## What's new?
 
-- Build on bun reducing container size.
-- Better default environment settings.
+- Build on bun reducing container size
+- Better default environment settings
 - Multi account support
 
 ## Supported platforms
