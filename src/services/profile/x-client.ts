@@ -19,7 +19,15 @@ export async function createTwitterClient({
     prefixText: oraPrefixer("Creating 𝕏 client"),
   }).start("connecting to twitter...");
 
-  const client = new Scraper();
+  const client = new Scraper({
+    fetch:fetch,
+    rateLimitStrategy: {
+      async onRateLimit(e){
+        // console.log(e)
+        throw new Error("Rate limited")
+      }
+    }
+  });
   if (!twitterPassword || !twitterUsername) {
     log.warn("connected as guest | replies will not be synced");
     return client;

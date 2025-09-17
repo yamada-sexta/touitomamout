@@ -114,6 +114,7 @@ for (const handle of TWITTER_HANDLES) {
   });
 }
 
+
 /**
  * Main syncing loop
  */

@@ -184,6 +184,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
 
         const quoteRecord: Partial<AppBskyEmbedRecord.Main> | undefined = post.quotePost
           ? {
+            $type: "app.bsky.embed.record",
             record: {
               $type: "com.atproto.repo.strongRef",
               cid: post.quotePost.cid,
@@ -247,6 +248,12 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
                   image: i.data.blob,
                 } as BlueskyImage)),
               },
+              // record: {
+              //   $type?: 'app.bsky.embed.record',
+              //   record: {
+
+              //   }
+              // }
             }
           }
         }
@@ -261,20 +268,39 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
 
         let firstEmbed: AppBskyFeedPost.Record["embed"] = undefined;
         // Inject media and/or quote data only for the first chunk.
-        if (quoteRecord) {
+        // if (quoteRecord) {
+        //   firstEmbed = {
+        //     ...quoteRecord,
+        //     $type: "app.bsky.embed.record",
+        //   };
+        // }
+        // if (mediaRecord) {
+        //   if (!firstEmbed)
+        //     firstEmbed = { $type: "app.bsky.embed.recordWithMedia" }
+        //   firstEmbed = {
+        //     ...firstEmbed,
+        //     ...mediaRecord,
+        //     $type: "app.bsky.embed.recordWithMedia",
+        //   };
+        // }
+        // Handle the different embed combinations correctly
+        if (quoteRecord && mediaRecord) {
+          // --- Case 1: Post has both a quote and media ---
           firstEmbed = {
-            ...quoteRecord,
-            $type: "app.bsky.embed.record",
-          };
-        }
-        if (mediaRecord) {
-          if (!firstEmbed)
-            firstEmbed = { $type: "app.bsky.embed.recordWithMedia" }
-          firstEmbed = {
-            ...firstEmbed,
-            ...mediaRecord,
             $type: "app.bsky.embed.recordWithMedia",
+            record: quoteRecord, // This is the embed record for the quote
+            media: mediaRecord.media, // This is the embed for images/video
           };
+        } else if (quoteRecord) {
+          // --- Case 2: Post has only a quote ---
+          firstEmbed = quoteRecord;
+        } else if (mediaRecord) {
+          // --- Case 3: Post has only media ---
+          // Use the media embed directly (e.g., app.bsky.embed.images)
+          firstEmbed = mediaRecord.media;
+        } else {
+          // --- Case 4: No quote or media, fall back to checking for external link cards ---
+          firstEmbed = externalRecord;
         }
         firstEmbed = firstEmbed ? firstEmbed : externalRecord
 
@@ -282,6 +308,9 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
           cid: string;
           rkey: string;
         } & { uri: string }> = [];
+        if (DEBUG) {
+          console.log({ firstEmbed })
+        }
 
         for (let i = 0; i < post.chunks.length; i++) {
           const chunk = post.chunks[i]

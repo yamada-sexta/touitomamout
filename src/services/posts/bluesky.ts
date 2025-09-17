@@ -147,7 +147,7 @@ export class BlueskyPostSynchronizer implements PostSynchronizer {
                         };
                     }
                 } else if (Object.keys(mediaRecord).length) {
-                    // Handle media(s) only
+                    // Handle media(s) o
                     embed = {
                         $type: "app.bsky.embed.recordWithMedia",
                         ...mediaRecord.media,
