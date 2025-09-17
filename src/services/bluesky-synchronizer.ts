@@ -1,6 +1,7 @@
 import { uploadBlueskyMedia } from "helpers/medias/upload-bluesky-media";
 import { SynchronizerFactory } from "./synchronizer";
 import { BskyAgent, CredentialSession } from "@atproto/api";
+import ora from "ora";
 
 const KEYS = [
   "BLUESKY_INSTANCE",
@@ -10,12 +11,14 @@ const KEYS = [
 
 export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
   NAME: "Bluesky",
+  EMOJI: "☁️",
   ENV_KEYS: KEYS,
   FALLBACK_ENV: {
     BLUESKY_INSTANCE: "bsky.social",
   },
 
   create: async (args) => {
+    const log = ora();
     let blueskyInstance = args.env.BLUESKY_INSTANCE;
 
     const session = new CredentialSession(
@@ -32,7 +35,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
       password,
     });
 
-    args.log.succeed("connected to bluesky");
+    log.succeed("connected to bluesky");
 
     return {
       name: "Bluesky",
@@ -74,9 +77,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
         }));
       },
 
-      syncPost: async (args) => {
-
-      },
+      syncPost: async (args) => {},
     };
   },
 };

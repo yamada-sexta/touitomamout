@@ -1,5 +1,5 @@
 import { Tweet } from "@the-convocation/twitter-scraper";
-import { downloadMedia } from "helpers/download-media";
+import { download } from "helpers/download-media";
 // import { downloadMedia } from "helpers/download-media";
 import { Media } from "types";
 
@@ -10,7 +10,7 @@ export async function getTweetMedia(tweet: Tweet): Promise<Media[]> {
                 .map(
                     async photo => {
                         return {
-                            type: "image", photo: photo, blob: await downloadMedia(photo.url!)
+                            type: "image", photo: photo, blob: await download(photo.url!)
                         } as Media
                     }
                 ),
@@ -19,7 +19,7 @@ export async function getTweetMedia(tweet: Tweet): Promise<Media[]> {
                 .map(
                     async video => {
                         return {
-                            type: "video", video, blob: await downloadMedia(video.url!)
+                            type: "video", video, blob: await download(video.url!)
                         } as Media
                     }
                 )

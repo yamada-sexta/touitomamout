@@ -4,30 +4,68 @@ import { eq, sql } from "drizzle-orm";
 import { oraPrefixer } from "helpers/logs";
 import ora, { Ora } from "ora";
 
-export async function createXClient({
-    twitterPassword, twitterUsername, db
+export async function createTwitterClient({
+  twitterPassword,
+  twitterUsername,
+  db,
 }: {
-    twitterUsername?: string,
-    twitterPassword?: string,
-    db: DBType
+  twitterUsername?: string;
+  twitterPassword?: string;
+  db: DBType;
 }): Promise<Scraper> {
-    const log = ora({
-        color: "gray",
-        prefixText: oraPrefixer("Creating 𝕏 client"),
-    }).start("connecting to twitter...");
+  const log = ora({
+    color: "gray",
+    prefixText: oraPrefixer("Creating 𝕏 client"),
+  }).start("connecting to twitter...");
 
-    const client = new Scraper();
-    if (!twitterPassword || !twitterUsername) {
-        log.warn("connected as guest | replies will not be synced");
-        return client;
-    }
-    
-    const cookieStr = await (await db.query.TwitterCookieCache.findFirst({
-        where: eq(Schema.TwitterCookieCache.userHandle, twitterUsername)
-    }))?.cookie;
-
-
-    await handleTwitterAuth(twitterClient);
-
+  const client = new Scraper();
+  if (!twitterPassword || !twitterUsername) {
+    log.warn("connected as guest | replies will not be synced");
     return client;
+  }
+
+  try {
+    const prevCookie = await (
+      await db.query.TwitterCookieCache.findFirst({
+        where: eq(Schema.TwitterCookieCache.userHandle, twitterUsername),
+      })
+    )?.cookie;
+
+    if (prevCookie) {
+      const cookies = JSON.parse(prevCookie);
+      await client.setCookies(cookies);
+    }
+
+    const loggedIn = await client.isLoggedIn();
+    if (loggedIn) {
+      log.succeed("connected (session restored)");
+    } else {
+      // Handle restoration failure
+      await client.login(twitterUsername, twitterPassword);
+      log.succeed("connected (using credentials)");
+    }
+    if (await client.isLoggedIn()) {
+      const cookies = await client.getCookies();
+      const cookieString = JSON.stringify(cookies);
+      await db
+        .insert(Schema.TwitterCookieCache)
+        .values({
+          userHandle: twitterUsername,
+          cookie: cookieString,
+        })
+        .onConflictDoUpdate({
+          target: Schema.TwitterCookieCache.userHandle,
+          set: {
+            cookie: cookieString,
+          },
+        });
+    }
+    // await handleTwitterAuth(twitterClient);
+  } catch (e) {
+    log.warn(`Unable to login: ${e}`);
+  } finally {
+    log.stop();
+  }
+
+  return client;
 }

@@ -4,7 +4,7 @@ import { ProfileType, ProfileUpdate } from "../../types/profile";
 import { getCachedProfile } from "../cache/get-cached-profile";
 import { computeBlobHash } from "../medias/compute-blob-hash";
 
-const getBlobHashOrNull = async (blob: Blob | null | undefined): Promise<string | null> => {
+export const getBlobHashOrNull = async (blob: Blob | null | undefined): Promise<string | null> => {
   return blob ? computeBlobHash(blob) : null;
 };
 

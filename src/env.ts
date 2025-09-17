@@ -10,7 +10,7 @@ if (process.env.NODE_ENV !== "test") {
   try {
     accessSync(envPath, constants.F_OK);
   } catch (err) {
-    console.log("No suitable .env file found.")
+    console.log("No suitable .env file found.");
   }
 }
 
@@ -18,43 +18,40 @@ const trimTwitterHandle = (handle: string) => {
   return handle.toLowerCase().trim().replaceAll("@", "");
 };
 
-export const TWITTER_HANDLES: TwitterHandle[] = []
-type TwitterHandleKey<T extends number | ""> = `TWITTER_HANDLE${T}`
+export const TWITTER_HANDLES: TwitterHandle[] = [];
+type TwitterHandleKey<T extends number | ""> = `TWITTER_HANDLE${T}`;
 export interface TwitterHandle<T extends number | "" = "" | number> {
-  env: TwitterHandleKey<T>,
-  postFix: T,
-  handle: string,
+  env: TwitterHandleKey<T>;
+  postFix: T;
+  handle: string;
+  slot: number;
 }
 
-
-let _handleCounter = 0
-let _twitterHandleKey: TwitterHandleKey<"" | number> = `TWITTER_HANDLE`
-export const INSTANCE_IDS: string[] = []
+let _handleCounter = 0;
+let _twitterHandleKey: TwitterHandleKey<"" | number> = `TWITTER_HANDLE`;
+export const INSTANCE_IDS: string[] = [];
 while (process.env[_twitterHandleKey]) {
-  const handle = trimTwitterHandle(process.env[_twitterHandleKey] as string)
+  const handle = trimTwitterHandle(process.env[_twitterHandleKey] as string);
   console.log(`Found ${_twitterHandleKey}: @${handle}`);
-  TWITTER_HANDLES.push(
-    {
-      env: _twitterHandleKey,
-      handle,
-      postFix: _handleCounter ? _handleCounter : ""
-    }
-  )
-  INSTANCE_IDS.push(
-    handle.toLocaleLowerCase().replaceAll(" ", "_")
-  )
-  _handleCounter += 1
-  _twitterHandleKey = `TWITTER_HANDLE${_handleCounter}`
+  TWITTER_HANDLES.push({
+    env: _twitterHandleKey,
+    handle,
+    postFix: _handleCounter ? _handleCounter : "",
+    slot: _handleCounter,
+  });
+  INSTANCE_IDS.push(handle.toLocaleLowerCase().replaceAll(" ", "_"));
+  _handleCounter += 1;
+  _twitterHandleKey = `TWITTER_HANDLE${_handleCounter}`;
 }
 
 export const TWITTER_USERNAME = trimTwitterHandle(
-  process.env.TWITTER_USERNAME ?? "",
+  process.env.TWITTER_USERNAME ?? ""
 );
 export const TWITTER_PASSWORD = (process.env.TWITTER_PASSWORD ?? "").trim();
 
 // export const MASTODON_INSTANCE = (process.env.MASTODON_INSTANCE ?? "").trim();
 // export const MASTODON_ACCESS_TOKEN = (
-  // process.env.MASTODON_ACCESS_TOKEN ?? ""
+// process.env.MASTODON_ACCESS_TOKEN ?? ""
 // ).trim();
 // export const BLUESKY_INSTANCE = (process.env.BLUESKY_INSTANCE ?? "").trim();
 // export const BLUESKY_IDENTIFIER = (process.env.BLUESKY_IDENTIFIER ?? "").trim();
@@ -68,7 +65,7 @@ export const SYNC_BLUESKY = (process.env.SYNC_BLUESKY ?? "false") === "true";
 export const BACKDATE_BLUESKY_POSTS =
   (process.env.BACKDATE_BLUESKY_POSTS ?? "true") === "true";
 export const SYNC_FREQUENCY_MIN = parseInt(
-  process.env.SYNC_FREQUENCY_MIN ?? "30",
+  process.env.SYNC_FREQUENCY_MIN ?? "30"
 );
 export const SYNC_PROFILE_DESCRIPTION =
   (process.env.SYNC_PROFILE_DESCRIPTION ?? "false") === "true";

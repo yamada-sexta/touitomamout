@@ -5,7 +5,7 @@ import { oraPrefixer } from "helpers/logs";
 import { buildProfileUpdate } from "helpers/profile/build-profile-update";
 import { ProfileCache } from "types";
 import { ProfileSynchronizer } from "./profile-synchronizer";
-import { downloadMedia } from "helpers/download-media";
+import { download } from "helpers/download-media";
 import { TwitterHandle } from "env";
 import { getCachePath } from "configuration/configuration";
 
@@ -33,12 +33,12 @@ export async function syncProfile(
     // --- COMMON LOGIC: MEDIA PREP ---
     log.text = `avatar: ↓ downloading`;
     const avatarBlob = profile.avatar
-        ? await downloadMedia(profile.avatar.replace("_normal", ""))
+        ? await download(profile.avatar.replace("_normal", ""))
         : undefined;
 
     log.text = `banner: ↓ downloading`;
     const bannerBlob = profile.banner
-        ? await downloadMedia(profile.banner)
+        ? await download(profile.banner)
         : undefined;
 
     log.text = "checking media cache...";
