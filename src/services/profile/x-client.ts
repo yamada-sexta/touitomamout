@@ -3,6 +3,7 @@ import { DBType, Schema } from "db";
 import { eq, sql } from "drizzle-orm";
 import { oraPrefixer } from "helpers/logs";
 import ora, { Ora } from "ora";
+import { Cookie } from "tough-cookie";
 
 export async function createTwitterClient({
   twitterPassword,
@@ -25,15 +26,16 @@ export async function createTwitterClient({
   }
 
   try {
-    const prevCookie = await (
-      await db.query.TwitterCookieCache.findFirst({
-        where: eq(Schema.TwitterCookieCache.userHandle, twitterUsername),
-      })
-    )?.cookie;
+    const prevCookie = await db.select().from(Schema.TwitterCookieCache).where(
+      eq(Schema.TwitterCookieCache.userHandle, twitterUsername)
+    )
+    const cookie = prevCookie.length ? prevCookie[0].cookie : null;
 
-    if (prevCookie) {
-      const cookies = JSON.parse(prevCookie);
-      await client.setCookies(cookies);
+    if (cookie) {
+      const cookies: Cookie[] = (JSON.parse(cookie) as unknown[]).map(
+        o => Cookie.fromJSON(o) as Cookie
+      ).filter(o => o);
+      await client.setCookies(cookies.map(c => c.toString()));
     }
 
     const loggedIn = await client.isLoggedIn();

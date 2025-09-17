@@ -25,7 +25,7 @@ import {
   TWITTER_USERNAME,
   TwitterHandle,
 } from "./env";
-import { syncProfile } from "services/profile/sync";
+// import { syncProfile } from "services/profile/sync";
 import { syncPosts } from "services/posts/sync";
 import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
 import { createTwitterClient } from "services/profile/x-client";
@@ -33,6 +33,7 @@ import { db } from "db";
 import { Synchronizer } from "services/synchronizer";
 import ora from "ora";
 import { oraPrefixer } from "helpers/logs";
+import { syncProfile } from "services/sync-profile";
 
 const factories = [BlueskySynchronizerFactory] as const;
 
@@ -89,7 +90,7 @@ for (const handle of TWITTER_HANDLES) {
       });
 
       synchronizers.push({ ...s, name: factory.NAME, emoji: factory.EMOJI });
-    } catch (e) {}
+    } catch (e) { }
   }
 
   users.push({
@@ -109,39 +110,30 @@ const syncAll = async () => {
   for await (const user of users) {
     console.log(`\n𝕏 -> ${user.synchronizers.map((s) => s.emoji).join("+")}`);
     console.log(`| Twitter handle: @${user.handle.handle}`);
-        const log = ora({
-            color: "cyan",
-            prefixText: oraPrefixer("profile-sync"),
-        }).start();
-    log.text = "parsing";
-    const profile = await twitterClient.getProfile(user.handle.handle);
-        
-
-
-    for (const s of user.synchronizers){
-
-    }
-
     await syncProfile({
-      twitterClient: client.twitter,
-      synchronizers: client.profileSynchronizers,
-      twitterHandle: client.twitterHandle,
-    });
-    /* Posts sync */
-    const postsSyncResponse = await syncPosts({
-      twitterClient: client.twitter,
-      syncCount: client.thisRunCount,
-      synchronizers: client.postSynchronizers,
-      twitterHandle: client.twitterHandle.handle,
-    });
+      twitterClient, twitterHandle: user.handle, synchronizers: user.synchronizers, db
+    })
 
-    client.allTimeCount.set(postsSyncResponse.metrics.totalSynced);
-    console.log(
-      `| just synced ${postsSyncResponse.metrics.justSynced} post(s)`
-    );
-    console.log(
-      `| ${postsSyncResponse.metrics.totalSynced} post(s) synced so far`
-    );
+    // await syncProfile({
+    //   twitterClient: client.twitter,
+    //   synchronizers: client.profileSynchronizers,
+    //   twitterHandle: client.twitterHandle,
+    // });
+    // /* Posts sync */
+    // const postsSyncResponse = await syncPosts({
+    //   twitterClient: client.twitter,
+    //   syncCount: client.thisRunCount,
+    //   synchronizers: client.postSynchronizers,
+    //   twitterHandle: client.twitterHandle.handle,
+    // });
+
+    // client.allTimeCount.set(postsSyncResponse.metrics.totalSynced);
+    // console.log(
+    //   `| just synced ${postsSyncResponse.metrics.justSynced} post(s)`
+    // );
+    // console.log(
+    //   `| ${postsSyncResponse.metrics.totalSynced} post(s) synced so far`
+    // );
   }
 };
 
