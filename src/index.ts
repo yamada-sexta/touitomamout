@@ -32,7 +32,7 @@ import { createTwitterClient } from "services/profile/x-client";
 import { db } from "db";
 import { Synchronizer } from "services/synchronizer";
 import ora from "ora";
-import { oraPrefixer } from "helpers/logs";
+import { oraPrefixer } from "utils/logs";
 import { syncProfile } from "services/sync-profile";
 import { MastodonSynchronizerFactory } from "services/mastodon-synchronizer";
 

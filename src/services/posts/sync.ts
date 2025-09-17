@@ -3,7 +3,7 @@ import * as Counter from "@pm2/io/build/main/utils/metrics/counter";
 import { PostSynchronizer } from "./post-sender";
 import { getTweets as getTweets } from "services/tweets-getter";
 import ora from "ora";
-import { oraPrefixer } from "helpers/logs/ora-prefixer";
+import { oraPrefixer } from "utils/logs/ora-prefixer";
 import { getCachedPosts } from "helpers/cache/get-cached-posts";
 import { getTweetMedia } from "./get-tweet-media";
 

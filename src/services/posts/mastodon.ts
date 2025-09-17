@@ -3,10 +3,10 @@ import { Ora } from "ora";
 import { MastodonCacheChunk, Media, Platform } from "types";
 import { PostSynchronizer } from "./post-sender";
 import { mastodon } from "masto";
-import { makeMastodonPost } from "helpers/post/make-mastodon-post";
-import { getPostExcerpt } from "helpers/post/get-post-excerpt";
+import { makeMastodonPost } from "utils/post/make-mastodon-post";
+import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { DEBUG, TwitterHandle, VOID } from "env";
-import { oraProgress } from "helpers/logs";
+import { oraProgress } from "utils/logs";
 import { savePostToCache } from "helpers/cache/save-post-to-cache";
 import { getCachePath } from "configuration/configuration";
 

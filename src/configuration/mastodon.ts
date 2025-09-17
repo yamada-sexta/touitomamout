@@ -1,6 +1,6 @@
 import { SYNC_MASTODON, TwitterHandle } from "env";
-import { TouitomamoutError } from "helpers/error";
-import { oraPrefixer } from "helpers/logs";
+import { TouitomamoutError } from "utils/error";
+import { oraPrefixer } from "utils/logs";
 import { createRestAPIClient, mastodon } from "masto";
 import ora from "ora";
 

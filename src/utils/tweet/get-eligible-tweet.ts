@@ -1,6 +1,6 @@
 import { Tweet } from "@the-convocation/twitter-scraper";
 import { getPostExcerpt } from "../post/get-post-excerpt";
-import { isRecentTweet } from "./";
+import { isRecentTweet } from ".";
 
 export const getEligibleTweet = async (
   tweet: Tweet,

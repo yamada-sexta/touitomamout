@@ -1,13 +1,13 @@
 import type { Scraper } from "@the-convocation/twitter-scraper";
 import ora from "ora";
-import { oraPrefixer } from "helpers/logs";
-import { getBlobHashOrNull } from "helpers/profile/build-profile-update";
-import { download } from "helpers/download-media";
+import { oraPrefixer } from "utils/logs";
+import { getBlobHashOrNull } from "utils/profile/build-profile-update";
+import { download } from "utils/download-media";
 import { SYNC_PROFILE_DESCRIPTION, SYNC_PROFILE_HEADER, SYNC_PROFILE_NAME, SYNC_PROFILE_PICTURE, TwitterHandle } from "env";
 import { Synchronizer } from "./synchronizer";
 import { DBType, Schema } from "db";
 import { eq } from "drizzle-orm";
-import { shortenedUrlsReplacer } from "helpers/url/shortened-urls-replacer";
+import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
 
 async function upsertProfileCache(args:
   { db: DBType, userId: string, avatarHash: string, bannerHash: string }): Promise<{

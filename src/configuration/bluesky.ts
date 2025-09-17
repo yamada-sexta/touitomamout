@@ -1,8 +1,8 @@
 import AtpAgent, { Agent, BskyAgent, CredentialSession } from "@atproto/api";
 import { ResponseType } from "@atproto/xrpc";
 import { SYNC_BLUESKY, TwitterHandle } from "env";
-import { TouitomamoutError } from "helpers/error";
-import { oraPrefixer } from "helpers/logs/ora-prefixer";
+import { TouitomamoutError } from "utils/error";
+import { oraPrefixer } from "utils/logs/ora-prefixer";
 import ora from "ora";
 
 export async function createBlueskyClient(args: { handle: TwitterHandle }): Promise<[Agent, string] | void> {

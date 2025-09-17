@@ -1,4 +1,4 @@
-import { uploadBlueskyMedia } from "helpers/medias/upload-bluesky-media";
+import { uploadBlueskyMedia } from "utils/medias/upload-bluesky-media";
 import { SynchronizerFactory } from "./synchronizer";
 import { BskyAgent, CredentialSession } from "@atproto/api";
 import ora from "ora";

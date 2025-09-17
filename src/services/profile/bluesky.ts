@@ -8,9 +8,9 @@ import {
     SYNC_PROFILE_PICTURE,
 } from "../../env";
 import { ProfileUpdate } from "types/profile";
-import { uploadBlueskyMedia } from "helpers/medias/upload-bluesky-media";
+import { uploadBlueskyMedia } from "utils/medias/upload-bluesky-media";
 import { ProfileSynchronizer } from "./profile-synchronizer";
-import { shortenedUrlsReplacer } from "helpers/url/shortened-urls-replacer";
+import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
 
 export class BlueskyProfileSynchronizer implements ProfileSynchronizer {
     constructor(private client: Agent) { }

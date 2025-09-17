@@ -2,10 +2,10 @@ import { Scraper, Tweet } from "@the-convocation/twitter-scraper";
 import ora from "ora";
 
 import { API_RATE_LIMIT } from "../env";
-import { getCachedPosts } from "../helpers/cache/get-cached-posts";
-import { oraPrefixer, oraProgress } from "../helpers/logs";
-import { isTweetCached, tweetFormatter } from "../helpers/tweet";
-import { getEligibleTweet } from "../helpers/tweet/get-eligible-tweet";
+import { getCachedPosts } from "../utils/cache/get-cached-posts";
+import { oraPrefixer, oraProgress } from "../utils/logs";
+import { isTweetCached, tweetFormatter } from "../utils/tweet";
+import { getEligibleTweet } from "../utils/tweet/get-eligible-tweet";
 
 const pullContentStats = (tweets: Tweet[], title: string) => {
   const stats = {

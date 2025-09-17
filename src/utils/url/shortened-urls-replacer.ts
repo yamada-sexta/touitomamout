@@ -2,7 +2,7 @@ import { getRedirectedUrl } from "./get-redirection";
 /**
  * A utility method to replace t.co urls with the original url.
  */
-export const shortenedUrlsReplacer = async (text: string): Promise<string> => {
+export async function shortenedUrlsReplacer(text: string): Promise<string> {
   const TWITTER_URL_SHORTENER = /https:\/\/t\.co\/\w+/g;
 
   const matches = Array.from(text.matchAll(TWITTER_URL_SHORTENER));

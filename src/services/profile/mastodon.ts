@@ -8,7 +8,7 @@ import {
     SYNC_PROFILE_NAME,
     SYNC_PROFILE_PICTURE,
 } from "env";
-import { shortenedUrlsReplacer } from "../../helpers/url/shortened-urls-replacer";
+import { shortenedUrlsReplacer } from "../../utils/url/shortened-urls-replacer";
 import { ProfileSynchronizer } from "./profile-synchronizer";
 import { ProfileUpdate } from "types/profile";
 import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";

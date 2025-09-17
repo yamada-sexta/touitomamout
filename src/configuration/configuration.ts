@@ -8,11 +8,11 @@ import {
   SYNC_DRY_RUN,
   TwitterHandle,
 } from "env";
-import { handleTwitterAuth } from "../helpers/auth/handle-twitter-auth";
-import { createCacheFile } from "../helpers/cache/create-cache";
-import { getCachedPosts } from "../helpers/cache/get-cached-posts";
-import { runMigrations } from "../helpers/cache/run-migrations";
-import { oraPrefixer } from "../helpers/logs";
+import { handleTwitterAuth } from "../utils/auth/handle-twitter-auth";
+import { createCacheFile } from "../utils/cache/create-cache";
+import { getCachedPosts } from "../utils/cache/get-cached-posts";
+import { runMigrations } from "../utils/cache/run-migrations";
+import { oraPrefixer } from "../utils/logs";
 import { createBlueskyClient } from "./bluesky";
 import { createMastodonClient } from "./mastodon";
 import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
