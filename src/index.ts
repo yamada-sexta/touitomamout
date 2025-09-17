@@ -29,7 +29,7 @@ import {
 import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
 import { createTwitterClient } from "services/profile/x-client";
 import { db } from "db";
-import { Synchronizer, TaggedSynchronizer } from "services/synchronizer";
+import { TaggedSynchronizer } from "services/synchronizer";
 import ora from "ora";
 import { oraPrefixer } from "utils/logs";
 import { syncProfile } from "services/sync-profile";
