@@ -151,6 +151,7 @@ export async function syncProfile(args: {
   log.text = "dispatching sync tasks...";
   try {
     await Promise.all(jobs);
+    log.succeed("task finished");
   } catch (error) {
     if (error instanceof Error) {
       log.fail(`Error during synchronization: ${error.message}`);
@@ -159,6 +160,5 @@ export async function syncProfile(args: {
       log.fail(`An unknown error occurred during sync: ${String(error)}`);
     }
   }
-  log.succeed("task finished");
   log.stop()
 };

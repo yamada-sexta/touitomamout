@@ -6,12 +6,11 @@ import {
 import { DBType } from "db";
 import { Ora } from "ora";
 import { Media } from "types";
-import { ProfileUpdate } from "types/profile";
 
 type SyncArgs = { log: Ora };
 type ProfileArgs = SyncArgs & {
   readonly profile: Profile;
-//   readonly profileUpdate: ProfileUpdate;
+  //   readonly profileUpdate: ProfileUpdate;
 };
 
 export interface SynchronizerFactory<K extends readonly string[]> {
@@ -27,7 +26,7 @@ export interface SynchronizerFactory<K extends readonly string[]> {
     // readonly envKeys: K;
     readonly db: DBType;
     readonly slot: number;
-    // readonly log: Ora;
+    readonly log: Ora;
   }): Promise<Synchronizer>;
 }
 
@@ -56,7 +55,7 @@ export interface SynchronizerBase {
 export type Synchronizer<
   //   NAME extends string,
   //   EMOJI extends string,
-> = Partial<SynchronizerBase> & {
-  //   name: NAME;
-  //   emoji: EMOJI;
-};
+  > = Partial<SynchronizerBase> & {
+    //   name: NAME;
+    //   emoji: EMOJI;
+  };

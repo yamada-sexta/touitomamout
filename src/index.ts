@@ -34,8 +34,9 @@ import { Synchronizer } from "services/synchronizer";
 import ora from "ora";
 import { oraPrefixer } from "helpers/logs";
 import { syncProfile } from "services/sync-profile";
+import { MastodonSynchronizerFactory } from "services/mastodon-synchronizer";
 
-const factories = [BlueskySynchronizerFactory] as const;
+const factories = [BlueskySynchronizerFactory, MastodonSynchronizerFactory] as const;
 
 const twitterClient = await createTwitterClient({
   twitterPassword: TWITTER_PASSWORD,
@@ -65,7 +66,7 @@ for (const handle of TWITTER_HANDLES) {
     let skip = false;
     for (const key of envKeys) {
       const osKey = key + handle.postFix;
-      const val = process.env[osKey] || fallback[key];
+      const val = process.env[osKey] || fallback[key as keyof typeof fallback] as string | undefined;
       if (!val) {
         console.warn(
           `Unable to setup for ${factory.NAME} for user ${handle.handle}.`
@@ -74,23 +75,36 @@ for (const handle of TWITTER_HANDLES) {
         skip = true;
         break;
       }
-      env[key] = val;
+      //@ts-ignore
+      env[key as string] = val;
     }
     if (skip) {
       continue;
     }
 
+
+    const log = ora({
+      color: "gray",
+      prefixText: oraPrefixer(`${factory.EMOJI} client`),
+    }).start(`Connecting to ${factory.NAME}`);
+
     try {
-      console.log(`Connecting to ${factory.EMOJI} ${factory.NAME}`);
       const s = await factory.create({
         xClient: twitterClient,
         env: env as EnvType,
         db: db,
         slot: handle.slot,
+        log
       });
-
       synchronizers.push({ ...s, name: factory.NAME, emoji: factory.EMOJI });
-    } catch (e) { }
+      log.succeed("connected")
+    } catch (error) {
+      const msg = (error instanceof Error) ? error.message : String(error)
+      log.fail(`Failed to connect to ${factory.NAME}: ${msg}`);
+    }
+    finally {
+      log.stop();
+    }
   }
 
   users.push({

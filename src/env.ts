@@ -51,8 +51,8 @@ export const TWITTER_PASSWORD = (process.env.TWITTER_PASSWORD ?? "").trim();
 export const STORAGE_DIR = process.env.STORAGE_DIR ?? process.cwd();
 // export const CACHE_PATH = `${STORAGE_DIR}/cache.${INSTANCE_ID}.json`;
 export const COOKIES_PATH = `${STORAGE_DIR}/cookies.v6.${TWITTER_USERNAME}.json`;
-export const SYNC_MASTODON = (process.env.SYNC_MASTODON ?? "false") === "true";
-export const SYNC_BLUESKY = (process.env.SYNC_BLUESKY ?? "false") === "true";
+export const SYNC_MASTODON = (process.env.SYNC_MASTODON ?? "true") === "true";
+export const SYNC_BLUESKY = (process.env.SYNC_BLUESKY ?? "true") === "true";
 export const BACKDATE_BLUESKY_POSTS =
   (process.env.BACKDATE_BLUESKY_POSTS ?? "true") === "true";
 export const SYNC_FREQUENCY_MIN = parseInt(

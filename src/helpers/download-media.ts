@@ -55,7 +55,7 @@ export async function download(
       }
     }
     const blob = new Blob(chunks, { type: contentType });
-    spinner.succeed("Media downloaded successfully");
+    spinner.succeed(`${displayUrl} downloaded successfully`);
     return blob;
   } catch (err) {
     const errorMessage = err instanceof Error ? err.message : String(err);

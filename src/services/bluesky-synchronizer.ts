@@ -18,7 +18,6 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
   },
 
   create: async (args) => {
-    const log = ora();
     let blueskyInstance = args.env.BLUESKY_INSTANCE;
 
     const session = new CredentialSession(
@@ -34,8 +33,6 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
       identifier,
       password,
     });
-
-    log.succeed("connected to bluesky");
 
     return {
       name: "Bluesky",
@@ -77,7 +74,9 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
         }));
       },
 
-      syncPost: async (args) => {},
+      syncPost: async (args) => {
+
+      },
     };
   },
 };
