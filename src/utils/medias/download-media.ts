@@ -1,5 +1,5 @@
 import ora from "ora";
-import { oraProgress } from "./logs";
+import { oraProgress } from "../logs";
 
 /**
  * A method to download the media.

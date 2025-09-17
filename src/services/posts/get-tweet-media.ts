@@ -1,5 +1,5 @@
 import { Tweet } from "@the-convocation/twitter-scraper";
-import { download } from "utils/download-media";
+import { download } from "utils/medias/download-media";
 // import { downloadMedia } from "helpers/download-media";
 import { Media } from "types";
 

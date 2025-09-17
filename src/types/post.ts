@@ -26,3 +26,13 @@ export type Post = {
   mastodon: null | MastodonPost;
   bluesky: null | BlueskyPost;
 };
+
+
+
+export interface ValidPost extends Tweet {
+    id: string
+}
+
+export function isValidPost(tweet: Tweet): tweet is ValidPost {
+    return "id" in tweet;
+}

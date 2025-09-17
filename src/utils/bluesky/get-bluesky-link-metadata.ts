@@ -1,8 +1,8 @@
 import { Agent, AtpAgent } from "@atproto/api";
 import { BlueskyLinkMetadata } from "../../types/link-metadata";
-import { parseBlobForBluesky } from "../medias/parse-blob-for-bluesky";
+import { parseBlobForBluesky } from "./parse-blob-for-bluesky";
 import { fetchLinkMetadata } from "./fetch-link-metadata";
-import { download } from "utils/download-media";
+import { download } from "utils/medias/download-media";
 
 /**
  * Retrieves Bluesky Link metadata asynchronously.
@@ -31,6 +31,9 @@ export const getBlueskyLinkMetadata = async (
   }
 
   const mediaBlob = await download(data.image);
+  if (!mediaBlob){
+    return null;
+  }
 
   const blueskyBlob = await parseBlobForBluesky(mediaBlob);
 

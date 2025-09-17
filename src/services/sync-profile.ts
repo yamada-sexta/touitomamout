@@ -1,93 +1,136 @@
 import type { Scraper } from "@the-convocation/twitter-scraper";
 import ora from "ora";
 import { oraPrefixer } from "utils/logs";
-import { getBlobHashOrNull } from "utils/profile/build-profile-update";
-import { download } from "utils/download-media";
-import { SYNC_PROFILE_DESCRIPTION, SYNC_PROFILE_HEADER, SYNC_PROFILE_NAME, SYNC_PROFILE_PICTURE, TwitterHandle } from "env";
-import { Synchronizer } from "./synchronizer";
+import { download } from "utils/medias/download-media";
+import { DEBUG, SYNC_PROFILE_DESCRIPTION, SYNC_PROFILE_HEADER, SYNC_PROFILE_NAME, SYNC_PROFILE_PICTURE, TwitterHandle } from "env";
+import { Synchronizer, TaggedSynchronizer } from "./synchronizer";
 import { DBType, Schema } from "db";
 import { eq } from "drizzle-orm";
 import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
+import { getBlobHash } from "utils/medias/get-blob-hash";
+const Table = Schema.TwitterProfileCache;
 
 async function upsertProfileCache(args:
-  { db: DBType, userId: string, avatarHash: string, bannerHash: string }): Promise<{
-    avatarChanged: boolean, bannerChanged: boolean;
+  { db: DBType, userId: string, pfpUrl?: string, bannerUrl?: string }): Promise<{
+    pfpChanged: boolean, bannerChanged: boolean;
+    pfpBlob?: Blob, bannerBlob?: Blob
   }> {
-  const { db, userId, avatarHash, bannerHash } = args;
-  // Fetch the latest row to compare in TS
-  const rows = await db
-    .select({
-      avatarHash: Schema.TwitterProfileCache.avatarHash,
-      bannerHash: Schema.TwitterProfileCache.bannerHash,
-    })
-    .from(Schema.TwitterProfileCache)
-    .where(eq(Schema.TwitterProfileCache.userId, userId));
+  const pfpUrl = args.pfpUrl ?? ""
+  const bannerUrl = args.bannerUrl ?? ""
+  const { db, userId } = args;
 
-  let localA = ""
-  let localB = ""
-  if (rows.length > 0) {
-    const [{ avatarHash, bannerHash }] = rows;
-    localA = avatarHash;
-    localB = bannerHash;
+  const [row] = await db
+    .select({
+      pfpHash: Table.pfpHash,
+      bannerHash: Table.bannerHash,
+      pfpUrl: Table.pfpUrl,
+      bannerUrl: Table.bannerUrl
+    })
+    .from(Table)
+    .where(eq(Table.userId, userId));
+  let pfpChanged = false;
+
+  const cPfpUrl = row?.pfpUrl ?? "";
+  const cPfpHash = row?.bannerHash ?? "";
+  let pfpHash = ""
+  let pfpBlob: Blob | undefined = undefined;
+
+  if (cPfpUrl !== pfpUrl) {
+    pfpBlob = await download(pfpUrl);
+    const hash = await getBlobHash(pfpBlob);
+    pfpHash = hash;
+    if (hash !== cPfpHash) {
+      pfpChanged = true;
+    }
+  } else {
+    if (DEBUG) {
+      console.log("Same pfp url");
+    }
+  }
+
+  let bannerChanged = false;
+  const cBannerUrl = row?.bannerUrl ?? "";
+  const cBannerHash = row?.bannerHash ?? "";
+  let bannerHash = ""
+  let bannerBlob: Blob | undefined = undefined;
+
+  if (cBannerUrl !== bannerUrl) {
+    if (DEBUG)
+      console.log("Banner URL changed");
+
+    bannerBlob = await download(bannerUrl);
+    const hash = await getBlobHash(bannerBlob);
+    bannerHash = hash;
+    if (hash !== cBannerHash) {
+      if (DEBUG)
+        console.log("Banner has a different hash");
+      bannerChanged = true;
+
+    }
+  } else {
+    if (DEBUG)
+      console.log("Same banner url");
   }
 
   // Upsert (insert or update) the cache row
   await db
-    .insert(Schema.TwitterProfileCache)
+    .insert(Table)
     .values({
       userId,
-      avatarHash: avatarHash ?? "",
-      bannerHash: bannerHash ?? "",
+      pfpHash,
+      bannerHash,
+      bannerUrl,
+      pfpUrl
     })
     .onConflictDoUpdate({
-      target: Schema.TwitterProfileCache.userId,
+      target: Table.userId,
       set: {
-        avatarHash: avatarHash ?? "",
-        bannerHash: bannerHash ?? "",
+        pfpHash,
+        bannerHash,
+        bannerUrl,
+        pfpUrl
       },
     });
-
   return {
-    avatarChanged: localA === avatarHash,
-    bannerChanged: localB === bannerHash,
+    pfpChanged,
+    bannerChanged,
+    pfpBlob,
+    bannerBlob,
   };
 }
-
 /**
  * An async method that fetches a Twitter profile and dispatches 
  * synchronization tasks to configured platforms.
  */
 export async function syncProfile(args: {
   twitterHandle: TwitterHandle;
-  twitterClient: Scraper;
-  synchronizers: Synchronizer[];
+  x: Scraper;
+  synchronizers: TaggedSynchronizer[];
   db: DBType
 }): Promise<void> {
-  const { twitterClient, synchronizers, db } = args;
+  const { x: x, synchronizers, db } = args;
   const log = ora({
     color: "cyan",
-    prefixText: oraPrefixer("profile-sync"),
+    prefixText: oraPrefixer("profile"),
   }).start();
   log.text = "parsing";
 
   // --- COMMON LOGIC: FETCH ---
-  const profile = await twitterClient.getProfile(args.twitterHandle.handle);
-
-  // --- COMMON LOGIC: MEDIA PREP ---
-  log.text = `avatar: ↓ downloading`;
-  const avatarBlob = await download(profile.avatar?.replace("_normal", ""))
-  const avatarHash = await getBlobHashOrNull(avatarBlob) ?? "";
-
-  log.text = `banner: ↓ downloading`;
-  const bannerBlob = await download(profile.banner);
-  const bannerHash = await getBlobHashOrNull(bannerBlob) ?? "";
+  const profile = await x.getProfile(args.twitterHandle.handle);
+  const pfpUrl = profile.avatar?.replace("_normal", "") ?? ""
+  const bannerUrl = profile.banner ?? "";
 
   log.text = "checking media cache...";
-  const { avatarChanged, bannerChanged } = await upsertProfileCache({ db, userId: args.twitterHandle.handle, avatarHash, bannerHash })
+  const { pfpChanged, bannerChanged,
+    pfpBlob, bannerBlob,
+  } = await upsertProfileCache({
+    db, userId: args.twitterHandle.handle,
+    bannerUrl, pfpUrl
+  })
 
   const jobs: Promise<void>[] = [];
 
-  if (SYNC_PROFILE_PICTURE && avatarChanged && avatarBlob) {
+  if (SYNC_PROFILE_PICTURE && pfpChanged && pfpBlob) {
     jobs.push(
       ...synchronizers
         .filter((s) => s.syncProfilePic)
@@ -95,7 +138,7 @@ export async function syncProfile(args: {
           s.syncProfilePic!({
             log,
             profile,
-            pfpBlob: avatarBlob,
+            pfpBlob,
           })
         )
     );
@@ -151,7 +194,7 @@ export async function syncProfile(args: {
   log.text = "dispatching sync tasks...";
   try {
     await Promise.all(jobs);
-    log.succeed("task finished");
+    log.succeed("synced");
   } catch (error) {
     if (error instanceof Error) {
       log.fail(`Error during synchronization: ${error.message}`);

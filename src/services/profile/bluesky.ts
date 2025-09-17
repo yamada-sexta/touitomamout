@@ -8,7 +8,7 @@ import {
     SYNC_PROFILE_PICTURE,
 } from "../../env";
 import { ProfileUpdate } from "types/profile";
-import { uploadBlueskyMedia } from "utils/medias/upload-bluesky-media";
+import { uploadBlueskyMedia } from "utils/bluesky/upload-bluesky-media";
 import { ProfileSynchronizer } from "./profile-synchronizer";
 import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
 

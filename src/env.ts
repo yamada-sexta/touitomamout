@@ -75,3 +75,4 @@ export const TOUITOMAMOUT_VERSION = packageInfo.version ?? "0.0.0";
 export const MASTODON_MAX_POST_LENGTH = 500;
 export const BLUESKY_MAX_POST_LENGTH = 300;
 export const BLUESKY_MEDIA_MAX_SIZE_BYTES = 976560;
+export const MAX_CONSECUTIVE_CACHED = 5;

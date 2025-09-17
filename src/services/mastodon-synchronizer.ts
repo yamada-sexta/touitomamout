@@ -9,7 +9,8 @@ const KEYS = [
 ] as const;
 
 export const MastodonSynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
-    NAME: "Mastodon",
+    DISPLAY_NAME: "Mastodon",
+    PLATFORM_ID: "mastodon",
     EMOJI: "🦣",
     ENV_KEYS: KEYS,
     FALLBACK_ENV: {
@@ -24,8 +25,8 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
             accessToken: args.env.MASTODON_ACCESS_TOKEN,
         });
         await client.v1.accounts.verifyCredentials();
-        
-        const updateCredentials = async (args: UpdateCredentialsParams)=> await client.v1.accounts.updateCredentials(args);
+
+        const updateCredentials = async (args: UpdateCredentialsParams) => await client.v1.accounts.updateCredentials(args);
 
         return {
             async syncBio(args) {

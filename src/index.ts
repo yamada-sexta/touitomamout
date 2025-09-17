@@ -15,7 +15,6 @@ process.on("SIGTERM", () => {
 });
 
 console.log(`\nTouitomamout@v${TOUITOMAMOUT_VERSION}\n`);
-import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
 import {
   DAEMON,
   SYNC_FREQUENCY_MIN,
@@ -26,15 +25,17 @@ import {
   TwitterHandle,
 } from "./env";
 // import { syncProfile } from "services/profile/sync";
-import { syncPosts } from "services/posts/sync";
+// import { syncPosts } from "services/posts/sync";
 import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
 import { createTwitterClient } from "services/profile/x-client";
 import { db } from "db";
-import { Synchronizer } from "services/synchronizer";
+import { Synchronizer, TaggedSynchronizer } from "services/synchronizer";
 import ora from "ora";
 import { oraPrefixer } from "utils/logs";
 import { syncProfile } from "services/sync-profile";
 import { MastodonSynchronizerFactory } from "services/mastodon-synchronizer";
+import { logError } from "utils/logs/log-error";
+import { syncPosts } from "services/sync-posts";
 
 const factories = [BlueskySynchronizerFactory, MastodonSynchronizerFactory] as const;
 
@@ -44,20 +45,26 @@ const twitterClient = await createTwitterClient({
   db,
 });
 
-type NamedSynchronizer = Synchronizer & {
-  name: string;
-  emoji: string;
-};
+// type NamedSynchronizer = Synchronizer & {
+//   name: string;
+//   emoji: string;
+// };
 
 const users: SyncUser[] = [];
 interface SyncUser {
   handle: TwitterHandle;
-  synchronizers: NamedSynchronizer[];
+  synchronizers: TaggedSynchronizer[];
 }
 
 for (const handle of TWITTER_HANDLES) {
-  const synchronizers: NamedSynchronizer[] = [];
+  console.log(`Connecting @${handle.handle}...`)
+  const synchronizers: TaggedSynchronizer[] = [];
   for (const factory of factories) {
+    const log = ora({
+      color: "gray",
+      prefixText: oraPrefixer(`${factory.EMOJI} client`),
+    }).start(`Connecting to ${factory.DISPLAY_NAME}`);
+
     const envKeys = factory.ENV_KEYS;
     type K = (typeof factory.ENV_KEYS)[number];
     const fallback = factory.FALLBACK_ENV ?? {};
@@ -68,10 +75,10 @@ for (const handle of TWITTER_HANDLES) {
       const osKey = key + handle.postFix;
       const val = process.env[osKey] || fallback[key as keyof typeof fallback] as string | undefined;
       if (!val) {
-        console.warn(
-          `Unable to setup for ${factory.NAME} for user ${handle.handle}.`
+        log.warn(
+          `skip ${factory.DISPLAY_NAME} because "${osKey}" is not set.`
         );
-        console.warn(`Because ${osKey} is not set.`);
+        // console.warn(`Because ${osKey} is not set.`);
         skip = true;
         break;
       }
@@ -83,11 +90,6 @@ for (const handle of TWITTER_HANDLES) {
     }
 
 
-    const log = ora({
-      color: "gray",
-      prefixText: oraPrefixer(`${factory.EMOJI} client`),
-    }).start(`Connecting to ${factory.NAME}`);
-
     try {
       const s = await factory.create({
         xClient: twitterClient,
@@ -96,11 +98,10 @@ for (const handle of TWITTER_HANDLES) {
         slot: handle.slot,
         log
       });
-      synchronizers.push({ ...s, name: factory.NAME, emoji: factory.EMOJI });
+      synchronizers.push({ ...s, displayName: factory.DISPLAY_NAME, emoji: factory.EMOJI, platformId: factory.PLATFORM_ID });
       log.succeed("connected")
     } catch (error) {
-      const msg = (error instanceof Error) ? error.message : String(error)
-      log.fail(`Failed to connect to ${factory.NAME}: ${msg}`);
+      logError(log, error)`Failed to connect to ${factory.DISPLAY_NAME}: ${error}`
     }
     finally {
       log.stop();
@@ -122,10 +123,14 @@ const syncAll = async () => {
   }
 
   for await (const user of users) {
-    console.log(`\n𝕏 -> ${user.synchronizers.map((s) => s.emoji).join("+")}`);
-    console.log(`| Twitter handle: @${user.handle.handle}`);
+    console.log(`\n𝕏 ->  ${user.synchronizers.map((s) => s.emoji).join(" + ")}`);
+    console.log(`| @${user.handle.handle}`);
     await syncProfile({
-      twitterClient, twitterHandle: user.handle, synchronizers: user.synchronizers, db
+      x: twitterClient, twitterHandle: user.handle, synchronizers: user.synchronizers, db
+    })
+
+    await syncPosts({
+      db, handle: user.handle, x: twitterClient, synchronizers: user.synchronizers
     })
 
     // await syncProfile({

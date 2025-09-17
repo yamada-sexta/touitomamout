@@ -1,5 +1,5 @@
 import { BLUESKY_MEDIA_MAX_SIZE_BYTES } from "../../env";
-import { compressMedia } from "./compress-media";
+import { compressMedia } from "../medias/compress-media";
 
 interface BlueskyBlob {
   mimeType: string;

@@ -2,7 +2,7 @@ import { BunSQLiteDatabase, drizzle } from "drizzle-orm/bun-sqlite";
 import { Database } from "bun:sqlite";
 import { migrate } from "db/migration";
 
-import * as schema from "db/schema/v3";
+import * as schema from "db/schema/v1";
 export const Schema = schema;
 // export const Schema = latestSchema;
 

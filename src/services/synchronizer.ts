@@ -5,7 +5,7 @@ import {
 } from "@the-convocation/twitter-scraper";
 import { DBType } from "db";
 import { Ora } from "ora";
-import { Media } from "types";
+import { ValidPost } from "types/post";
 
 type SyncArgs = { log: Ora };
 type ProfileArgs = SyncArgs & {
@@ -14,7 +14,8 @@ type ProfileArgs = SyncArgs & {
 };
 
 export interface SynchronizerFactory<K extends readonly string[]> {
-  NAME: string;
+  DISPLAY_NAME: string;
+  PLATFORM_ID: string;
   EMOJI: string;
   ENV_KEYS: K;
   // Fallback environments. Used to set default values.
@@ -23,11 +24,14 @@ export interface SynchronizerFactory<K extends readonly string[]> {
   create(args: {
     readonly xClient: XClient;
     readonly env: Record<K[number], string>;
-    // readonly envKeys: K;
     readonly db: DBType;
     readonly slot: number;
     readonly log: Ora;
   }): Promise<Synchronizer>;
+}
+
+export type PostSyncCache = {
+  readonly platformStore: string,
 }
 
 export interface SynchronizerBase {
@@ -45,17 +49,13 @@ export interface SynchronizerBase {
   syncBanner(args: ProfileArgs & { readonly bannerBlob: Blob }): Promise<void>;
 
   syncPost(
-    args: SyncArgs & {
-      readonly tweet: Tweet;
-      readonly mediaList: Media[];
+    args: SyncArgs & Partial<PostSyncCache> & {
+      readonly tweet: ValidPost,
     }
-  ): Promise<void>;
+  ): Promise<PostSyncCache | void>;
 }
 
-export type Synchronizer<
-  //   NAME extends string,
-  //   EMOJI extends string,
-  > = Partial<SynchronizerBase> & {
-    //   name: NAME;
-    //   emoji: EMOJI;
-  };
+export type Synchronizer = Partial<SynchronizerBase>;
+export type TaggedSynchronizer = Synchronizer & {
+  displayName: string, platformId: string, emoji: string
+}
