@@ -21,22 +21,17 @@ import {
 } from "sync/platforms/bluesky/utils";
 import { parseBlobForBluesky } from "sync/platforms/bluesky/utils/parse-blob-for-bluesky";
 import { splitTextForBluesky } from "sync/platforms/bluesky/utils/split-text";
-import { uploadBlueskyMedia } from "sync/platforms/bluesky/utils/upload-bluesky-media";
 import { oraProgress } from "utils/logs";
 import { logError } from "utils/logs";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { downloadTweet } from "utils/tweet/download-tweet";
 import z from "zod";
 
-import { getPostStore } from "./get-post-store";
+import { getPostStore } from "utils/get-post-store";
 import { SynchronizerFactory } from "../../synchronizer";
 import { syncProfile } from "./sync-profile";
 import { BLUESKY_KEYS, BlueskyPlatformStore } from "./types";
 
-// const PostRefSchema = z.object({
-//   cid: z.string(),
-//   rkey: z.string(),
-// });
 export const PostRefArraySchema = z.array(BlueskyPlatformStore);
 export type PostRefArray = z.infer<typeof PostRefArraySchema>;
 
@@ -132,10 +127,10 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
       ...syncProfile({ agent }),
       syncPost: async (args) => {
         const { tweet, log } = args;
-        if (args.platformStore?.success) {
+        if (args.store.success) {
           args.log.info("skipping...");
           return {
-            platformStore: args.platformStore,
+            store: args.store.data,
           };
         }
         const username = await agent
@@ -275,7 +270,6 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
         if (DEBUG) {
           console.log({ firstEmbed });
         }
-
         for (let i = 0; i < post.chunks.length; i++) {
           const chunk = post.chunks[i];
 
@@ -333,9 +327,8 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
             rkey: RKEY_REGEX.exec(createdPost.uri)?.groups?.["rkey"] ?? "",
           });
         }
-
         return {
-          platformStore: chunkReferences,
+          store: chunkReferences[0],
         };
       },
     };

@@ -1,8 +1,9 @@
 import { Agent } from "@atproto/api";
 import { Synchronizer } from "sync/synchronizer";
 import { uploadBlueskyMedia } from "./utils/upload-bluesky-media";
+import { BlueskyPlatformStore } from "./types";
 
-export function syncProfile(args: { agent: Agent }): Synchronizer {
+export function syncProfile(args: { agent: Agent }): Synchronizer<typeof BlueskyPlatformStore> {
     const { agent } = args;
     return {
         syncBio: async (args) => {

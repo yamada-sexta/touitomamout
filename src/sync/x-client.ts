@@ -1,7 +1,7 @@
 import { Scraper } from "@the-convocation/twitter-scraper";
 import { DBType, Schema } from "db";
-import { eq, sql } from "drizzle-orm";
-import ora, { Ora } from "ora";
+import { eq } from "drizzle-orm";
+import ora from "ora";
 import { Cookie } from "tough-cookie";
 import { oraPrefixer } from "utils/logs";
 

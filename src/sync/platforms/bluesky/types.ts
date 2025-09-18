@@ -10,5 +10,3 @@ export const BlueskyPlatformStore = z.object({
   cid: z.string(),
   rkey: z.string(),
 });
-
-// const PostRefSchema =

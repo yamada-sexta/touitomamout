@@ -31,10 +31,6 @@ export interface SynchronizerFactory<
   }): Promise<Synchronizer<S>>;
 }
 
-export type PostSyncCache<S extends z.ZodObject> = {
-  readonly platformStore: z.ZodSafeParseResult<z.infer<S>>;
-};
-
 export interface SynchronizerBase<S extends z.ZodObject> {
   syncBio(
     args: ProfileArgs & {
@@ -50,11 +46,13 @@ export interface SynchronizerBase<S extends z.ZodObject> {
   syncBanner(args: ProfileArgs & { readonly bannerBlob: Blob }): Promise<void>;
 
   syncPost(
-    args: SyncArgs &
-      Partial<PostSyncCache<S>> & {
-        readonly tweet: ValidPost;
-      }
-  ): Promise<z.infer<S> | void>;
+    args: SyncArgs & {
+      store: z.ZodSafeParseResult<z.infer<S>>;
+      readonly tweet: ValidPost;
+    }
+  ): Promise<{
+    store: z.infer<S> | undefined;
+  } | void>;
 }
 
 export type Synchronizer<S extends z.ZodObject> = Partial<SynchronizerBase<S>>;
