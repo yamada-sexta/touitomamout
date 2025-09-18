@@ -1,4 +1,4 @@
-.git/
+/.git/
 node_modules/
 deployment/
 docs/
@@ -6,3 +6,5 @@ Dockerfile
 __test__
 /.github
 /.vscode
+*.sqlite
+*.db

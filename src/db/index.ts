@@ -2,11 +2,11 @@ import { Database } from "bun:sqlite";
 import { migrate } from "db/migration";
 import * as schema from "db/schema/v1";
 import { BunSQLiteDatabase, drizzle } from "drizzle-orm/bun-sqlite";
+import { DATABASE_PATH } from "env";
 
 export const Schema = schema;
-// export const Schema = latestSchema;
 
-const sqlite = new Database("sqlite.db", {
+const sqlite = new Database(DATABASE_PATH, {
   create: true,
   safeIntegers: true,
   strict: true,
