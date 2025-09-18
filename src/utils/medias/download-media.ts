@@ -1,4 +1,4 @@
-import ora, { Ora } from "ora";
+import { Ora } from "ora";
 import { logError } from "utils/logs/log-error";
 
 import { oraProgress } from "../logs";
