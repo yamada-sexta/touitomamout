@@ -1,6 +1,5 @@
-// import { MASTODON_INSTANCE } from "../../../env";
 import { MastodonCacheChunk, Platform } from "../../../types";
-import { getCachedPostChunk } from "../../cache/get-cached-post-chunk";
+// import { getCachedPostChunk } from "../../cache/get-cached-post-chunk";
 
 export async function getMastodonQuoteLinkSection(args: {
   quotedTweetId: string;

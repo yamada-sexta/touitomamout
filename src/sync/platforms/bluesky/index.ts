@@ -15,19 +15,19 @@ import { Image as BlueskyImage } from "@atproto/api/dist/client/types/app/bsky/e
 import { Photo } from "@the-convocation/twitter-scraper";
 import { BACKDATE_BLUESKY_POSTS, DEBUG, VOID } from "env";
 import { BlueskyPost } from "types/post";
-import { buildReplyEntry, getBlueskyChunkLinkMetadata } from "utils/bluesky";
-import { parseBlobForBluesky } from "utils/bluesky/parse-blob-for-bluesky";
-import { splitTextForBluesky } from "utils/bluesky/split-text";
-import { uploadBlueskyMedia } from "utils/bluesky/upload-bluesky-media";
+import { buildReplyEntry, getBlueskyChunkLinkMetadata } from "sync/platforms/bluesky/utils";
+import { parseBlobForBluesky } from "sync/platforms/bluesky/utils/parse-blob-for-bluesky";
+import { splitTextForBluesky } from "sync/platforms/bluesky/utils/split-text";
+import { uploadBlueskyMedia } from "sync/platforms/bluesky/utils/upload-bluesky-media";
 import { oraProgress } from "utils/logs";
-import { logError } from "utils/logs/log-error";
+import { logError } from "utils/logs";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
-// import { splitTextForBluesky } from "utils/tweet/split-tweet-text";
 import { downloadTweet } from "utils/tweet/download-tweet";
 import z from "zod";
 
 import { getPostStore } from "./get-post-store";
-import { SynchronizerFactory } from "./synchronizer";
+import { SynchronizerFactory } from "../../synchronizer";
+import { syncProfile } from "./sync-profile";
 
 const PostRefSchema = z.object({
   cid: z.string(),
@@ -127,42 +127,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
     }
 
     return {
-      syncBio: async (args) => {
-        await agent.upsertProfile((o) => ({
-          ...o,
-          description: args.formattedBio,
-        }));
-      },
-
-      syncUserName: async (args) => {
-        await agent.upsertProfile((o) => ({
-          ...o,
-          displayName: args.name,
-        }));
-      },
-
-      syncProfilePic: async (args) => {
-        const avatar = await uploadBlueskyMedia(args.pfpBlob, agent);
-        if (!avatar) {
-          throw new Error("Failed to upload avatar");
-        }
-        await agent.upsertProfile((o) => ({
-          ...o,
-          avatar: avatar.data.blob,
-        }));
-      },
-
-      syncBanner: async (args) => {
-        const res = await uploadBlueskyMedia(args.bannerBlob, agent);
-        if (!res) {
-          throw new Error("Unable to upload banner");
-        }
-        await agent.upsertProfile((o) => ({
-          ...o,
-          banner: res?.data.blob,
-        }));
-      },
-
+      ...syncProfile({ agent }),
       syncPost: async (args) => {
         const { tweet, log } = args;
         if (args.platformStore) {
@@ -197,13 +162,13 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
         const quoteRecord: $Typed<AppBskyEmbedRecord.Main> | undefined =
           post.quotePost
             ? {
-                $type: "app.bsky.embed.record",
-                record: {
-                  $type: "com.atproto.repo.strongRef",
-                  cid: post.quotePost.cid,
-                  uri: post.quotePost.uri,
-                },
-              }
+              $type: "app.bsky.embed.record",
+              record: {
+                $type: "com.atproto.repo.strongRef",
+                cid: post.quotePost.cid,
+                uri: post.quotePost.uri,
+              },
+            }
             : undefined;
 
         let media:
@@ -322,7 +287,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
           await richText.detectFacets(agent);
           const createdAt = new Date(
             (BACKDATE_BLUESKY_POSTS ? post.tweet.timestamp : null) ||
-              Date.now(),
+            Date.now(),
           ).toISOString();
           const data: Partial<AppBskyFeedPost.Record> = {
             $type: "app.bsky.feed.post",

@@ -1,6 +1,7 @@
 import { Tweet } from "@the-convocation/twitter-scraper";
 import { BLUESKY_MAX_POST_LENGTH } from "env";
-import { splitTweetTextCore } from "utils/tweet/split-tweet-text";
+import { splitTweetTextCore } from "utils/tweet/split-tweet-text/split-tweet-text";
+// import { splitTweetTextCore } from "./split-tweet-text";
 
 /**
  * Bluesky-specific split logic.

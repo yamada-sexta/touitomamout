@@ -1,15 +1,12 @@
 import { db } from "db";
 import ora from "ora";
-// import { syncProfile } from "services/profile/sync";
-// import { syncPosts } from "services/posts/sync";
-import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
-import { MastodonSynchronizerFactory } from "services/mastodon-synchronizer";
-import { createTwitterClient } from "services/profile/x-client";
-import { syncPosts } from "services/sync-posts";
-import { syncProfile } from "services/sync-profile";
-import { TaggedSynchronizer } from "services/synchronizer";
-import { oraPrefixer } from "utils/logs";
-import { logError } from "utils/logs/log-error";
+import { BlueskySynchronizerFactory } from "sync/platforms/bluesky";
+import { MastodonSynchronizerFactory } from "sync/platforms/mastodon-synchronizer";
+import { createTwitterClient } from "sync/x-client";
+import { syncPosts } from "sync/sync-posts";
+import { syncProfile } from "sync/sync-profile";
+import { TaggedSynchronizer } from "sync/synchronizer";
+import { oraPrefixer, logError } from "utils/logs";
 
 import {
   DAEMON,
@@ -50,11 +47,6 @@ const twitterClient = await createTwitterClient({
   db,
 });
 
-// type NamedSynchronizer = Synchronizer & {
-//   name: string;
-//   emoji: string;
-// };
-
 const users: SyncUser[] = [];
 interface SyncUser {
   handle: TwitterHandle;
@@ -82,7 +74,7 @@ for (const handle of TWITTER_HANDLES) {
         process.env[osKey] ||
         (fallback[key as keyof typeof fallback] as string | undefined);
       if (!val) {
-        log.warn(`skip ${factory.DISPLAY_NAME} because "${osKey}" is not set.`);
+        log.warn(`${factory.DISPLAY_NAME} will not be synced because "${osKey}" is not set`);
         // console.warn(`Because ${osKey} is not set.`);
         skip = true;
         break;
@@ -151,27 +143,7 @@ const syncAll = async () => {
       x: twitterClient,
       synchronizers: user.synchronizers,
     });
-
-    // await syncProfile({
-    //   twitterClient: client.twitter,
-    //   synchronizers: client.profileSynchronizers,
-    //   twitterHandle: client.twitterHandle,
-    // });
-    // /* Posts sync */
-    // const postsSyncResponse = await syncPosts({
-    //   twitterClient: client.twitter,
-    //   syncCount: client.thisRunCount,
-    //   synchronizers: client.postSynchronizers,
-    //   twitterHandle: client.twitterHandle.handle,
-    // });
-
-    // client.allTimeCount.set(postsSyncResponse.metrics.totalSynced);
-    // console.log(
-    //   `| just synced ${postsSyncResponse.metrics.justSynced} post(s)`
-    // );
-    // console.log(
-    //   `| ${postsSyncResponse.metrics.totalSynced} post(s) synced so far`
-    // );
+    console.log(`| ${user.handle.handle} is up-to-date ٩(^ᗜ^ )و `);
   }
 };
 

@@ -5,11 +5,11 @@ import { Scraper } from "@the-convocation/twitter-scraper";
 import { STORAGE_DIR, SYNC_DRY_RUN, TwitterHandle } from "env";
 import ora from "ora";
 import { BlueskyPostSynchronizer } from "services/posts/bluesky";
-import { MastodonPostSynchronizer } from "services/posts/mastodon";
-import { PostSynchronizer } from "services/posts/post-sender";
+import { MastodonPostSynchronizer } from "sync/posts/mastodon";
+import { PostSynchronizer } from "sync/posts/post-sender";
 import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
-import { MastodonProfileSynchronizer } from "services/profile/mastodon";
-import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
+import { MastodonProfileSynchronizer } from "sync/profile/mastodon";
+import { ProfileSynchronizer } from "sync/profile/profile-synchronizer";
 
 import { handleTwitterAuth } from "../utils/auth/handle-twitter-auth";
 import { createCacheFile } from "../utils/cache/create-cache";

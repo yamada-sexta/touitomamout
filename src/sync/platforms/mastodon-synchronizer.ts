@@ -2,7 +2,7 @@ import { SYNC_MASTODON } from "env";
 import { createRestAPIClient } from "masto";
 import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
 
-import { SynchronizerFactory } from "./synchronizer";
+import { SynchronizerFactory } from "../synchronizer";
 
 const KEYS = ["MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN"] as const;
 

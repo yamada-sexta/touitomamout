@@ -1,7 +1,7 @@
 import { Ora } from "ora";
-import { logError } from "utils/logs/log-error";
+import { logError, oraProgress } from "utils/logs";
 
-import { oraProgress } from "../logs";
+// import { oraProgress } from "../logs";
 
 /**
  * A method to download the media.
