@@ -4,7 +4,8 @@ import { mastodon } from "masto";
 import { Platform } from "../../types";
 import { MastodonPost } from "../../types/post";
 import { getCachedPosts } from "../cache/get-cached-posts";
-import { splitTextForMastodon } from "../tweet/split-tweet-text";
+import { splitTextForMastodon } from "sync/platforms/mastodon/text";
+// import { splitTextForMastodon } from "../tweet/split-tweet-text";
 
 export const makeMastodonPost = async (
   client: mastodon.rest.Client,
@@ -17,7 +18,7 @@ export const makeMastodonPost = async (
     .then((account) => account.username);
 
   // Get post chunks (including quote in first one when needed)
-  const chunks = await splitTextForMastodon(tweet, username);
+  const chunks = await splitTextForMastodon({tweet, db, mastodonUsername});
 
   // Get in reply post references
   let inReplyToId = undefined;

@@ -4,14 +4,14 @@ import { DEBUG, TwitterHandle, VOID } from "env";
 import { savePostToCache } from "helpers/cache/save-post-to-cache";
 import { mastodon } from "masto";
 import { Ora } from "ora";
-import { MastodonCacheChunk, Media, Platform } from "types";
+import { MastodonCacheChunk, Media } from "types";
 import { oraProgress } from "utils/logs";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { makeMastodonPost } from "utils/post/make-mastodon-post";
 
-import { PostSynchronizer } from "./post-sender";
+// import { PostSynchronizer } from "./post-sender";
 
-export class MastodonPostSynchronizer implements PostSynchronizer {
+export class MastodonPostSynchronizer {
   constructor(
     private client: mastodon.rest.Client,
     private twitterHandle: TwitterHandle,
