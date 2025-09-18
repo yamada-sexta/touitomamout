@@ -27,7 +27,7 @@ import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { downloadTweet } from "utils/tweet/download-tweet";
 import z from "zod";
 
-import { getPostStore } from "utils/get-post-store";
+import { getPostStoreStr } from "utils/get-post-store";
 import { SynchronizerFactory } from "../../synchronizer";
 import { syncProfile } from "./sync-profile";
 import { BLUESKY_KEYS, BlueskyPlatformStore } from "./types";
@@ -105,7 +105,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
     ): Promise<ReturnType<typeof agent.getPost> | void> {
       if (!tid) return;
 
-      const str = await getPostStore({ db, platformId, tweet: tid });
+      const str = await getPostStoreStr({ db, platformId, tweet: tid });
       if (!str) return;
 
       // const storeArray = JSON.parse(str.platformStore) as PostRef[] | unknown;
