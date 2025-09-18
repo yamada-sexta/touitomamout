@@ -4,11 +4,11 @@ import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
 
 import { SynchronizerFactory } from "../../synchronizer";
 import z from "zod";
-import { splitTextForMastodon } from "utils/mastodon/text";
+import { splitTextForMastodon } from "sync/platforms/mastodon/text";
 
 const KEYS = ["MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN"] as const;
-const MastodonStoreSchema = z.object({
-  toodId: z.string(),
+export const MastodonStoreSchema = z.object({
+  tootId: z.string(),
 });
 type MastodonStoreSchemaType = typeof MastodonStoreSchema;
 
