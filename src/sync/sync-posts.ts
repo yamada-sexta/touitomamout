@@ -11,7 +11,7 @@ import ora from "ora";
 import { isValidPost } from "types/post";
 import { oraPrefixer } from "utils/logs";
 import { logError } from "utils/logs";
-import { getPostStoreStr } from "../utils/get-post-store";
+import { getPostStore, getPostStoreStr } from "../utils/get-post-store";
 import type { TaggedSynchronizer } from "./synchronizer";
 
 const MAX_TWEET = 200;
@@ -71,14 +71,12 @@ export async function syncPosts(args: {
         for (const s of args.synchronizers) {
           // Might have race condition if done in parallel
           if (!s.syncPost) continue;
-          const storeRow = await getPostStoreStr({
+          const store = await getPostStore({
             db,
             tweet,
             platformId: s.platformId,
+            s: s.storeSchema,
           });
-
-          const store = s.storeSchema.safeParse(storeRow?.platformStore);
-          // const platformStore = store?.platformStore;
           const syncRes = await s.syncPost({ log, tweet, store });
           const storeStr = syncRes ? JSON.stringify(syncRes.store) : "";
           db.insert(TweetMap).values({

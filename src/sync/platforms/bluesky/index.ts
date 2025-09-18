@@ -27,7 +27,7 @@ import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { downloadTweet } from "utils/tweet/download-tweet";
 import z from "zod";
 
-import { getPostStoreStr } from "utils/get-post-store";
+import { getPostStore, getPostStoreStr } from "utils/get-post-store";
 import { SynchronizerFactory } from "../../synchronizer";
 import { syncProfile } from "./sync-profile";
 import { BLUESKY_KEYS, BlueskyPlatformStore } from "./types";
@@ -106,15 +106,19 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
       if (!tid) return;
 
       const str = await getPostStoreStr({ db, platformId, tweet: tid });
-      if (!str) return;
+      // if (!str) return;
 
-      // const storeArray = JSON.parse(str.platformStore) as PostRef[] | unknown;
-      const validationResult = PostRefArraySchema.safeParse(str.platformStore);
-      if (!validationResult.success) return;
-      const storeArray = validationResult.data;
-
-      if (!storeArray.length) return;
-      const [store] = storeArray;
+      // // const storeArray = JSON.parse(str.platformStore) as PostRef[] | unknown;
+      // const validationResult = PostRefArraySchema.safeParse(str.platformStore);
+      // if (!validationResult.success) return;
+      const storeRes = await getPostStore({
+        db,
+        platformId,
+        tweet: tid,
+        s: BlueskyPlatformStore,
+      });
+      if (!storeRes.success) return;
+      const store = storeRes.data;
       const post = await agent.getPost({
         cid: store.cid,
         rkey: store.rkey,

@@ -30,17 +30,18 @@ export async function getPostStoreStr({
   return store;
 }
 
-export async function getPostStore<S extends z.ZodObject>(args: {
+export async function getPostStore<S extends z.ZodObject = z.ZodObject>(args: {
   s: S;
   db: DBType;
-  tweet?: Tweet;
+  tweet?: Tweet | string;
   platformId: string;
 }) {
   const str = await getPostStoreStr({ ...args });
   const p = args.s.safeParse(str);
-  if (p.success) {
-    return p.data;
-  } else {
-    return undefined;
-  }
+  // if (p.success) {
+  //   return p.data;
+  // } else {
+  //   return undefined;
+  // }
+  return p;
 }
