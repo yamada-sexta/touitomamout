@@ -1,40 +1,27 @@
 import { uploadBlueskyMedia } from "utils/bluesky/upload-bluesky-media";
 import { SynchronizerFactory } from "./synchronizer";
 import { $Typed, Agent, AppBskyEmbedExternal, AppBskyEmbedImages, AppBskyEmbedRecord, AppBskyEmbedRecordWithMedia, AppBskyEmbedVideo, AppBskyFeedPost, BskyAgent, ComAtprotoRepoUploadBlob, CredentialSession, RichText } from "@atproto/api";
-import ora from "ora";
 import { getPostStore } from "./get-post-store";
 import { BlueskyPost } from "types/post";
-import { splitTextForBluesky } from "utils/tweet/split-tweet-text";
+// import { splitTextForBluesky } from "utils/tweet/split-tweet-text";
 import { downloadTweet } from "utils/tweet/download-tweet";
 import { parseBlobForBluesky } from "utils/bluesky/parse-blob-for-bluesky";
 import { logError } from "utils/logs/log-error";
-import { createMediaRecord } from "utils/bluesky/create-media-record";
-import { BlueskyCacheChunk } from "types";
 import { BACKDATE_BLUESKY_POSTS, DEBUG, VOID } from "env";
 import { Image as BlueskyImage } from "@atproto/api/dist/client/types/app/bsky/embed/images";
 import { Photo } from "@the-convocation/twitter-scraper";
 import { buildReplyEntry, getBlueskyChunkLinkMetadata } from "utils/bluesky";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { oraProgress } from "utils/logs";
+import { splitTextForBluesky } from "utils/bluesky/split-text";
+import z from "zod";
 
-interface PostRef {
-  cid: string;
-  rkey: string;
-}
-function isPostRef(value: unknown): value is PostRef {
-  return (
-    typeof value === 'object' && // It's an object...
-    value !== null &&           // ...and not null...
-    'cid' in value &&           // ...with a 'cid' property...
-    'rkey' in value &&          // ...and a 'rkey' property...
-    typeof (value as PostRef).cid === 'string' && // ...and they are both strings.
-    typeof (value as PostRef).rkey === 'string'
-  );
-}
-function isPostRefArray(value: unknown): value is PostRef[] {
-  // It must be an array AND every element must pass the isPostRef check.
-  return Array.isArray(value) && value.every(isPostRef);
-}
+const PostRefSchema = z.object({
+  cid: z.string(),
+  rkey: z.string()
+});
+export const PostRefArraySchema = z.array(PostRefSchema);
+export type PostRefArray = z.infer<typeof PostRefArraySchema>;
 
 const KEYS = [
   "BLUESKY_INSTANCE",
@@ -49,18 +36,24 @@ export async function getExternalEmbedding(richText: RichText, agent: Agent): Pr
   $Typed<AppBskyEmbedExternal.Main> | undefined> {
   try {
     const card = await getBlueskyChunkLinkMetadata(richText, agent);
-    const externalRecord: $Typed<AppBskyEmbedExternal.Main> | undefined = card
-      ? {
-        $type: "app.bsky.embed.external",
-        external: {
-          uri: card.url,
-          title: card.title,
-          description: card.description,
-          thumb: card.image?.data.blob,
-          $type: "app.bsky.embed.external#external",
-        },
-      }
-      : undefined;
+    if (!card) {
+      return;
+    }
+    if (!card.url) {
+      if (DEBUG) console.warn("Card has no URL", card);
+      return;
+    }
+    const externalRecord: $Typed<AppBskyEmbedExternal.Main> =
+    {
+      $type: "app.bsky.embed.external",
+      external: {
+        uri: card.url,
+        title: card.title,
+        description: card.description,
+        thumb: card.image?.data.blob,
+        $type: "app.bsky.embed.external#external",
+      },
+    }
     return externalRecord;
   } catch (e) {
     return undefined
@@ -103,16 +96,17 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
       const str = await getPostStore({ db, platformId, tweet: tid })
       if (!str) return;
 
-      const storeArray = JSON.parse(str.platformStore) as PostRef[] | unknown;
+      // const storeArray = JSON.parse(str.platformStore) as PostRef[] | unknown;
+      const validationResult = PostRefArraySchema.safeParse(str.platformStore);
+      if (!validationResult.success) return;
+      const storeArray = validationResult.data;
 
-      if (isPostRefArray(storeArray)) {
-        if (!storeArray.length) return;
-        const [store] = storeArray;
-        const post = await agent.getPost({
-          cid: store.cid, rkey: store.rkey, repo: env.BLUESKY_IDENTIFIER
-        })
-        return post;
-      }
+      if (!storeArray.length) return;
+      const [store] = storeArray;
+      const post = await agent.getPost({
+        cid: store.cid, rkey: store.rkey, repo: env.BLUESKY_IDENTIFIER
+      })
+      return post;
     }
 
 
@@ -182,7 +176,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
         const dt = await downloadTweet(tweet);
         let hasMedia = false;
 
-        const quoteRecord: Partial<AppBskyEmbedRecord.Main> | undefined = post.quotePost
+        const quoteRecord: $Typed<AppBskyEmbedRecord.Main> | undefined = post.quotePost
           ? {
             $type: "app.bsky.embed.record",
             record: {
@@ -193,7 +187,8 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
           }
           : undefined;
 
-        let mediaRecord: Partial<$Typed<AppBskyEmbedRecordWithMedia.Main>> | undefined = undefined;
+        let media: $Typed<AppBskyEmbedImages.Main>
+          | $Typed<AppBskyEmbedVideo.Main> | undefined = undefined;
 
         const externalRecord = await getExternalEmbedding(richText, agent);
 
@@ -205,11 +200,9 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
             const uploadRes = await agent.uploadBlob(blob.blobData, {
               encoding: blob.mimeType
             })
-            mediaRecord = {
-              media: {
-                $type: "app.bsky.embed.video",
-                video: uploadRes.data.blob,
-              },
+            media = {
+              $type: 'app.bsky.embed.video',
+              video: uploadRes.data.blob,
             };
           } catch (e) {
             logError(log, e)`Error while uploading video to bluesky: ${e}`
@@ -240,20 +233,12 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
           }
 
           if (photoRes.length) {
-            mediaRecord = {
-              media: {
-                $type: "app.bsky.embed.images",
-                images: photoRes.map(([i, p]) => ({
-                  alt: p.alt_text ?? "",
-                  image: i.data.blob,
-                } as BlueskyImage)),
-              },
-              // record: {
-              //   $type?: 'app.bsky.embed.record',
-              //   record: {
-
-              //   }
-              // }
+            media = {
+              $type: "app.bsky.embed.images",
+              images: photoRes.map(([i, p]) => ({
+                alt: p.alt_text ?? "",
+                image: i.data.blob,
+              } as BlueskyImage)),
             }
           }
         }
@@ -267,42 +252,26 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
         }
 
         let firstEmbed: AppBskyFeedPost.Record["embed"] = undefined;
-        // Inject media and/or quote data only for the first chunk.
-        // if (quoteRecord) {
-        //   firstEmbed = {
-        //     ...quoteRecord,
-        //     $type: "app.bsky.embed.record",
-        //   };
-        // }
-        // if (mediaRecord) {
-        //   if (!firstEmbed)
-        //     firstEmbed = { $type: "app.bsky.embed.recordWithMedia" }
-        //   firstEmbed = {
-        //     ...firstEmbed,
-        //     ...mediaRecord,
-        //     $type: "app.bsky.embed.recordWithMedia",
-        //   };
-        // }
         // Handle the different embed combinations correctly
-        if (quoteRecord && mediaRecord) {
+        if (quoteRecord && media) {
           // --- Case 1: Post has both a quote and media ---
           firstEmbed = {
             $type: "app.bsky.embed.recordWithMedia",
             record: quoteRecord, // This is the embed record for the quote
-            media: mediaRecord.media, // This is the embed for images/video
+            media: media, // This is the embed for images/video
           };
         } else if (quoteRecord) {
           // --- Case 2: Post has only a quote ---
           firstEmbed = quoteRecord;
-        } else if (mediaRecord) {
+        } else if (media) {
           // --- Case 3: Post has only media ---
           // Use the media embed directly (e.g., app.bsky.embed.images)
-          firstEmbed = mediaRecord.media;
+          firstEmbed = media;
         } else {
           // --- Case 4: No quote or media, fall back to checking for external link cards ---
           firstEmbed = externalRecord;
         }
-        firstEmbed = firstEmbed ? firstEmbed : externalRecord
+        // firstEmbed = firstEmbed ? firstEmbed : externalRecord
 
         const chunkReferences: Array<{
           cid: string;
@@ -354,10 +323,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
               chunkReferences[i - 1],
             );
           }
-
           log.text = `☁️ | post sending: ${getPostExcerpt(post.tweet.text ?? VOID)}`;
-
-
           const createdPost = await agent.post({ ...data })
           oraProgress(
             log,

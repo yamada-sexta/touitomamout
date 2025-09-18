@@ -1,8 +1,12 @@
-import { Agent, AtpAgent } from "@atproto/api";
-import { BlueskyLinkMetadata } from "../../types/link-metadata";
+import { Agent, type ComAtprotoRepoUploadBlob } from "@atproto/api";
+// import { BlueskyLinkMetadata } from "../../types/link-metadata";
 import { parseBlobForBluesky } from "./parse-blob-for-bluesky";
-import { fetchLinkMetadata } from "./fetch-link-metadata";
+import { fetchLinkMetadata, LinkMetadata } from "./fetch-link-metadata";
 import { download } from "utils/medias/download-media";
+
+export type BlueskyLinkMetadata = Omit<LinkMetadata, "image"> & {
+  image: ComAtprotoRepoUploadBlob.Response | undefined;
+};
 
 /**
  * Retrieves Bluesky Link metadata asynchronously.
@@ -11,10 +15,10 @@ import { download } from "utils/medias/download-media";
  * @param {AtpAgent} client - The AtpAgent client used for uploading the media.
  * @returns {Promise<BlueskyLinkMetadata | null>} - A promise that resolves to the Bluesky Link metadata or null if not found.
  */
-export const getBlueskyLinkMetadata = async (
+export async function getBlueskyLinkMetadata(
   url: string,
   client: Agent,
-): Promise<BlueskyLinkMetadata | null> => {
+): Promise<BlueskyLinkMetadata | null> {
   const data = await fetchLinkMetadata(url);
 
   // Without metadata, stop
@@ -31,7 +35,7 @@ export const getBlueskyLinkMetadata = async (
   }
 
   const mediaBlob = await download(data.image);
-  if (!mediaBlob){
+  if (!mediaBlob) {
     return null;
   }
 

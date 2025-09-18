@@ -1,6 +1,6 @@
 import { Scraper } from "@the-convocation/twitter-scraper";
 import { Schema, type DBType } from "db";
-import { MAX_CONSECUTIVE_CACHED as MAX_NEW_CONSECUTIVE_CACHED, type TwitterHandle } from "env";
+import { DEBUG, FORCE_SYNC_POSTS, MAX_CONSECUTIVE_CACHED as MAX_NEW_CONSECUTIVE_CACHED, type TwitterHandle } from "env";
 import type { TaggedSynchronizer } from "./synchronizer";
 import ora from "ora";
 import { oraPrefixer } from "utils/logs";
@@ -10,7 +10,7 @@ import { logError } from "utils/logs/log-error";
 import { isRecentTweet } from "utils/tweet";
 import { getPostStore } from "./get-post-store";
 
-const MAX_TWEET = 5;
+const MAX_TWEET = 200;
 
 const TweetMap = Schema.TweetMap;
 const TweetSynced = Schema.TweetSynced;
@@ -30,18 +30,17 @@ export async function syncPosts(args: {
     }).start();
     log.text = "starting...";
 
-    let newCached = 0;
+    let cachedCounter = 0;
     let counter = 0;
-    console.log("Got here");
     try {
-        console.log("getting", handle)
+        if (DEBUG)
+            console.log("getting", handle)
         const iter = x.getTweets(handle.handle, MAX_TWEET);
-        log.text ="Created async iterator";
-        console.log(iter)
+        log.text = "Created async iterator";
         for await (const tweet of iter) {
             counter++;
             log.text = `syncing [${counter}/${MAX_TWEET}]`
-            if (newCached > MAX_NEW_CONSECUTIVE_CACHED) {
+            if (cachedCounter >= MAX_NEW_CONSECUTIVE_CACHED) {
                 log.info("skipping because too many consecutive cached tweets")
                 break;
             }
@@ -50,15 +49,13 @@ export async function syncPosts(args: {
                 continue;
             }
             const synced = db.select().from(TweetSynced).where(eq(TweetSynced.tweetId, tweet.id)).get();
-            if (synced && synced.synced !== 0) {
+            if (synced && synced.synced !== 0 && !FORCE_SYNC_POSTS) {
                 log.info("skipping synced tweet")
-                if (isRecentTweet(tweet)) {
-                    newCached++;
-                    log.info(`encounter new cached tweet [${newCached}/${MAX_NEW_CONSECUTIVE_CACHED}]`)
-                }
+                cachedCounter++;
+                log.info(`encounter cached tweet [${cachedCounter}/${MAX_NEW_CONSECUTIVE_CACHED}]`)
                 continue;
             } else {
-                newCached = 0
+                cachedCounter = 0
             }
             try {
                 for (const s of args.synchronizers) {
@@ -74,7 +71,6 @@ export async function syncPosts(args: {
                         { tweetId: tweet.id, platform: s.platformId, platformStore: syncRes ? syncRes.platformStore : "" }
                     )
                 }
-
                 // Mark as synced
                 db.insert(TweetSynced)
                     .values({ tweetId: tweet.id, synced: 1 })

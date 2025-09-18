@@ -1,22 +1,20 @@
-import ora from "ora";
+import ora, { Ora } from "ora";
 import { oraProgress } from "../logs";
+import { logError } from "utils/logs/log-error";
 
 /**
  * A method to download the media.
  */
 export async function download(
   url?: string,
+  log?: Ora,
   description?: string
 ): Promise<Blob | undefined> {
   if (!url) {
     return;
   }
-  // Create a shorter URL for display, e.g., first 50 chars + "..."
-  const displayUrl =description?? (url.length > 50 ? `${url.substring(0, 50)}...` : url);
-  // const spinner = ora(`Downloading: ${url.}`).start();
-  // const spinner = ora(`Downloading: ${displayUrl}`).start();
-  const spinner = ora(`Connecting: ${displayUrl}`).start();
-
+  const displayUrl = description ?? (url.length > 50 ? `${url.substring(0, 50)}...` : url);
+  log && (log.text = (`Connecting: ${displayUrl}`))
   try {
     // 1. Start the fetch request
     const res = await fetch(url);
@@ -40,27 +38,25 @@ export async function download(
     while (true) {
       const { done, value } = await reader.read();
       if (done) break;
-
       if (value) {
         chunks.push(value);
         received += value.length;
-
         // update progress bar
-        oraProgress(
-          spinner,
+        log && oraProgress(
+          log,
           { before: "Downloading", after: displayUrl },
           received,
           contentLength
         );
       }
     }
+
     const blob = new Blob(chunks, { type: contentType });
-    spinner.succeed(`${displayUrl} downloaded successfully`);
+    log && log.succeed(`${displayUrl} downloaded successfully`);
     return blob;
+
   } catch (err) {
-    const errorMessage = err instanceof Error ? err.message : String(err);
-    spinner.fail(`Unable to download media: ${errorMessage}`);
-    // throw new Error(`Unable to download media:\n${err}`);
+    log && logError(log, err)`Unable to download media: ${err}`
     return undefined;
   }
 }
