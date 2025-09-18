@@ -286,19 +286,17 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
           const createdAt = new Date(
             (BACKDATE_BLUESKY_POSTS ? post.tweet.timestamp : null) || Date.now()
           ).toISOString();
-          const data: Partial<AppBskyFeedPost.Record> = {
+          const data: $Typed<AppBskyFeedPost.Record> = {
             $type: "app.bsky.feed.post",
             text: richText.text,
             facets: richText.facets,
             createdAt,
           };
-
           if (i === 0 && firstEmbed) {
             data.embed = firstEmbed;
           } else {
             data.embed = await getExternalEmbedding(richText, agent);
           }
-
           if (i === 0) {
             if (post.replyPost) {
               if (post.replyPost.value.reply) {
