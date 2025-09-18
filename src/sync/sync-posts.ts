@@ -9,8 +9,8 @@ import {
 } from "env";
 import ora from "ora";
 import { isValidPost } from "types/post";
-import { oraPrefixer } from "utils/logs";
-import { logError } from "utils/logs";
+import { logError, oraPrefixer } from "utils/logs";
+
 import { getPostStore } from "../utils/get-post-store";
 import type { TaggedSynchronizer } from "./synchronizer";
 
@@ -61,7 +61,7 @@ export async function syncPosts(args: {
         log.info("skipping synced tweet");
         cachedCounter++;
         log.info(
-          `encounter cached tweet [${cachedCounter}/${MAX_NEW_CONSECUTIVE_CACHED}]`
+          `encounter cached tweet [${cachedCounter}/${MAX_NEW_CONSECUTIVE_CACHED}]`,
         );
         continue;
       } else {

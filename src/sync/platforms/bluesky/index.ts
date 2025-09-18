@@ -14,20 +14,19 @@ import {
 import { Image as BlueskyImage } from "@atproto/api/dist/client/types/app/bsky/embed/images";
 import { Photo } from "@the-convocation/twitter-scraper";
 import { BACKDATE_BLUESKY_POSTS, DEBUG, VOID } from "env";
-import { BlueskyPost } from "types/post";
 import {
   buildReplyEntry,
   getBlueskyChunkLinkMetadata,
 } from "sync/platforms/bluesky/utils";
 import { parseBlobForBluesky } from "sync/platforms/bluesky/utils/parse-blob-for-bluesky";
 import { splitTextForBluesky } from "sync/platforms/bluesky/utils/split-text";
-import { oraProgress } from "utils/logs";
-import { logError } from "utils/logs";
+import { BlueskyPost } from "types/post";
+import { getPostStore, getPostStoreStr } from "utils/get-post-store";
+import { logError, oraProgress } from "utils/logs";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { downloadTweet } from "utils/tweet/download-tweet";
 import z from "zod";
 
-import { getPostStore, getPostStoreStr } from "utils/get-post-store";
 import { SynchronizerFactory } from "../../synchronizer";
 import { syncProfile } from "./sync-profile";
 import { BLUESKY_KEYS, BlueskyPlatformStore } from "./types";
@@ -40,7 +39,7 @@ const RKEY_REGEX = /\/(?<rkey>\w+)$/;
 
 export async function getExternalEmbedding(
   richText: RichText,
-  agent: Agent
+  agent: Agent,
 ): Promise<$Typed<AppBskyEmbedExternal.Main> | undefined> {
   try {
     const card = await getBlueskyChunkLinkMetadata(richText, agent);
@@ -84,7 +83,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
     const blueskyInstance = args.env.BLUESKY_INSTANCE;
 
     const session = new CredentialSession(
-      new URL(`https://${blueskyInstance}`)
+      new URL(`https://${blueskyInstance}`),
     );
 
     // ? there is literally no documentation on the alternative
@@ -101,7 +100,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
     });
 
     async function getPostFromTid(
-      tid?: string
+      tid?: string,
     ): Promise<ReturnType<typeof agent.getPost> | void> {
       if (!tid) return;
       const storeRes = await getPostStore({
@@ -227,7 +226,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
                   ({
                     alt: p.alt_text ?? "",
                     image: i.data.blob,
-                  }) as BlueskyImage
+                  }) as BlueskyImage,
               ),
             };
           }
@@ -235,7 +234,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
 
         if (!hasMedia && !post.tweet.text) {
           log.warn(
-            `☁️ | post skipped: no compatible media nor text to post (tweet: ${post.tweet.id})`
+            `☁️ | post skipped: no compatible media nor text to post (tweet: ${post.tweet.id})`,
           );
           return;
         }
@@ -279,7 +278,8 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
           const richText = new RichText({ text: chunk });
           await richText.detectFacets(agent);
           const createdAt = new Date(
-            (BACKDATE_BLUESKY_POSTS ? post.tweet.timestamp : null) || Date.now()
+            (BACKDATE_BLUESKY_POSTS ? post.tweet.timestamp : null) ||
+              Date.now(),
           ).toISOString();
           const data: $Typed<AppBskyFeedPost.Record> = {
             $type: "app.bsky.feed.post",
@@ -297,7 +297,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
               if (post.replyPost.value.reply) {
                 data.reply = buildReplyEntry(
                   post.replyPost.value.reply.root,
-                  post.replyPost
+                  post.replyPost,
                 );
               } else {
                 data.reply = buildReplyEntry(post.replyPost);
@@ -306,7 +306,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
           } else {
             data.reply = buildReplyEntry(
               chunkReferences[0],
-              chunkReferences[i - 1]
+              chunkReferences[i - 1],
             );
           }
           log.text = `☁️ | post sending: ${getPostExcerpt(post.tweet.text ?? VOID)}`;
@@ -315,7 +315,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
             log,
             { before: "☁️ | post sending: " },
             i,
-            post.chunks.length
+            post.chunks.length,
           );
           chunkReferences.push({
             cid: createdPost.cid,

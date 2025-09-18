@@ -1,15 +1,15 @@
 import { DEBUG, SYNC_MASTODON, VOID } from "env";
 import { createRestAPIClient } from "masto";
+import { MediaAttachment } from "masto/mastodon/entities/v1/index.js";
 import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
-
-import { SynchronizerFactory } from "../../synchronizer";
-import z from "zod";
 import { splitTextForMastodon } from "sync/platforms/mastodon/text";
 import { getPostStore } from "utils/get-post-store";
-import { downloadTweet } from "utils/tweet/download-tweet";
-import { MediaAttachment } from "masto/mastodon/entities/v1/index.js";
-import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { oraProgress } from "utils/logs";
+import { getPostExcerpt } from "utils/post/get-post-excerpt";
+import { downloadTweet } from "utils/tweet/download-tweet";
+import z from "zod";
+
+import { SynchronizerFactory } from "../../synchronizer";
 
 const KEYS = ["MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN"] as const;
 
@@ -96,6 +96,7 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
           }
         }
         for (const p of dt.photos) {
+          if (DEBUG) console.log("uploading", p);
           if (!p.blob) {
             continue;
           }
@@ -104,9 +105,11 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
             description: p.alt_text,
           });
           attachments.push(a);
+          if (DEBUG) console.log("uploaded");
         }
 
         for (const v of dt.videos) {
+          if (DEBUG) console.log("uploading", v);
           if (!v.blob) {
             continue;
           }
@@ -114,11 +117,12 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
             file: v.blob,
           });
           attachments.push(a);
+          if (DEBUG) console.log("uploaded");
         }
 
         if (!attachments.length && !tweet.text) {
           log.warn(
-            `🦣️ | post skipped: no compatible media nor text to post (tweet: ${tweet.id})`
+            `🦣️ | post skipped: no compatible media nor text to post (tweet: ${tweet.id})`,
           );
           return;
         }
@@ -142,22 +146,16 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
             // i === 0 ? post.inReplyToId : chunkReferences[chunkIndex - 1],
           });
 
-          oraProgress(
-            log,
-            { before: "🦣 | toot sending: " },
-            i,
-            chunks.length
-          );
+          oraProgress(log, { before: "🦣 | toot sending: " }, i, chunks.length);
 
           // Save toot ID to be able to reference it while posting the next chunk.
           tootIds.push(toot.id);
           // If this is the last chunk, save the all chunks ID to the cache.
           if (i === chunks.length - 1) {
             log.succeed(
-              `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${tootIds.length > 1
-                ? ` (${tootIds.length} chunks)`
-                : ""
-              }`
+              `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${
+                tootIds.length > 1 ? ` (${tootIds.length} chunks)` : ""
+              }`,
             );
           }
         }
@@ -165,7 +163,7 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
         return {
           store: {
             tootIds: tootIds,
-          }
+          },
         };
       },
     };

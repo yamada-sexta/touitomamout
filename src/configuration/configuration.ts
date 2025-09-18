@@ -5,9 +5,9 @@ import { Scraper } from "@the-convocation/twitter-scraper";
 import { STORAGE_DIR, SYNC_DRY_RUN, TwitterHandle } from "env";
 import ora from "ora";
 import { BlueskyPostSynchronizer } from "services/posts/bluesky";
+import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
 import { MastodonPostSynchronizer } from "sync/posts/mastodon";
 import { PostSynchronizer } from "sync/posts/post-sender";
-import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
 import { MastodonProfileSynchronizer } from "sync/profile/mastodon";
 import { ProfileSynchronizer } from "sync/profile/profile-synchronizer";
 

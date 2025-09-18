@@ -36,7 +36,7 @@ export interface SynchronizerBase<S extends z.ZodObject> {
     args: ProfileArgs & {
       readonly bio: string;
       readonly formattedBio: string;
-    }
+    },
   ): Promise<void>;
 
   syncUserName(args: ProfileArgs & { readonly name: string }): Promise<void>;
@@ -49,7 +49,7 @@ export interface SynchronizerBase<S extends z.ZodObject> {
     args: SyncArgs & {
       store: z.ZodSafeParseResult<z.infer<S>>;
       readonly tweet: ValidPost;
-    }
+    },
   ): Promise<{
     store: z.infer<S> | undefined;
   } | void>;

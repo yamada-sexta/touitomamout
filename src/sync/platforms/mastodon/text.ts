@@ -2,8 +2,8 @@ import { Tweet } from "@the-convocation/twitter-scraper";
 import { DBType } from "db";
 import { MASTODON_MAX_POST_LENGTH } from "env";
 import { getPostStore } from "utils/get-post-store";
-import { getMastodonQuoteLinkSection } from "sync/platforms/mastodon/get-mastodon-quote-link-section";
 import { splitTweetTextCore } from "utils/tweet/split-tweet-text/split-tweet-text";
+
 import { MastodonStoreSchema, MastodonSynchronizerFactory } from ".";
 
 export async function splitTextForMastodon(
@@ -12,7 +12,7 @@ export async function splitTextForMastodon(
     db: DBType;
     mastodonUsername: string;
     mastodonInstance: string;
-  }
+  },
   // mastodonUsername: string
 ): Promise<string[]> {
   const { text, quotedStatusId, urls } = args.tweet;
@@ -31,7 +31,7 @@ export async function splitTextForMastodon(
     });
 
     if (store.success) {
-      const tootId = store.data.tootId;
+      const tootId = store.data.tootIds.at(-1);
       quoteLink = `\n\nhttps://${args.mastodonInstance}/@${args.mastodonUsername}/${tootId}`;
     }
   }

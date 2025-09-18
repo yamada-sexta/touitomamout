@@ -2,11 +2,11 @@ import { db } from "db";
 import ora from "ora";
 import { BlueskySynchronizerFactory } from "sync/platforms/bluesky";
 import { MastodonSynchronizerFactory } from "sync/platforms/mastodon";
-import { createTwitterClient } from "sync/x-client";
 import { syncPosts } from "sync/sync-posts";
 import { syncProfile } from "sync/sync-profile";
 import { TaggedSynchronizer } from "sync/synchronizer";
-import { oraPrefixer, logError } from "utils/logs";
+import { createTwitterClient } from "sync/x-client";
+import { logError, oraPrefixer } from "utils/logs";
 
 import {
   DAEMON,
@@ -93,7 +93,7 @@ for (const handle of TWITTER_HANDLES) {
         (fallback[key as keyof typeof fallback] as string | undefined);
       if (!val) {
         log.warn(
-          `${factory.DISPLAY_NAME} will not be synced because "${osKey}" is not set`
+          `${factory.DISPLAY_NAME} will not be synced because "${osKey}" is not set`,
         );
         // console.warn(`Because ${osKey} is not set.`);
         skip = true;
@@ -125,7 +125,7 @@ for (const handle of TWITTER_HANDLES) {
     } catch (error) {
       logError(
         log,
-        error
+        error,
       )`Failed to connect to ${factory.DISPLAY_NAME}: ${error}`;
     } finally {
       log.stop();
@@ -148,7 +148,7 @@ const syncAll = async () => {
 
   for await (const user of users) {
     console.log(
-      `\n𝕏 ->  ${user.synchronizers.map((s) => s.emoji).join(" + ")}`
+      `\n𝕏 ->  ${user.synchronizers.map((s) => s.emoji).join(" + ")}`,
     );
     console.log(`| @${user.handle.handle}`);
     await syncProfile({
@@ -176,6 +176,6 @@ if (DAEMON) {
     async () => {
       await syncAll();
     },
-    SYNC_FREQUENCY_MIN * 60 * 1000
+    SYNC_FREQUENCY_MIN * 60 * 1000,
   );
 }
