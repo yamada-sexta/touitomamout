@@ -1,6 +1,3 @@
-import { MastodonCacheChunk, Platform } from "../../../types";
-// import { getCachedPostChunk } from "../../cache/get-cached-post-chunk";
-
 export async function getMastodonQuoteLinkSection(args: {
   mastodonQuotedId: string;
   mastodonUsername: string;

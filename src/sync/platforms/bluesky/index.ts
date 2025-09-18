@@ -260,7 +260,6 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
           // --- Case 4: No quote or media, fall back to checking for external link cards ---
           firstEmbed = externalRecord;
         }
-        // firstEmbed = firstEmbed ? firstEmbed : externalRecord
         const chunkReferences: Array<
           {
             cid: string;

@@ -4,16 +4,18 @@ import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
 
 import { SynchronizerFactory } from "../../synchronizer";
 import z from "zod";
+import { splitTextForMastodon } from "utils/mastodon/text";
 
 const KEYS = ["MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN"] as const;
 const MastodonStoreSchema = z.object({
-  toodId: z.string()
+  toodId: z.string(),
 });
-type MastodonStoreSchemaType = typeof MastodonStoreSchema
+type MastodonStoreSchemaType = typeof MastodonStoreSchema;
 
-
-export const MastodonSynchronizerFactory: SynchronizerFactory<typeof KEYS,
-  MastodonStoreSchemaType> = {
+export const MastodonSynchronizerFactory: SynchronizerFactory<
+  typeof KEYS,
+  MastodonStoreSchemaType
+> = {
   DISPLAY_NAME: "Mastodon",
   PLATFORM_ID: "mastodon",
   STORE_SCHEMA: MastodonStoreSchema,
@@ -47,6 +49,23 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<typeof KEYS,
       },
       async syncUserName(args) {
         await updateCredentials({ displayName: args.name });
+      },
+
+      async syncPost(args) {
+        const { tweet, log } = args;
+        if (args.store.success) {
+          args.log.info("skipping...");
+          return {
+            store: args.store.data,
+          };
+        }
+
+        const username = await client.v1.accounts
+          .verifyCredentials()
+          .then((account) => account.username);
+  const chunks = await splitTextForMastodon(tweet, username);
+
+
       },
     };
   },
