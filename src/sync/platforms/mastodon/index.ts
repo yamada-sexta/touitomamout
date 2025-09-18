@@ -3,12 +3,20 @@ import { createRestAPIClient } from "masto";
 import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
 
 import { SynchronizerFactory } from "../../synchronizer";
+import z from "zod";
 
 const KEYS = ["MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN"] as const;
+const MastodonStoreSchema = z.object({
+  toodId: z.string()
+});
+type MastodonStoreSchemaType = typeof MastodonStoreSchema
 
-export const MastodonSynchronizerFactory: SynchronizerFactory<typeof KEYS> = {
+
+export const MastodonSynchronizerFactory: SynchronizerFactory<typeof KEYS,
+  MastodonStoreSchemaType> = {
   DISPLAY_NAME: "Mastodon",
   PLATFORM_ID: "mastodon",
+  STORE_SCHEMA: MastodonStoreSchema,
   EMOJI: "🦣",
   ENV_KEYS: KEYS,
   FALLBACK_ENV: {
