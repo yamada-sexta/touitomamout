@@ -1,6 +1,6 @@
 import sharp from "sharp";
 
-import { DEBUG } from "../../env";
+import { DEBUG } from "env";
 
 const findSmallerBuffer = (
   compressedBuffers: CompressedBuffer[],
@@ -98,8 +98,7 @@ export const compressMedia = async (
 
   if (DEBUG) {
     console.log(
-      `Compression results : ${inputBuffer.length / 1000}kB -> ${
-        compressedBuffer.buffer.length / 1000
+      `Compression results : ${inputBuffer.length / 1000}kB -> ${compressedBuffer.buffer.length / 1000
       }kB`,
     );
   }

@@ -8,14 +8,15 @@ import { splitTextForMastodon } from "sync/platforms/mastodon/text";
 import { getPostStore } from "utils/get-post-store";
 import { downloadTweet } from "utils/tweet/download-tweet";
 import { MediaAttachment } from "masto/mastodon/entities/v1/index.js";
-import { MastodonCacheChunk } from "types";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
 import { oraProgress } from "utils/logs";
 
 const KEYS = ["MASTODON_INSTANCE", "MASTODON_ACCESS_TOKEN"] as const;
+
 export const MastodonStoreSchema = z.object({
-  tootId: z.string(),
+  tootIds: z.array(z.string()),
 });
+
 type MastodonStoreSchemaType = typeof MastodonStoreSchema;
 
 export const MastodonSynchronizerFactory: SynchronizerFactory<
@@ -81,23 +82,19 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
         const dt = await downloadTweet(tweet);
         const attachments: MediaAttachment[] = [];
 
-        let inReplyToId = undefined;
-        if (tweet.inReplyToStatusId){
-  const store = await getPostStore({
-    s: MastodonStoreSchema,
-    db: db,
-    tweet: tweet.inReplyToStatusId,
-    platformId: MastodonSynchronizerFactory.PLATFORM_ID,
-  });
+        let inReplyToId: undefined | string = undefined;
+        if (tweet.inReplyToStatusId) {
+          const store = await getPostStore({
+            s: MastodonStoreSchema,
+            db: db,
+            tweet: tweet.inReplyToStatusId,
+            platformId: MastodonSynchronizerFactory.PLATFORM_ID,
+          });
 
-    if (store.success) {
-      inReplyToId = store.data.tootId;
-    
-    }
+          if (store.success) {
+            [inReplyToId] = store.data.tootIds;
+          }
         }
-        
-
-
         for (const p of dt.photos) {
           if (!p.blob) {
             continue;
@@ -128,55 +125,48 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
 
         log.text = `🦣 | toot sending: ${getPostExcerpt(tweet.text ?? VOID)}`;
 
-        const chunkReferences: MastodonCacheChunk[] = [];
+        const tootIds: string[] = [];
 
-            for (let i = 0; i < chunks.length; i++) {
-              const first = i === 0;
-              const chunk = chunks[i];
-              if (DEBUG) {
-                console.log("mastodon post chunk: ", chunk);
-              }
+        for (let i = 0; i < chunks.length; i++) {
+          const first = i === 0;
+          const chunk = chunks[i];
+          if (DEBUG) {
+            console.log("mastodon post chunk: ", chunk);
+          }
 
-              const toot = await client.v1.statuses.create({
-                status: chunk,
-                visibility: "public",
-                // mediaIds: i === 0 ? mediaAttachments.map((m) => m.id) : [],
-                mediaIds: first ? attachments.map((m) => m.id) : [],
-                inReplyToId: first ? inReplyToId : chunkReferences[i - 1],
-                // i === 0 ? post.inReplyToId : chunkReferences[chunkIndex - 1],
-              });
+          const toot = await client.v1.statuses.create({
+            status: chunk,
+            visibility: "public",
+            mediaIds: first ? attachments.map((m) => m.id) : undefined,
+            inReplyToId: first ? inReplyToId : tootIds[i - 1],
+            // i === 0 ? post.inReplyToId : chunkReferences[chunkIndex - 1],
+          });
 
-              oraProgress(
-                log,
-                { before: "🦣 | toot sending: " },
-                i,
-chunks.length
-              );
+          oraProgress(
+            log,
+            { before: "🦣 | toot sending: " },
+            i,
+            chunks.length
+          );
 
-              // Save toot ID to be able to reference it while posting the next chunk.
-              chunkReferences.push(toot.id);
-              // If this is the last chunk, save the all chunks ID to the cache.
-              if (i === chunks.length - 1) {
-                log.succeed(
-                  `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${
-                    chunkReferences.length > 1
-                      ? ` (${chunkReferences.length} chunks)`
-                      : ""
-                  }`
-                );
+          // Save toot ID to be able to reference it while posting the next chunk.
+          tootIds.push(toot.id);
+          // If this is the last chunk, save the all chunks ID to the cache.
+          if (i === chunks.length - 1) {
+            log.succeed(
+              `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${tootIds.length > 1
+                ? ` (${tootIds.length} chunks)`
+                : ""
+              }`
+            );
+          }
+        }
 
-                // await savePostToCache({
-                //   tweetId: .tweet.id,
-                //   data: chunkReferences,
-                //   platform: Platform.MASTODON,
-                //   cachePath: getCachePath(this.twitterHandle),
-                // });
-              }
-            }
-
-            return {
-              toot: chunkReferences[0],
-            };
+        return {
+          store: {
+            tootIds: tootIds,
+          }
+        };
       },
     };
   },

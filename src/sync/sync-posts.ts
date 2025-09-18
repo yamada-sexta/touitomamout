@@ -11,7 +11,7 @@ import ora from "ora";
 import { isValidPost } from "types/post";
 import { oraPrefixer } from "utils/logs";
 import { logError } from "utils/logs";
-import { getPostStore, getPostStoreStr } from "../utils/get-post-store";
+import { getPostStore } from "../utils/get-post-store";
 import type { TaggedSynchronizer } from "./synchronizer";
 
 const MAX_TWEET = 200;
