@@ -1,7 +1,7 @@
 import { db } from "db";
 import ora from "ora";
 import { BlueskySynchronizerFactory } from "sync/platforms/bluesky";
-import { MastodonSynchronizerFactory } from "sync/platforms/mastodon-synchronizer";
+import { MastodonSynchronizerFactory } from "sync/platforms/mastodon/mastodon-synchronizer";
 import { createTwitterClient } from "sync/x-client";
 import { syncPosts } from "sync/sync-posts";
 import { syncProfile } from "sync/sync-profile";
@@ -34,7 +34,25 @@ process.on("SIGTERM", () => {
   process.exit(0);
 });
 
-console.log(`\nTouitomamout@v${TOUITOMAMOUT_VERSION}\n`);
+console.log(`\n
+  Touitomamout@v${TOUITOMAMOUT_VERSION}
+    \\
+⠀⠀⠀⠀⠀⠀⢀⣠⠤⠔⠒⠒⠒⠒⠒⠢⠤⢤⡀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⢀⠴⠊⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠉⠲⣄⠀⠀⠀
+⠀⠀⡰⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠋⠦⠀
+⠀⡸⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣧
+⠀⡇⠀⠀⠀⢀⡶⠛⣿⣷⡄⠀⠀⠀⣰⣿⠛⢿⣷⡄⠀⠀  ⠘⣿⠀
+⠀⡇⠀⠀⠀⢸⣷⣶⣿⣿⡇⠀⠀⠀⢻⣿⣶⣿⣿⣿⠀⠀⠀  ⢸⠀
+⠀⡇⠀⠀⠀⠈⠛⠻⠿⠟⠁⠀⠀⠀⠈⠛⠻⠿⠛⠁⠀⠀⠀ ⢸⠀
+⠀⠹⣄⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⠀⠀⠀⠀⠀⠀⠀⠀⣠⠏⠁
+⠀⠀⠈⠢⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⣤⣚⡁⠀⠀
+⠀⠀⠀⠀⠈⠙⠒⢢⡤⠤⠤⠤⠤⠤⠖⠒⠒⠋⠉⠉⠈⢙⢨⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠹
+⠀⠀⠀⠀⠀⠀⠀⢸⡀⠀⠀⠀⠀⣤⠀⠀⠀⢀⣀⣀⣀⠀⠀⠀⢸
+⠀⠀⠀⠀⠀⠀⠀⠈⡇⠀⠀⠀⢠⣿⠀⠀⠀⢸⠀⠀⣿⠀⠀⠀⣸
+⠀⠀⠀⠀⠀⠀⠀⠀⢱⠀⠀⠀⢸⠘⡆⠀⠀⢸⣀⡰⠋⣆⠀⣠⠇
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠳⠤⠤⠼⠀⠘⠤⠴⠃⠀⠀⠀⠈⠉⠁⠀⠀
+  `);
 
 const factories = [
   BlueskySynchronizerFactory,
@@ -145,7 +163,7 @@ const syncAll = async () => {
       x: twitterClient,
       synchronizers: user.synchronizers,
     });
-    console.log(`| ${user.handle.handle} is up-to-date ٩(^ᗜ^ )و `);
+    console.log(`| ${user.handle.handle} is up-to-date ᐠ( ᐛ )ᐟ`);
   }
 };
 
