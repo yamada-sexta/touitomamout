@@ -179,8 +179,11 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
 
         const externalRecord = await getExternalEmbedding(richText, agent);
 
-        if (dt.videos.length === 1 && dt.videos[0].blob) {
+        if (dt.videos.length >= 1 && dt.videos[0].blob) {
           log.text = `Uploading video to bluesky...`;
+          if (dt.videos.length > 1) {
+            log.warn(`Unable to upload all ${dt.videos.length} videos`);
+          }
           const [video] = dt.videos;
           try {
             const blob = await parseBlobForBluesky(video.blob!);
