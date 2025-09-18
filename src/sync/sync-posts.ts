@@ -77,12 +77,14 @@ export async function syncPosts(args: {
                         platformId: s.platformId,
                     });
 
-                    const platformStore = store?.platformStore;
+                    const platformStore = s.storeSchema.safeParse(store?.platformStore);
+                    // const platformStore = store?.platformStore;
                     const syncRes = await s.syncPost({ log, tweet, platformStore });
+                    const storeStr =  syncRes ? JSON.stringify(syncRes.platformStore): "";
                     db.insert(TweetMap).values({
                         tweetId: tweet.id,
                         platform: s.platformId,
-                        platformStore: syncRes ? syncRes.platformStore : "",
+                        platformStore: storeStr,
                     });
                 }
                 // Mark as synced

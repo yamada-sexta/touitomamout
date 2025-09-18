@@ -1,11 +1,8 @@
-import {
-  Profile,
-  Scraper as XClient,
-  Tweet,
-} from "@the-convocation/twitter-scraper";
+import { Profile, Scraper as XClient } from "@the-convocation/twitter-scraper";
 import { DBType } from "db";
 import { Ora } from "ora";
 import { ValidPost } from "types/post";
+import * as z from "zod";
 
 type SyncArgs = { log: Ora };
 type ProfileArgs = SyncArgs & {
@@ -13,33 +10,37 @@ type ProfileArgs = SyncArgs & {
   //   readonly profileUpdate: ProfileUpdate;
 };
 
-export interface SynchronizerFactory<K extends readonly string[]> {
+export interface SynchronizerFactory<
+  KEYS extends readonly string[],
+  S extends z.ZodObject,
+> {
   DISPLAY_NAME: string;
   PLATFORM_ID: string;
   EMOJI: string;
-  ENV_KEYS: K;
+  ENV_KEYS: KEYS;
+  STORE_SCHEMA: S;
   // Fallback environments. Used to set default values.
-  FALLBACK_ENV?: Partial<Record<K[number], string>>;
+  FALLBACK_ENV?: Partial<Record<KEYS[number], string>>;
   // Create a Synchronizer. May throw errors
   create(args: {
     readonly xClient: XClient;
-    readonly env: Record<K[number], string>;
+    readonly env: Record<KEYS[number], string>;
     readonly db: DBType;
     readonly slot: number;
     readonly log: Ora;
-  }): Promise<Synchronizer>;
+  }): Promise<Synchronizer<S>>;
 }
 
-export type PostSyncCache = {
-  readonly platformStore: string;
+export type PostSyncCache<S extends z.ZodObject> = {
+  readonly platformStore: z.ZodSafeParseResult<z.infer<S>>;
 };
 
-export interface SynchronizerBase {
+export interface SynchronizerBase<S extends z.ZodObject> {
   syncBio(
     args: ProfileArgs & {
       readonly bio: string;
       readonly formattedBio: string;
-    },
+    }
   ): Promise<void>;
 
   syncUserName(args: ProfileArgs & { readonly name: string }): Promise<void>;
@@ -50,15 +51,17 @@ export interface SynchronizerBase {
 
   syncPost(
     args: SyncArgs &
-      Partial<PostSyncCache> & {
+      Partial<PostSyncCache<S>> & {
         readonly tweet: ValidPost;
-      },
-  ): Promise<PostSyncCache | void>;
+      }
+  ): Promise<z.infer<S> | void>;
 }
 
-export type Synchronizer = Partial<SynchronizerBase>;
-export type TaggedSynchronizer = Synchronizer & {
-  displayName: string;
-  platformId: string;
-  emoji: string;
-};
+export type Synchronizer<S extends z.ZodObject> = Partial<SynchronizerBase<S>>;
+export type TaggedSynchronizer<S extends z.ZodObject = z.ZodObject> =
+  Synchronizer<S> & {
+    displayName: string;
+    platformId: string;
+    emoji: string;
+    storeSchema: S;
+  };

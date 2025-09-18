@@ -16,7 +16,7 @@ export async function createTwitterClient({
 }): Promise<Scraper> {
   const log = ora({
     color: "gray",
-    prefixText: oraPrefixer("Creating 𝕏 client"),
+    prefixText: oraPrefixer("𝕏 client"),
   }).start("connecting to twitter...");
 
   const client = new Scraper({

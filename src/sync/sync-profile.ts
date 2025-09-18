@@ -15,7 +15,7 @@ import { download } from "utils/medias/download-media";
 import { getBlobHash } from "utils/medias/get-blob-hash";
 import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
 
-import { Synchronizer, TaggedSynchronizer } from "./synchronizer";
+import { TaggedSynchronizer } from "./synchronizer";
 
 const Table = Schema.TwitterProfileCache;
 
