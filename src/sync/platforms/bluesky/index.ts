@@ -104,13 +104,6 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
       tid?: string
     ): Promise<ReturnType<typeof agent.getPost> | void> {
       if (!tid) return;
-
-      const str = await getPostStoreStr({ db, platformId, tweet: tid });
-      // if (!str) return;
-
-      // // const storeArray = JSON.parse(str.platformStore) as PostRef[] | unknown;
-      // const validationResult = PostRefArraySchema.safeParse(str.platformStore);
-      // if (!validationResult.success) return;
       const storeRes = await getPostStore({
         db,
         platformId,
@@ -325,7 +318,6 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
             i,
             post.chunks.length
           );
-
           chunkReferences.push({
             cid: createdPost.cid,
             uri: createdPost.uri,
