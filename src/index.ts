@@ -1,7 +1,7 @@
 import { db } from "db";
 import ora from "ora";
 import { BlueskySynchronizerFactory } from "sync/platforms/bluesky";
-import { MastodonSynchronizerFactory } from "sync/platforms/mastodon/mastodon-synchronizer";
+import { MastodonSynchronizerFactory } from "sync/platforms/mastodon";
 import { createTwitterClient } from "sync/x-client";
 import { syncPosts } from "sync/sync-posts";
 import { syncProfile } from "sync/sync-profile";
@@ -99,6 +99,7 @@ for (const handle of TWITTER_HANDLES) {
         skip = true;
         break;
       }
+      //@ts-expect-error
       env[key as string] = val;
     }
     if (skip) {
