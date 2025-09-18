@@ -34,4 +34,4 @@ export function createMediaRecord(
     default:
       return {};
   }
-};
+}

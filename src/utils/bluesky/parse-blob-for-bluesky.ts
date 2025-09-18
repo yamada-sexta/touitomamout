@@ -24,10 +24,10 @@ export async function parseBlobForBluesky(
 ): Promise<BlueskyBlob> {
   // console.log("Parsing blob for bluesky");
 
-  const blob = await compressMedia(
-    inputBlob,
-    BLUESKY_MEDIA_MAX_SIZE_BYTES,
-  ).catch(() => inputBlob) || inputBlob;
+  const blob =
+    (await compressMedia(inputBlob, BLUESKY_MEDIA_MAX_SIZE_BYTES).catch(
+      () => inputBlob,
+    )) || inputBlob;
 
   const ab = await blob.arrayBuffer();
   const data = new Uint8Array(ab);
@@ -35,14 +35,15 @@ export async function parseBlobForBluesky(
   const mimeType = blob.type || inputBlob.type;
 
   if (!mimeType) {
-    throw new Error("Empty media type!")
+    throw new Error("Empty media type!");
   }
 
   if (!allowedMimeTypes.includes(mimeType)) {
-    throw new Error(`Media type not supported (${mimeType})`)
+    throw new Error(`Media type not supported (${mimeType})`);
   }
 
   return {
-    mimeType, blobData: data
-  }
-};
+    mimeType,
+    blobData: data,
+  };
+}

@@ -1,18 +1,21 @@
-import { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
-import * as v1 from "./schema/v1";
+import { DBType } from "db";
 // import * as v2 from "./schema/v2";
 // import * as v3 from "./schema/v3";
 // import * as v4 from "./schema/v4";
 import {
-  generateSQLiteMigration,
   generateSQLiteDrizzleJson,
+  generateSQLiteMigration,
 } from "drizzle-kit/api";
-import { DBType } from "db";
+import { BunSQLiteDatabase } from "drizzle-orm/bun-sqlite";
+
+import * as v1 from "./schema/v1";
 
 export const schemas = [{}, v1];
 // export const latestSchema = schemas[schemas.length - 1];
 
-export async function migrate(db: BunSQLiteDatabase<{ Version: typeof v1.Version }>): Promise<DBType> {
+export async function migrate(
+  db: BunSQLiteDatabase<{ Version: typeof v1.Version }>,
+): Promise<DBType> {
   let currentVersion: number = 0;
   try {
     // 1. Try to get the current version.
@@ -20,7 +23,7 @@ export async function migrate(db: BunSQLiteDatabase<{ Version: typeof v1.Version
     const result = db.select().from(v1.Version).get();
     currentVersion = result?.version || 0;
     console.log(`Current database version: ${currentVersion}`);
-  } catch (e) {
+  } catch (_) {
     // 2. If it fails, assume version 0.
     console.log("Could not determine database version, assuming 0.");
   }
@@ -35,7 +38,7 @@ export async function migrate(db: BunSQLiteDatabase<{ Version: typeof v1.Version
 
     const migrationStatements = await generateSQLiteMigration(
       await generateSQLiteDrizzleJson(prevSchema),
-      await generateSQLiteDrizzleJson(currSchema)
+      await generateSQLiteDrizzleJson(currSchema),
     );
 
     if (migrationStatements.length === 0) {
@@ -52,7 +55,7 @@ export async function migrate(db: BunSQLiteDatabase<{ Version: typeof v1.Version
       // 4. Update the version in the database
       // Ensure the table exists
       db.run(
-        "CREATE TABLE IF NOT EXISTS version (id INTEGER PRIMARY KEY, version INTEGER);"
+        "CREATE TABLE IF NOT EXISTS version (id INTEGER PRIMARY KEY, version INTEGER);",
       );
       // Use INSERT OR REPLACE (UPSERT) to set the new version
       db.run(`INSERT OR REPLACE INTO version (id, version) VALUES (1, ${i})`);
@@ -61,7 +64,7 @@ export async function migrate(db: BunSQLiteDatabase<{ Version: typeof v1.Version
       console.error(`Migration to v${i} failed:`, e);
       // If a migration fails, stop the process
       // return;
-      throw new Error("Migration failed...")
+      throw new Error("Migration failed...");
     }
   }
 

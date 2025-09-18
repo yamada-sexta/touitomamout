@@ -1,22 +1,37 @@
 import type { Scraper } from "@the-convocation/twitter-scraper";
+import { DBType, Schema } from "db";
+import { eq } from "drizzle-orm";
+import {
+  DEBUG,
+  SYNC_PROFILE_DESCRIPTION,
+  SYNC_PROFILE_HEADER,
+  SYNC_PROFILE_NAME,
+  SYNC_PROFILE_PICTURE,
+  TwitterHandle,
+} from "env";
 import ora from "ora";
 import { oraPrefixer } from "utils/logs";
 import { download } from "utils/medias/download-media";
-import { DEBUG, SYNC_PROFILE_DESCRIPTION, SYNC_PROFILE_HEADER, SYNC_PROFILE_NAME, SYNC_PROFILE_PICTURE, TwitterHandle } from "env";
-import { Synchronizer, TaggedSynchronizer } from "./synchronizer";
-import { DBType, Schema } from "db";
-import { eq } from "drizzle-orm";
-import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
 import { getBlobHash } from "utils/medias/get-blob-hash";
+import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
+
+import { Synchronizer, TaggedSynchronizer } from "./synchronizer";
+
 const Table = Schema.TwitterProfileCache;
 
-async function upsertProfileCache(args:
-  { db: DBType, userId: string, pfpUrl?: string, bannerUrl?: string }): Promise<{
-    pfpChanged: boolean, bannerChanged: boolean;
-    pfpBlob?: Blob, bannerBlob?: Blob
-  }> {
-  const pfpUrl = args.pfpUrl ?? ""
-  const bannerUrl = args.bannerUrl ?? ""
+async function upsertProfileCache(args: {
+  db: DBType;
+  userId: string;
+  pfpUrl?: string;
+  bannerUrl?: string;
+}): Promise<{
+  pfpChanged: boolean;
+  bannerChanged: boolean;
+  pfpBlob?: Blob;
+  bannerBlob?: Blob;
+}> {
+  const pfpUrl = args.pfpUrl ?? "";
+  const bannerUrl = args.bannerUrl ?? "";
   const { db, userId } = args;
 
   const [row] = await db
@@ -24,7 +39,7 @@ async function upsertProfileCache(args:
       pfpHash: Table.pfpHash,
       bannerHash: Table.bannerHash,
       pfpUrl: Table.pfpUrl,
-      bannerUrl: Table.bannerUrl
+      bannerUrl: Table.bannerUrl,
     })
     .from(Table)
     .where(eq(Table.userId, userId));
@@ -32,7 +47,7 @@ async function upsertProfileCache(args:
 
   const cPfpUrl = row?.pfpUrl ?? "";
   const cPfpHash = row?.bannerHash ?? "";
-  let pfpHash = ""
+  let pfpHash = "";
   let pfpBlob: Blob | undefined = undefined;
 
   if (cPfpUrl !== pfpUrl) {
@@ -51,25 +66,21 @@ async function upsertProfileCache(args:
   let bannerChanged = false;
   const cBannerUrl = row?.bannerUrl ?? "";
   const cBannerHash = row?.bannerHash ?? "";
-  let bannerHash = ""
+  let bannerHash = "";
   let bannerBlob: Blob | undefined = undefined;
 
   if (cBannerUrl !== bannerUrl) {
-    if (DEBUG)
-      console.log("Banner URL changed");
+    if (DEBUG) console.log("Banner URL changed");
 
     bannerBlob = await download(bannerUrl);
     const hash = await getBlobHash(bannerBlob);
     bannerHash = hash;
     if (hash !== cBannerHash) {
-      if (DEBUG)
-        console.log("Banner has a different hash");
+      if (DEBUG) console.log("Banner has a different hash");
       bannerChanged = true;
-
     }
   } else {
-    if (DEBUG)
-      console.log("Same banner url");
+    if (DEBUG) console.log("Same banner url");
   }
 
   // Upsert (insert or update) the cache row
@@ -80,7 +91,7 @@ async function upsertProfileCache(args:
       pfpHash,
       bannerHash,
       bannerUrl,
-      pfpUrl
+      pfpUrl,
     })
     .onConflictDoUpdate({
       target: Table.userId,
@@ -88,7 +99,7 @@ async function upsertProfileCache(args:
         pfpHash,
         bannerHash,
         bannerUrl,
-        pfpUrl
+        pfpUrl,
       },
     });
   return {
@@ -99,14 +110,14 @@ async function upsertProfileCache(args:
   };
 }
 /**
- * An async method that fetches a Twitter profile and dispatches 
+ * An async method that fetches a Twitter profile and dispatches
  * synchronization tasks to configured platforms.
  */
 export async function syncProfile(args: {
   twitterHandle: TwitterHandle;
   x: Scraper;
   synchronizers: TaggedSynchronizer[];
-  db: DBType
+  db: DBType;
 }): Promise<void> {
   const { x: x, synchronizers, db } = args;
   const log = ora({
@@ -117,16 +128,17 @@ export async function syncProfile(args: {
 
   // --- COMMON LOGIC: FETCH ---
   const profile = await x.getProfile(args.twitterHandle.handle);
-  const pfpUrl = profile.avatar?.replace("_normal", "") ?? ""
+  const pfpUrl = profile.avatar?.replace("_normal", "") ?? "";
   const bannerUrl = profile.banner ?? "";
 
   log.text = "checking media cache...";
-  const { pfpChanged, bannerChanged,
-    pfpBlob, bannerBlob,
-  } = await upsertProfileCache({
-    db, userId: args.twitterHandle.handle,
-    bannerUrl, pfpUrl
-  })
+  const { pfpChanged, bannerChanged, pfpBlob, bannerBlob } =
+    await upsertProfileCache({
+      db,
+      userId: args.twitterHandle.handle,
+      bannerUrl,
+      pfpUrl,
+    });
 
   const jobs: Promise<void>[] = [];
 
@@ -139,8 +151,8 @@ export async function syncProfile(args: {
             log,
             profile,
             pfpBlob,
-          })
-        )
+          }),
+        ),
     );
   }
 
@@ -153,39 +165,39 @@ export async function syncProfile(args: {
             log,
             profile,
             bannerBlob,
-          })
-        )
+          }),
+        ),
     );
   }
 
   if (SYNC_PROFILE_DESCRIPTION && profile.biography) {
-    const formattedBio = await shortenedUrlsReplacer(profile.biography)
+    const formattedBio = await shortenedUrlsReplacer(profile.biography);
     jobs.push(
-      ...synchronizers.filter(s => s.syncBio).map(
-        s => s.syncBio!(
-          {
+      ...synchronizers
+        .filter((s) => s.syncBio)
+        .map((s) =>
+          s.syncBio!({
             log,
             profile,
             bio: profile.biography!,
-            formattedBio
-          }
-        )
-      )
-    )
+            formattedBio,
+          }),
+        ),
+    );
   }
 
   if (SYNC_PROFILE_NAME && profile.name) {
     jobs.push(
-      ...synchronizers.filter(s => s.syncUserName).map(
-        s => s.syncUserName!(
-          {
+      ...synchronizers
+        .filter((s) => s.syncUserName)
+        .map((s) =>
+          s.syncUserName!({
             log,
             profile,
-            name: profile.name!
-          }
-        )
-      )
-    )
+            name: profile.name!,
+          }),
+        ),
+    );
   }
 
   // console.log(profile)
@@ -203,5 +215,5 @@ export async function syncProfile(args: {
       log.fail(`An unknown error occurred during sync: ${String(error)}`);
     }
   }
-  log.stop()
-};
+  log.stop();
+}

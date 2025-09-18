@@ -1,6 +1,6 @@
 import { DEBUG } from "env";
 // import { LinkMetadata } from "../../types/link-metadata";
-import { z } from 'zod';
+import { z } from "zod";
 
 const LinkMetadataSchema = z.object({
   title: z.string().default(""),
@@ -10,7 +10,11 @@ const LinkMetadataSchema = z.object({
   error: z.string().default(""),
   Error: z.string().optional(),
   likely_type: z.string().optional(),
-  url: z.url().or(z.literal("")).optional().transform(val => val ? val : null),
+  url: z
+    .url()
+    .or(z.literal(""))
+    .optional()
+    .transform((val) => (val ? val : null)),
 });
 export type LinkMetadata = z.infer<typeof LinkMetadataSchema>;
 
@@ -23,25 +27,31 @@ export async function fetchLinkMetadata(
   url: string,
 ): Promise<LinkMetadata | null> {
   try {
-    const res = await fetch(`https://cardyb.bsky.app/v1/extract?url=${encodeURI(url)}`, {
-      method: "GET",
-    });
-    const obj = await res.json() as unknown;
+    const res = await fetch(
+      `https://cardyb.bsky.app/v1/extract?url=${encodeURI(url)}`,
+      {
+        method: "GET",
+      },
+    );
+    const obj = (await res.json()) as unknown;
     const validationResult = LinkMetadataSchema.safeParse(obj);
     if (!validationResult.success) {
       // Zod gives you detailed errors about what went wrong!
-      console.error("Schema validation failed:", obj, z.treeifyError(validationResult.error));
+      console.error(
+        "Schema validation failed:",
+        obj,
+        z.treeifyError(validationResult.error),
+      );
       return null;
     }
     const data = validationResult.data;
     if (data.error || data.Error) {
       return null;
     }
-    if (DEBUG)
-      console.log("metadata: ", data)
+    if (DEBUG) console.log("metadata: ", data);
     return data;
   } catch (e) {
     console.error(`Error while fetching link metadata: ${e}`);
     return null;
   }
-};
+}

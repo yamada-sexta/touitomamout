@@ -98,7 +98,8 @@ export const compressMedia = async (
 
   if (DEBUG) {
     console.log(
-      `Compression results : ${inputBuffer.length / 1000}kB -> ${compressedBuffer.buffer.length / 1000
+      `Compression results : ${inputBuffer.length / 1000}kB -> ${
+        compressedBuffer.buffer.length / 1000
       }kB`,
     );
   }

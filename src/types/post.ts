@@ -27,12 +27,10 @@ export type Post = {
   bluesky: null | BlueskyPost;
 };
 
-
-
 export interface ValidPost extends Tweet {
-    id: string
+  id: string;
 }
 
 export function isValidPost(tweet: Tweet): tweet is ValidPost {
-    return "id" in tweet;
+  return "id" in tweet;
 }

@@ -2,12 +2,15 @@ import pm2 from "@pm2/io";
 import type Counter from "@pm2/io/build/main/utils/metrics/counter";
 import type Gauge from "@pm2/io/build/main/utils/metrics/gauge";
 import { Scraper } from "@the-convocation/twitter-scraper";
+import { STORAGE_DIR, SYNC_DRY_RUN, TwitterHandle } from "env";
 import ora from "ora";
-import {
-  STORAGE_DIR,
-  SYNC_DRY_RUN,
-  TwitterHandle,
-} from "env";
+import { BlueskyPostSynchronizer } from "services/posts/bluesky";
+import { MastodonPostSynchronizer } from "services/posts/mastodon";
+import { PostSynchronizer } from "services/posts/post-sender";
+import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
+import { MastodonProfileSynchronizer } from "services/profile/mastodon";
+import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
+
 import { handleTwitterAuth } from "../utils/auth/handle-twitter-auth";
 import { createCacheFile } from "../utils/cache/create-cache";
 import { getCachedPosts } from "../utils/cache/get-cached-posts";
@@ -15,29 +18,23 @@ import { runMigrations } from "../utils/cache/run-migrations";
 import { oraPrefixer } from "../utils/logs";
 import { createBlueskyClient } from "./bluesky";
 import { createMastodonClient } from "./mastodon";
-import { ProfileSynchronizer } from "services/profile/profile-synchronizer";
-import { PostSynchronizer } from "services/posts/post-sender";
-import { MastodonProfileSynchronizer } from "services/profile/mastodon";
-import { MastodonPostSynchronizer } from "services/posts/mastodon";
-import { BlueskyProfileSynchronizer } from "services/profile/bluesky";
-import { BlueskyPostSynchronizer } from "services/posts/bluesky";
 
 export function getCachePath(twitterHandle: TwitterHandle) {
   return `${STORAGE_DIR}/cache.${twitterHandle.handle}.json`;
 }
 
 export async function configuration(args: {
-  twitterHandle: TwitterHandle,
+  twitterHandle: TwitterHandle;
 }): Promise<{
   synchronizedPostsCountAllTime: Gauge;
   synchronizedPostsCountThisRun: Counter;
   twitterClient: Scraper;
-  profileSynchronizers: ProfileSynchronizer[]
-  postSynchronizers: PostSynchronizer[]
-  emojis: string[]
+  profileSynchronizers: ProfileSynchronizer[];
+  postSynchronizers: PostSynchronizer[];
+  emojis: string[];
 }> {
-  const profileSynchronizers: ProfileSynchronizer[] = []
-  const postSynchronizers: PostSynchronizer[] = []
+  const profileSynchronizers: ProfileSynchronizer[] = [];
+  const postSynchronizers: PostSynchronizer[] = [];
   const emojis: string[] = [];
 
   if (SYNC_DRY_RUN) {
@@ -48,12 +45,14 @@ export async function configuration(args: {
   }
 
   // Init configuration
-  const cachePath = getCachePath(args.twitterHandle)
+  const cachePath = getCachePath(args.twitterHandle);
   await createCacheFile({
-    cachePath, instanceId: args.twitterHandle.handle
+    cachePath,
+    instanceId: args.twitterHandle.handle,
   });
   await runMigrations({
-    cachePath, instanceId: args.twitterHandle.handle
+    cachePath,
+    instanceId: args.twitterHandle.handle,
   });
 
   const synchronizedPostsCountThisRun = pm2.counter({
@@ -77,31 +76,37 @@ export async function configuration(args: {
 
   await handleTwitterAuth(twitterClient);
 
-  const mastodonClient = await createMastodonClient({ handle: args.twitterHandle });
+  const mastodonClient = await createMastodonClient({
+    handle: args.twitterHandle,
+  });
 
   if (mastodonClient) {
-    profileSynchronizers.push(
-      new MastodonProfileSynchronizer(mastodonClient)
-    )
+    profileSynchronizers.push(new MastodonProfileSynchronizer(mastodonClient));
     postSynchronizers.push(
-      new MastodonPostSynchronizer(mastodonClient, args.twitterHandle)
-    )
-    emojis.push("🦣")
+      new MastodonPostSynchronizer(mastodonClient, args.twitterHandle),
+    );
+    emojis.push("🦣");
   } else {
-    console.log(`🦣 Mastodon will not be synced for ${args.twitterHandle.handle}`)
+    console.log(
+      `🦣 Mastodon will not be synced for ${args.twitterHandle.handle}`,
+    );
   }
 
-  const [blueskyClient, identifier] = await createBlueskyClient({ handle: args.twitterHandle }) || [undefined, undefined];
+  const [blueskyClient, identifier] = (await createBlueskyClient({
+    handle: args.twitterHandle,
+  })) || [undefined, undefined];
   if (blueskyClient) {
-    profileSynchronizers.push(
-      new BlueskyProfileSynchronizer(blueskyClient)
-    )
+    profileSynchronizers.push(new BlueskyProfileSynchronizer(blueskyClient));
     postSynchronizers.push(
-      new BlueskyPostSynchronizer(blueskyClient, args.twitterHandle, identifier)
-    )
-    emojis.push("☁️")
+      new BlueskyPostSynchronizer(
+        blueskyClient,
+        args.twitterHandle,
+        identifier,
+      ),
+    );
+    emojis.push("☁️");
   } else {
-    console.log(`☁️ Bluesky will not be synced ${args.twitterHandle.handle}`)
+    console.log(`☁️ Bluesky will not be synced ${args.twitterHandle.handle}`);
   }
 
   return {
@@ -110,6 +115,6 @@ export async function configuration(args: {
     synchronizedPostsCountThisRun,
     profileSynchronizers,
     postSynchronizers,
-    emojis
+    emojis,
   };
-};
+}

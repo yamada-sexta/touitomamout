@@ -1,9 +1,9 @@
 import { Scraper } from "@the-convocation/twitter-scraper";
 import { DBType, Schema } from "db";
 import { eq, sql } from "drizzle-orm";
-import { oraPrefixer } from "utils/logs";
 import ora, { Ora } from "ora";
 import { Cookie } from "tough-cookie";
+import { oraPrefixer } from "utils/logs";
 
 export async function createTwitterClient({
   twitterPassword,
@@ -20,13 +20,13 @@ export async function createTwitterClient({
   }).start("connecting to twitter...");
 
   const client = new Scraper({
-    fetch:fetch,
+    fetch: fetch,
     rateLimitStrategy: {
-      async onRateLimit(e){
+      async onRateLimit(e) {
         // console.log(e)
-        throw new Error("Rate limited")
-      }
-    }
+        throw new Error("Rate limited");
+      },
+    },
   });
   if (!twitterPassword || !twitterUsername) {
     log.warn("connected as guest | replies will not be synced");
@@ -34,16 +34,17 @@ export async function createTwitterClient({
   }
 
   try {
-    const prevCookie = await db.select().from(Schema.TwitterCookieCache).where(
-      eq(Schema.TwitterCookieCache.userHandle, twitterUsername)
-    )
+    const prevCookie = await db
+      .select()
+      .from(Schema.TwitterCookieCache)
+      .where(eq(Schema.TwitterCookieCache.userHandle, twitterUsername));
     const cookie = prevCookie.length ? prevCookie[0].cookie : null;
 
     if (cookie) {
-      const cookies: Cookie[] = (JSON.parse(cookie) as unknown[]).map(
-        o => Cookie.fromJSON(o) as Cookie
-      ).filter(o => o);
-      await client.setCookies(cookies.map(c => c.toString()));
+      const cookies: Cookie[] = (JSON.parse(cookie) as unknown[])
+        .map((o) => Cookie.fromJSON(o) as Cookie)
+        .filter((o) => o);
+      await client.setCookies(cookies.map((c) => c.toString()));
     }
 
     const loggedIn = await client.isLoggedIn();

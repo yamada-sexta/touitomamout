@@ -1,7 +1,7 @@
 import {
   Profile,
-  Tweet,
   Scraper as XClient,
+  Tweet,
 } from "@the-convocation/twitter-scraper";
 import { DBType } from "db";
 import { Ora } from "ora";
@@ -31,15 +31,15 @@ export interface SynchronizerFactory<K extends readonly string[]> {
 }
 
 export type PostSyncCache = {
-  readonly platformStore: string,
-}
+  readonly platformStore: string;
+};
 
 export interface SynchronizerBase {
   syncBio(
     args: ProfileArgs & {
       readonly bio: string;
       readonly formattedBio: string;
-    }
+    },
   ): Promise<void>;
 
   syncUserName(args: ProfileArgs & { readonly name: string }): Promise<void>;
@@ -49,13 +49,16 @@ export interface SynchronizerBase {
   syncBanner(args: ProfileArgs & { readonly bannerBlob: Blob }): Promise<void>;
 
   syncPost(
-    args: SyncArgs & Partial<PostSyncCache> & {
-      readonly tweet: ValidPost,
-    }
+    args: SyncArgs &
+      Partial<PostSyncCache> & {
+        readonly tweet: ValidPost;
+      },
   ): Promise<PostSyncCache | void>;
 }
 
 export type Synchronizer = Partial<SynchronizerBase>;
 export type TaggedSynchronizer = Synchronizer & {
-  displayName: string, platformId: string, emoji: string
-}
+  displayName: string;
+  platformId: string;
+  emoji: string;
+};

@@ -2,14 +2,13 @@ import { Tweet } from "@the-convocation/twitter-scraper";
 import { MASTODON_MAX_POST_LENGTH } from "env";
 import { getMastodonQuoteLinkSection } from "utils/tweet/split-tweet-text/get-mastodon-quote-link-section";
 
-
 export async function splitTextForMastodon(
   tweet: Tweet,
   args: {
-    quotedTweetId: string,
-    mastodonUsername: string,
-    mastodonInstance: string
-  }
+    quotedTweetId: string;
+    mastodonUsername: string;
+    mastodonInstance: string;
+  },
   // mastodonUsername: string
 ): Promise<string[]> {
   const { text, quotedStatusId, urls } = tweet;
@@ -18,7 +17,7 @@ export async function splitTextForMastodon(
   const quotedStatusLinkSection = await getMastodonQuoteLinkSection(
     // quotedStatusId,
     // args,
-    args
+    args,
   );
 
   if (quotedStatusId) {
@@ -36,6 +35,6 @@ export async function splitTextForMastodon(
     Platform.MASTODON,
     quotedStatusId,
     maxChunkSize,
-    quotedStatusLinkSection
+    quotedStatusLinkSection,
   );
 }

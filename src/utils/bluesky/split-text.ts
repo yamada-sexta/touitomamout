@@ -5,13 +5,10 @@ import { splitTweetTextCore } from "utils/tweet/split-tweet-text";
 /**
  * Bluesky-specific split logic.
  */
-export async function splitTextForBluesky(
-  tweet: Tweet
-): Promise<string[]> {
-
+export async function splitTextForBluesky(tweet: Tweet): Promise<string[]> {
   const { text, quotedStatusId, urls } = tweet;
   if (!text) {
-    return []
+    return [];
   }
   const maxChunkSize = BLUESKY_MAX_POST_LENGTH;
 
@@ -20,9 +17,11 @@ export async function splitTextForBluesky(
   }
 
   return await splitTweetTextCore({
-    text, urls, quotedStatusId, appendQuoteLink: false,
-    maxChunkSize, quotedStatusLinkSection: ""
-  }
-  );
+    text,
+    urls,
+    quotedStatusId,
+    appendQuoteLink: false,
+    maxChunkSize,
+    quotedStatusLinkSection: "",
+  });
 }
-

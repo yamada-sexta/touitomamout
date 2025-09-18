@@ -1,3 +1,26 @@
+import { db } from "db";
+import ora from "ora";
+// import { syncProfile } from "services/profile/sync";
+// import { syncPosts } from "services/posts/sync";
+import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
+import { MastodonSynchronizerFactory } from "services/mastodon-synchronizer";
+import { createTwitterClient } from "services/profile/x-client";
+import { syncPosts } from "services/sync-posts";
+import { syncProfile } from "services/sync-profile";
+import { TaggedSynchronizer } from "services/synchronizer";
+import { oraPrefixer } from "utils/logs";
+import { logError } from "utils/logs/log-error";
+
+import {
+  DAEMON,
+  SYNC_FREQUENCY_MIN,
+  TOUITOMAMOUT_VERSION,
+  TWITTER_HANDLES,
+  TWITTER_PASSWORD,
+  TWITTER_USERNAME,
+  TwitterHandle,
+} from "./env";
+
 let interval: NodeJS.Timeout | null = null;
 process.on("exit", (code) => {
   console.log(`Process exited with code ${code}`);
@@ -15,29 +38,11 @@ process.on("SIGTERM", () => {
 });
 
 console.log(`\nTouitomamout@v${TOUITOMAMOUT_VERSION}\n`);
-import {
-  DAEMON,
-  SYNC_FREQUENCY_MIN,
-  TOUITOMAMOUT_VERSION,
-  TWITTER_HANDLES,
-  TWITTER_PASSWORD,
-  TWITTER_USERNAME,
-  TwitterHandle,
-} from "./env";
-// import { syncProfile } from "services/profile/sync";
-// import { syncPosts } from "services/posts/sync";
-import { BlueskySynchronizerFactory } from "services/bluesky-synchronizer";
-import { createTwitterClient } from "services/profile/x-client";
-import { db } from "db";
-import { TaggedSynchronizer } from "services/synchronizer";
-import ora from "ora";
-import { oraPrefixer } from "utils/logs";
-import { syncProfile } from "services/sync-profile";
-import { MastodonSynchronizerFactory } from "services/mastodon-synchronizer";
-import { logError } from "utils/logs/log-error";
-import { syncPosts } from "services/sync-posts";
 
-const factories = [BlueskySynchronizerFactory, MastodonSynchronizerFactory] as const;
+const factories = [
+  BlueskySynchronizerFactory,
+  MastodonSynchronizerFactory,
+] as const;
 
 const twitterClient = await createTwitterClient({
   twitterPassword: TWITTER_PASSWORD,
@@ -57,7 +62,7 @@ interface SyncUser {
 }
 
 for (const handle of TWITTER_HANDLES) {
-  console.log(`Connecting @${handle.handle}...`)
+  console.log(`Connecting @${handle.handle}...`);
   const synchronizers: TaggedSynchronizer[] = [];
   for (const factory of factories) {
     const log = ora({
@@ -73,22 +78,21 @@ for (const handle of TWITTER_HANDLES) {
     let skip = false;
     for (const key of envKeys) {
       const osKey = key + handle.postFix;
-      const val = process.env[osKey] || fallback[key as keyof typeof fallback] as string | undefined;
+      const val =
+        process.env[osKey] ||
+        (fallback[key as keyof typeof fallback] as string | undefined);
       if (!val) {
-        log.warn(
-          `skip ${factory.DISPLAY_NAME} because "${osKey}" is not set.`
-        );
+        log.warn(`skip ${factory.DISPLAY_NAME} because "${osKey}" is not set.`);
         // console.warn(`Because ${osKey} is not set.`);
         skip = true;
         break;
       }
-      //@ts-ignore
+      //@ts-expect-error because the K is not assignable to all the subtypes
       env[key as string] = val;
     }
     if (skip) {
       continue;
     }
-
 
     try {
       const s = await factory.create({
@@ -96,14 +100,21 @@ for (const handle of TWITTER_HANDLES) {
         env: env as EnvType,
         db: db,
         slot: handle.slot,
-        log
+        log,
       });
-      synchronizers.push({ ...s, displayName: factory.DISPLAY_NAME, emoji: factory.EMOJI, platformId: factory.PLATFORM_ID });
-      log.succeed("connected")
+      synchronizers.push({
+        ...s,
+        displayName: factory.DISPLAY_NAME,
+        emoji: factory.EMOJI,
+        platformId: factory.PLATFORM_ID,
+      });
+      log.succeed("connected");
     } catch (error) {
-      logError(log, error)`Failed to connect to ${factory.DISPLAY_NAME}: ${error}`
-    }
-    finally {
+      logError(
+        log,
+        error,
+      )`Failed to connect to ${factory.DISPLAY_NAME}: ${error}`;
+    } finally {
       log.stop();
     }
   }
@@ -114,7 +125,6 @@ for (const handle of TWITTER_HANDLES) {
   });
 }
 
-
 /**
  * Main syncing loop
  */
@@ -124,15 +134,23 @@ const syncAll = async () => {
   }
 
   for await (const user of users) {
-    console.log(`\n𝕏 ->  ${user.synchronizers.map((s) => s.emoji).join(" + ")}`);
+    console.log(
+      `\n𝕏 ->  ${user.synchronizers.map((s) => s.emoji).join(" + ")}`,
+    );
     console.log(`| @${user.handle.handle}`);
     await syncProfile({
-      x: twitterClient, twitterHandle: user.handle, synchronizers: user.synchronizers, db
-    })
+      x: twitterClient,
+      twitterHandle: user.handle,
+      synchronizers: user.synchronizers,
+      db,
+    });
 
     await syncPosts({
-      db, handle: user.handle, x: twitterClient, synchronizers: user.synchronizers
-    })
+      db,
+      handle: user.handle,
+      x: twitterClient,
+      synchronizers: user.synchronizers,
+    });
 
     // await syncProfile({
     //   twitterClient: client.twitter,
@@ -165,6 +183,6 @@ if (DAEMON) {
     async () => {
       await syncAll();
     },
-    SYNC_FREQUENCY_MIN * 60 * 1000
+    SYNC_FREQUENCY_MIN * 60 * 1000,
   );
 }

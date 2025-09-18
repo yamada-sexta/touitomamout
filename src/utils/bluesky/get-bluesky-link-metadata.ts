@@ -1,8 +1,9 @@
 import { Agent, type ComAtprotoRepoUploadBlob } from "@atproto/api";
+import { download } from "utils/medias/download-media";
+
+import { fetchLinkMetadata, LinkMetadata } from "./fetch-link-metadata";
 // import { BlueskyLinkMetadata } from "../../types/link-metadata";
 import { parseBlobForBluesky } from "./parse-blob-for-bluesky";
-import { fetchLinkMetadata, LinkMetadata } from "./fetch-link-metadata";
-import { download } from "utils/medias/download-media";
 
 export type BlueskyLinkMetadata = Omit<LinkMetadata, "image"> & {
   image: ComAtprotoRepoUploadBlob.Response | undefined;
@@ -49,4 +50,4 @@ export async function getBlueskyLinkMetadata(
     ...data,
     image: blueskyBlob ? media : undefined,
   };
-};
+}

@@ -3,11 +3,10 @@ import { MastodonCacheChunk, Platform } from "../../../types";
 import { getCachedPostChunk } from "../../cache/get-cached-post-chunk";
 
 export async function getMastodonQuoteLinkSection(args: {
-  quotedTweetId: string,
-  mastodonUsername: string,
-  mastodonInstance: string
-}
-) {
+  quotedTweetId: string;
+  mastodonUsername: string;
+  mastodonInstance: string;
+}) {
   // if (!quotedTweetId || !mastodonUsername) {
   // return "";
   // }
@@ -19,4 +18,4 @@ export async function getMastodonQuoteLinkSection(args: {
   );
 
   return `\n\nhttps://${args.mastodonInstance}/@${args.mastodonUsername}/${mastodonQuotedId}`;
-};
+}

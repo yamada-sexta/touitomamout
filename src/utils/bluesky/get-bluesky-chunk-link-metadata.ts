@@ -1,7 +1,10 @@
 import { Agent, RichText } from "@atproto/api";
 
 // import { BlueskyLinkMetadata } from "../../types/link-metadata";
-import { BlueskyLinkMetadata, getBlueskyLinkMetadata } from "./get-bluesky-link-metadata";
+import {
+  BlueskyLinkMetadata,
+  getBlueskyLinkMetadata,
+} from "./get-bluesky-link-metadata";
 
 /**
  * Retrieves the metadata of the first link found in the given richtext.

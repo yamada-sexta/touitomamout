@@ -24,12 +24,10 @@ const pullContentStats = (tweets: Tweet[], title: string) => {
   );
 };
 
-export async function getTweets(
-  args: {
-    twitterClient: Scraper,
-    twitterHandle: string,
-  }
-): Promise<Tweet[]> {
+export async function getTweets(args: {
+  twitterClient: Scraper;
+  twitterHandle: string;
+}): Promise<Tweet[]> {
   const cachedPosts = await getCachedPosts();
   const log = ora({
     color: "cyan",
@@ -55,7 +53,10 @@ export async function getTweets(
     log.text = "post: → checking for synchronization needs";
     if (!preventPostsSynchronization) {
       // Only consider eligible tweets.
-      const tweet = await getEligibleTweet(tweetFormatter(latestTweet), args.twitterHandle);
+      const tweet = await getEligibleTweet(
+        tweetFormatter(latestTweet),
+        args.twitterHandle,
+      );
 
       if (tweet) {
         // If the latest eligible tweet is cached, mark sync as unneeded.
@@ -112,4 +113,4 @@ export async function getTweets(
   }
 
   return tweets;
-};
+}

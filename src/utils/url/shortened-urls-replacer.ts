@@ -22,4 +22,4 @@ export async function shortenedUrlsReplacer(text: string): Promise<string> {
       ? description.replace(match[0], resolvedUrl)
       : description;
   }, text);
-};
+}

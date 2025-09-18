@@ -12,7 +12,6 @@
 //     justSynced: number;
 // };
 
-
 // export async function syncPosts(args: {
 //     twitterClient: Scraper,
 //     synchronizers: PostSynchronizer[],

@@ -1,5 +1,6 @@
 import { accessSync, constants } from "node:fs";
 import { join } from "node:path";
+
 import packageInfo from "../package.json" assert { type: "json" };
 
 if (process.env.NODE_ENV !== "test") {
@@ -9,7 +10,7 @@ if (process.env.NODE_ENV !== "test") {
   }
   try {
     accessSync(envPath, constants.F_OK);
-  } catch (err) {
+  } catch (_) {
     console.log("No suitable .env file found.");
   }
 }
@@ -45,7 +46,7 @@ while (process.env[_twitterHandleKey]) {
 }
 
 export const TWITTER_USERNAME = trimTwitterHandle(
-  process.env.TWITTER_USERNAME ?? ""
+  process.env.TWITTER_USERNAME ?? "",
 );
 export const TWITTER_PASSWORD = (process.env.TWITTER_PASSWORD ?? "").trim();
 export const STORAGE_DIR = process.env.STORAGE_DIR ?? process.cwd();
@@ -56,7 +57,7 @@ export const SYNC_BLUESKY = (process.env.SYNC_BLUESKY ?? "true") === "true";
 export const BACKDATE_BLUESKY_POSTS =
   (process.env.BACKDATE_BLUESKY_POSTS ?? "true") === "true";
 export const SYNC_FREQUENCY_MIN = parseInt(
-  process.env.SYNC_FREQUENCY_MIN ?? "30"
+  process.env.SYNC_FREQUENCY_MIN ?? "30",
 );
 export const SYNC_PROFILE_DESCRIPTION =
   (process.env.SYNC_PROFILE_DESCRIPTION ?? "true") === "true";
@@ -76,4 +77,5 @@ export const MASTODON_MAX_POST_LENGTH = 500;
 export const BLUESKY_MAX_POST_LENGTH = 300;
 export const BLUESKY_MEDIA_MAX_SIZE_BYTES = 976560;
 export const MAX_CONSECUTIVE_CACHED = 5;
-export const FORCE_SYNC_POSTS = (process.env.FORCE_SYNC_POSTS ?? "false") === "true";
+export const FORCE_SYNC_POSTS =
+  (process.env.FORCE_SYNC_POSTS ?? "false") === "true";
