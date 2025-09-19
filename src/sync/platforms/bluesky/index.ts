@@ -20,7 +20,7 @@ import {
 } from "sync/platforms/bluesky/utils";
 import { parseBlobForBluesky } from "sync/platforms/bluesky/utils/parse-blob-for-bluesky";
 import { splitTextForBluesky } from "sync/platforms/bluesky/utils/split-text";
-import { BlueskyPost } from "types/post";
+
 import { getPostStore, getPostStoreStr } from "utils/get-post-store";
 import { logError, oraProgress } from "utils/logs";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
@@ -29,7 +29,7 @@ import z from "zod";
 
 import { SynchronizerFactory } from "../../synchronizer";
 import { syncProfile } from "./sync-profile";
-import { BLUESKY_KEYS, BlueskyPlatformStore } from "./types";
+import { BLUESKY_KEYS, BlueskyPlatformStore, BlueskyPost } from "./types";
 
 export const PostRefArraySchema = z.array(BlueskyPlatformStore);
 export type PostRefArray = z.infer<typeof PostRefArraySchema>;
