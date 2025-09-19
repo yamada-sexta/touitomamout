@@ -95,6 +95,7 @@ export async function syncPosts(args: {
           .run();
       } catch (e) {
         logError(log, e)`Failed to sync tweet: ${e}`;
+        console.error(e);
         console.error(tweet);
       }
     }

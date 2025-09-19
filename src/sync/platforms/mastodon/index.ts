@@ -50,10 +50,16 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
         await updateCredentials({ note: args.formattedBio });
       },
       async syncProfilePic(args) {
-        await updateCredentials({ avatar: args.pfpBlob });
+        const avatar = new File([args.pfpBlob], "profile", {
+          type: args.pfpBlob.type,
+        });
+        await updateCredentials({ avatar });
       },
       async syncBanner(args) {
-        await updateCredentials({ header: args.bannerBlob });
+        const header = new File([args.bannerBlob], "header", {
+          type: args.bannerBlob.type,
+        });
+        await updateCredentials({ header });
       },
       async syncUserName(args) {
         await updateCredentials({ displayName: args.name });
@@ -96,25 +102,31 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
           }
         }
         for (const p of dt.photos) {
-          if (DEBUG) console.log("uploading", p);
-          if (!p.blob) {
-            continue;
-          }
-          const a = await client.v2.media.create({
-            file: p.blob,
-            description: p.alt_text,
+          if (DEBUG) console.log("uploading photo", p);
+          if (!p.blob) continue;
+          // This somehow fix it?
+          const file = new File([p.blob], "upload.jpg", {
+            type: p.blob.type,
           });
+          const a = await client.v2.media.create({
+            file,
+            description: p.alt_text ?? null,
+          });
+
           attachments.push(a);
           if (DEBUG) console.log("uploaded");
         }
 
         for (const v of dt.videos) {
-          if (DEBUG) console.log("uploading", v);
+          if (DEBUG) console.log("uploading video", v);
           if (!v.blob) {
             continue;
           }
+          const file = new File([v.blob], "upload.mp4", {
+            type: v.blob.type,
+          });
           const a = await client.v2.media.create({
-            file: v.blob,
+            file,
           });
           attachments.push(a);
           if (DEBUG) console.log("uploaded");
@@ -153,8 +165,7 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
           // If this is the last chunk, save the all chunks ID to the cache.
           if (i === chunks.length - 1) {
             log.succeed(
-              `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${
-                tootIds.length > 1 ? ` (${tootIds.length} chunks)` : ""
+              `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${tootIds.length > 1 ? ` (${tootIds.length} chunks)` : ""
               }`,
             );
           }
