@@ -4,7 +4,7 @@ import { MASTODON_MAX_POST_LENGTH } from "env";
 import { getPostStore } from "utils/get-post-store";
 import { splitTweetTextCore } from "utils/tweet/split-tweet-text/split-tweet-text";
 
-import { MastodonStoreSchema, MastodonSynchronizerFactory } from ".";
+import { MastodonStoreSchema, MastodonSynchronizerFactory } from "./mastodon-sync";
 
 export async function splitTextForMastodon(
   args: {

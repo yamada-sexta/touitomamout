@@ -1,7 +1,7 @@
 import { db } from "db";
 import ora from "ora";
 import { BlueskySynchronizerFactory } from "sync/platforms/bluesky";
-import { MastodonSynchronizerFactory } from "sync/platforms/mastodon";
+import { MastodonSynchronizerFactory } from "sync/platforms/mastodon/mastodon-sync";
 import { syncPosts } from "sync/sync-posts";
 import { syncProfile } from "sync/sync-profile";
 import { TaggedSynchronizer } from "sync/synchronizer";
@@ -11,6 +11,7 @@ import { logError, oraPrefixer } from "utils/logs";
 import {
   DAEMON,
   SYNC_FREQUENCY_MIN,
+  SYNC_POSTS,
   TOUITOMAMOUT_VERSION,
   TWITTER_HANDLES,
   TWITTER_PASSWORD,
@@ -157,7 +158,10 @@ const syncAll = async () => {
       synchronizers: user.synchronizers,
       db,
     });
-
+    if (!SYNC_POSTS){
+      console.log("Posts will not be synced...")
+      continue
+    }
     await syncPosts({
       db,
       handle: user.handle,

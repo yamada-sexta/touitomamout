@@ -82,3 +82,6 @@ export const BLUESKY_MEDIA_MAX_SIZE_BYTES = 976560;
 export const MAX_CONSECUTIVE_CACHED = 5;
 export const FORCE_SYNC_POSTS =
   (process.env.FORCE_SYNC_POSTS ?? "false") === "true";
+
+
+  export const SYNC_POSTS  =   (process.env.SYNC_POSTS?? "true") === "true";

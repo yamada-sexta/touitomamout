@@ -11,6 +11,7 @@
         "drizzle-orm": "^0.44.5",
         "html-entities": "^2.6.0",
         "masto": "^7.2.0",
+        "misskey-js": "^2025.9.1-alpha.0",
         "ora": "^8.2.0",
         "sharp": "^0.34.4",
         "tough-cookie": "^6.0.0",
@@ -277,6 +278,8 @@
 
     "@rtsao/scc": ["@rtsao/scc@1.1.0", "", {}, "sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g=="],
 
+    "@simplewebauthn/types": ["@simplewebauthn/types@12.0.0", "", {}, "sha512-q6y8MkoV8V8jB4zzp18Uyj2I7oFp2/ONL8c3j8uT06AOWu3cIChc1au71QYHrP2b+xDapkGTiv+9lX7xkTlAsA=="],
+
     "@sinclair/typebox": ["@sinclair/typebox@0.32.31", "", {}, "sha512-rYB0tgGHawpom3ZwwsGidvI0NI+W/rRHu1dyyO1KlIoH8iMdg3esSnYQxQtyJ8eflhqxmzEV7Nu8zT4JY7CHKw=="],
 
     "@the-convocation/twitter-scraper": ["@the-convocation/twitter-scraper@0.18.3", "", { "dependencies": { "@sinclair/typebox": "^0.32.20", "cross-fetch": "^4.0.0-alpha.5", "debug": "^4.4.1", "headers-polyfill": "^3.1.2", "json-stable-stringify": "^1.0.2", "otpauth": "^9.2.2", "set-cookie-parser": "^2.6.0", "tough-cookie": "^4.1.2", "tslib": "^2.5.2" } }, "sha512-opbi58potXnE6d9WpwPRTD98niOdsBd+qo8whtQHIqulJw9HtHgVf2x6bK3nCGLx/m+U7bgJj1xFHPLR1dwl+g=="],
@@ -528,6 +531,8 @@
     "esutils": ["esutils@2.0.3", "", {}, "sha512-kVscqXk4OCp68SZ0dkgEKVi6/8ij300KBWTJq32P/dYeWTSwK41WyTxalN1eRmA5Z9UU/LX9D7FWSmV9SAYx6g=="],
 
     "eventemitter2": ["eventemitter2@6.4.9", "", {}, "sha512-JEPTiaOt9f04oa6NOkc4aH+nVp5I3wEjpHbIPqfgCdD5v5bUzy7xQqwcVO2aDQgOWhI28da57HksMrzK9HlRxg=="],
+
+    "eventemitter3": ["eventemitter3@5.0.1", "", {}, "sha512-GWkBvjiSZK87ELrYOSESUYeVIc9mvLLf/nXalMOS5dYrgZq9o5OVkbZAVM06CVxYsCwH9BDZFPlQTlPA1j4ahA=="],
 
     "events-to-async": ["events-to-async@2.0.1", "", {}, "sha512-RtnLYrMbXp4JkZIoZu+3VTqV21bNVBlJBZ4NmtwvMNqSE3qouhxv2gvLE4JJDaQc54ioPkrX74V6x+hp/hqjkQ=="],
 
@@ -805,6 +810,8 @@
 
     "minipass": ["minipass@7.1.2", "", {}, "sha512-qOOzS1cBTWYF4BH8fVePDBOO9iptMnGUEZwNc/cMWnTV2nVLZ7VoNWEPHkYczZA0pdoA7dl6e7FL659nX9S2aw=="],
 
+    "misskey-js": ["misskey-js@2025.9.1-alpha.0", "", { "dependencies": { "@simplewebauthn/types": "12.0.0", "eventemitter3": "5.0.1", "reconnecting-websocket": "4.4.0" } }, "sha512-SQIUzucVYhYTEhMo6ZpfdWyHEw4NG8lN13FKvslKNidWL1tspYLF4AzJWUnocDp3yFYdoN+aaqJlncNGQn1gTA=="],
+
     "module-details-from-path": ["module-details-from-path@1.0.4", "", {}, "sha512-EGWKgxALGMgzvxYF1UyGTy0HXX/2vHLkw6+NvDKW2jypWbHpjQuj4UMcqQWXHERJhVGKikolT06G3bcKe4fi7w=="],
 
     "ms": ["ms@2.1.3", "", {}, "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="],
@@ -894,6 +901,8 @@
     "querystringify": ["querystringify@2.2.0", "", {}, "sha512-FIqgj2EUvTa7R50u0rGsyTftzjYmv/a3hO345bZNrqabNqjtgiDMgmo4mkUjd+nzU5oF3dClKqFIPUKybUyqoQ=="],
 
     "queue-microtask": ["queue-microtask@1.2.3", "", {}, "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="],
+
+    "reconnecting-websocket": ["reconnecting-websocket@4.4.0", "", {}, "sha512-D2E33ceRPga0NvTDhJmphEgJ7FUYF0v4lr1ki0csq06OdlxKfugGzN0dSkxM/NfqCxYELK4KcaTOUOjTV6Dcng=="],
 
     "reflect.getprototypeof": ["reflect.getprototypeof@1.0.10", "", { "dependencies": { "call-bind": "^1.0.8", "define-properties": "^1.2.1", "es-abstract": "^1.23.9", "es-errors": "^1.3.0", "es-object-atoms": "^1.0.0", "get-intrinsic": "^1.2.7", "get-proto": "^1.0.1", "which-builtin-type": "^1.2.1" } }, "sha512-00o4I+DVrefhv+nX0ulyi3biSHCPDe+yLv5o/p6d/UVlirijB8E16FtfwSAi4g3tcqrQ4lRAqQSoFEZJehYEcw=="],
 
