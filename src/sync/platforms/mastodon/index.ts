@@ -164,10 +164,10 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
           tootIds.push(toot.id);
           // If this is the last chunk, save the all chunks ID to the cache.
           if (i === chunks.length - 1) {
-            log.succeed(
-              `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${tootIds.length > 1 ? ` (${tootIds.length} chunks)` : ""
-              }`,
-            );
+            // log.succeed(
+            //   `🦣 | toot sent: ${getPostExcerpt(tweet.text ?? VOID)}${tootIds.length > 1 ? ` (${tootIds.length} chunks)` : ""
+            //   }`,
+            // );
           }
         }
 
