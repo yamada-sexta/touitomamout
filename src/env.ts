@@ -84,4 +84,4 @@ export const FORCE_SYNC_POSTS =
   (process.env.FORCE_SYNC_POSTS ?? "false") === "true";
 
 
-  export const SYNC_POSTS  =   (process.env.SYNC_POSTS?? "true") === "true";
+export const SYNC_POSTS = (process.env.SYNC_POSTS ?? "true") === "true";

@@ -26,6 +26,7 @@ An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 - 🦣 Mastodon
 - ☁️ Bluesky
+- Ⓜ️ Misskey (WIP)
 
 ## Documentation
 
@@ -33,10 +34,3 @@ You'll find everything you need, from the project's discovery to its deployment,
 
 [<img src="https://github.com/louisgrasset/touitomamout/raw/main/.github/docs/documentation-center.svg"  width="300px"/>](https://github.com/yamada-sexta/touitomamout/wiki)
 
-## Dependencies
-
-Kudos to the following projects that made the Touitomamout project possible 🙏
-
-- 𝕏 [twitter-scraper](https://github.com/the-convocation/twitter-scraper)
-- 🦣 [masto.js](https://github.com/neet/masto.js)
-- ☁️ [atproto](https://github.com/bluesky-social/atproto)

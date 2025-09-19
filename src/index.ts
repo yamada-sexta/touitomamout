@@ -18,6 +18,7 @@ import {
   TWITTER_USERNAME,
   TwitterHandle,
 } from "./env";
+import { MisskeySynchronizerFactory } from "sync/platforms/misskey/missky-sync";
 
 let interval: NodeJS.Timeout | null = null;
 process.on("exit", (code) => {
@@ -58,6 +59,7 @@ console.log(`\n
 const factories = [
   BlueskySynchronizerFactory,
   MastodonSynchronizerFactory,
+  MisskeySynchronizerFactory,
 ] as const;
 
 const twitterClient = await createTwitterClient({

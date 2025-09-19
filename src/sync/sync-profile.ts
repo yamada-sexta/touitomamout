@@ -10,7 +10,7 @@ import {
   TwitterHandle,
 } from "env";
 import ora from "ora";
-import { oraPrefixer } from "utils/logs";
+import { logError, oraPrefixer } from "utils/logs";
 import { download } from "utils/medias/download-media";
 import { getBlobHash } from "utils/medias/get-blob-hash";
 import { shortenedUrlsReplacer } from "utils/url/shortened-urls-replacer";
@@ -199,21 +199,13 @@ export async function syncProfile(args: {
         ),
     );
   }
-
-  // console.log(profile)
-
   // 3. Run all synchronization tasks in parallel
   log.text = "dispatching sync tasks...";
   try {
     await Promise.all(jobs);
     log.succeed("synced");
   } catch (error) {
-    if (error instanceof Error) {
-      log.fail(`Error during synchronization: ${error.message}`);
-    } else {
-      // Handle cases where a non-Error value is thrown (e.g., throw "oops")
-      log.fail(`An unknown error occurred during sync: ${String(error)}`);
-    }
+    logError(log, error)`Error during synchronization: ${error}`
   }
   log.stop();
 }

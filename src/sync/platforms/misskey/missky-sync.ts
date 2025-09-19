@@ -1,10 +1,8 @@
-import { Scraper } from "@the-convocation/twitter-scraper";
-import { DBType } from "db";
-import { Ora } from "ora";
-import { SynchronizerBase, SynchronizerFactory } from "sync/synchronizer"
+import { SynchronizerFactory } from "sync/synchronizer"
 import z from "zod";
 import * as Misskey from 'misskey-js';
 import { DEBUG } from "env";
+import { handleRateLimit } from "./rate-limit";
 
 const KEYS = ["MISSKEY_INSTANCE", "MISSKEY_ACCESS_CODE"];
 const MisskeyStoreSchema = z.object({})
@@ -22,26 +20,51 @@ export const MisskeySynchronizerFactory: SynchronizerFactory<typeof KEYS, typeof
             credential: args.env.MISSKEY_ACCESS_CODE,
         });
 
-        // const client = new Misskey.
+        async function runWithRateLimitRetry<T = unknown>(task: () => Promise<T>): Promise<T> {
+            try {
+                return await task();
+            } catch (err) {
+                if (await handleRateLimit(err)) {
+                    return await task();
+                }
+                throw err;
+            }
+        }
 
 
-
-        // throw new Error("Function not implemented.");
         return ({
             async syncBio(args) {
-                await api.request("i/update", {
+                await runWithRateLimitRetry(() => api.request("i/update", {
                     description: args.formattedBio
-                })
+                }));
             },
             async syncBanner(args) {
-                const res = await api.request("drive/files/create", {
-                    file: args.bannerBlob
-                })
-                if (DEBUG)
-                    console.log(res)
-                await api.request("i/update", {
-                    bannerId: res.id
-                })
+                await runWithRateLimitRetry(async () => {
+                    if (DEBUG) console.log("Updating banner for Misskey");
+
+                    const res = await api.request("drive/files/create", {
+                        file: new File([args.bannerBlob], "banner")
+                    });
+                    if (DEBUG) console.log(res);
+                    await api.request("i/update", { bannerId: res.id });
+                });
+            },
+            async syncUserName(args) {
+                await runWithRateLimitRetry(() => api.request("i/update", {
+                    name: args.name
+                }));
+            },
+            async syncProfilePic(args) {
+                await runWithRateLimitRetry(async () => {
+                    const res = await api.request("drive/files/create", {
+                        file: new File([args.pfpBlob], "pfp")
+                    });
+
+                    if (DEBUG)
+                        console.log(res);
+
+                    await api.request("i/update", { avatarId: res.id });
+                });
             }
         })
     }

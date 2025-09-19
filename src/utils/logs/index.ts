@@ -24,6 +24,7 @@ export function logError(
     switch (type) {
       case "fail":
         log.fail(msg);
+        console.warn(error)
         break;
       case "warn":
         log.warn(msg);
