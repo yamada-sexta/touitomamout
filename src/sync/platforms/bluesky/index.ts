@@ -171,14 +171,14 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
 
         const externalRecord = await getExternalEmbedding(richText, agent);
 
-        if (dt.videos.length >= 1 && dt.videos[0].blob) {
+        if (dt.videos.length >= 1 && dt.videos[0].file) {
           log.text = `Uploading video to bluesky...`;
           if (dt.videos.length > 1) {
             log.warn(`Unable to upload all ${dt.videos.length} videos`);
           }
           const [video] = dt.videos;
           try {
-            const blob = await parseBlobForBluesky(video.blob!);
+            const blob = await parseBlobForBluesky(video.file!);
             const uploadRes = await agent.uploadBlob(blob.blobData, {
               encoding: blob.mimeType,
             });
@@ -201,12 +201,12 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
               break;
             }
             const photo = photos[i];
-            if (!photo.blob) {
+            if (!photo.file) {
               log.warn(`can't download ${photos}...`);
               continue;
             }
             try {
-              const blob = await parseBlobForBluesky(photo.blob);
+              const blob = await parseBlobForBluesky(photo.file);
               photoRes.push([
                 await agent.uploadBlob(blob.blobData, {
                   encoding: blob.mimeType,

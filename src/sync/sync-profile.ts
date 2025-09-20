@@ -27,8 +27,8 @@ async function upsertProfileCache(args: {
 }): Promise<{
   pfpChanged: boolean;
   bannerChanged: boolean;
-  pfpBlob?: Blob;
-  bannerBlob?: Blob;
+  pfp?: File;
+  banner?: File;
 }> {
   const pfpUrl = args.pfpUrl ?? "";
   const bannerUrl = args.bannerUrl ?? "";
@@ -48,7 +48,7 @@ async function upsertProfileCache(args: {
   const cPfpUrl = row?.pfpUrl ?? "";
   const cPfpHash = row?.bannerHash ?? "";
   let pfpHash = "";
-  let pfpBlob: Blob | undefined = undefined;
+  let pfpBlob: File | undefined = undefined;
 
   if (cPfpUrl !== pfpUrl) {
     pfpBlob = await download(pfpUrl);
@@ -67,7 +67,7 @@ async function upsertProfileCache(args: {
   const cBannerUrl = row?.bannerUrl ?? "";
   const cBannerHash = row?.bannerHash ?? "";
   let bannerHash = "";
-  let bannerBlob: Blob | undefined = undefined;
+  let bannerBlob: File | undefined = undefined;
 
   if (cBannerUrl !== bannerUrl) {
     if (DEBUG) console.log("Banner URL changed");
@@ -105,8 +105,8 @@ async function upsertProfileCache(args: {
   return {
     pfpChanged,
     bannerChanged,
-    pfpBlob,
-    bannerBlob,
+    pfp: pfpBlob,
+    banner: bannerBlob,
   };
 }
 /**
@@ -132,7 +132,7 @@ export async function syncProfile(args: {
   const bannerUrl = profile.banner ?? "";
 
   log.text = "checking media cache...";
-  const { pfpChanged, bannerChanged, pfpBlob, bannerBlob } =
+  const { pfpChanged, bannerChanged, pfp: pfpBlob, banner: bannerBlob } =
     await upsertProfileCache({
       db,
       userId: args.twitterHandle.handle,
@@ -150,7 +150,7 @@ export async function syncProfile(args: {
           s.syncProfilePic!({
             log,
             profile,
-            pfpBlob,
+            pfpFile: pfpBlob,
           }),
         ),
     );
@@ -164,7 +164,7 @@ export async function syncProfile(args: {
           s.syncBanner!({
             log,
             profile,
-            bannerBlob,
+            bannerFile: bannerBlob,
           }),
         ),
     );

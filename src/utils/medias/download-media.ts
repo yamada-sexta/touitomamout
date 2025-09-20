@@ -7,7 +7,8 @@ export async function download(
   url?: string,
   log?: Ora,
   description?: string,
-): Promise<Blob | undefined> {
+  filename?: string,
+): Promise<File | undefined> {
   if (!url) {
     return;
   }
@@ -51,9 +52,27 @@ export async function download(
       }
     }
 
-    const blob = new Blob(chunks, { type: contentType });
+    // Derive a filename:
+    let finalName = filename;
+    if (!finalName) {
+      // try Content-Disposition header
+      const contentDisposition = res.headers.get("content-disposition");
+      const match = contentDisposition?.match(/filename="?([^"]+)"?/);
+      if (match) {
+        finalName = match[1];
+      } else {
+        // fallback to last part of URL
+        finalName = url.split("/").pop() || "downloaded-file";
+      }
+    }
+    const file = new File(chunks, finalName, {
+      type: contentType,
+      lastModified: Date.now(),
+    });
+
     log && log.succeed(`${displayUrl} downloaded successfully`);
-    return blob;
+
+    return file;
   } catch (err) {
     log && logError(log, err)`Unable to download media: ${err}`;
     return undefined;

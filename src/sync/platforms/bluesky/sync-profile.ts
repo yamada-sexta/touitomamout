@@ -24,7 +24,7 @@ export function syncProfile(args: {
     },
 
     syncProfilePic: async (args) => {
-      const avatar = await uploadBlueskyMedia(args.pfpBlob, agent);
+      const avatar = await uploadBlueskyMedia(args.pfpFile, agent);
       if (!avatar) {
         throw new Error("Failed to upload avatar");
       }
@@ -35,7 +35,7 @@ export function syncProfile(args: {
     },
 
     syncBanner: async (args) => {
-      const res = await uploadBlueskyMedia(args.bannerBlob, agent);
+      const res = await uploadBlueskyMedia(args.bannerFile, agent);
       if (!res) {
         throw new Error("Unable to upload banner");
       }

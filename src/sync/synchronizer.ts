@@ -41,9 +41,9 @@ export interface SynchronizerBase<S extends z.ZodObject> {
 
   syncUserName(args: ProfileArgs & { readonly name: string }): Promise<void>;
 
-  syncProfilePic(args: ProfileArgs & { readonly pfpBlob: Blob }): Promise<void>;
+  syncProfilePic(args: ProfileArgs & { readonly pfpFile: File }): Promise<void>;
 
-  syncBanner(args: ProfileArgs & { readonly bannerBlob: Blob }): Promise<void>;
+  syncBanner(args: ProfileArgs & { readonly bannerFile: File }): Promise<void>;
 
   syncPost(
     args: SyncArgs & {

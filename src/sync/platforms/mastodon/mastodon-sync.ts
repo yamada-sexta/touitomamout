@@ -50,14 +50,14 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
         await updateCredentials({ note: args.formattedBio });
       },
       async syncProfilePic(args) {
-        const avatar = new File([args.pfpBlob], "profile", {
-          type: args.pfpBlob.type,
+        const avatar = new File([args.pfpFile], "profile", {
+          type: args.pfpFile.type,
         });
         await updateCredentials({ avatar });
       },
       async syncBanner(args) {
-        const header = new File([args.bannerBlob], "header", {
-          type: args.bannerBlob.type,
+        const header = new File([args.bannerFile], "header", {
+          type: args.bannerFile.type,
         });
         await updateCredentials({ header });
       },
@@ -103,10 +103,10 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
         }
         for (const p of dt.photos) {
           if (DEBUG) console.log("uploading photo", p);
-          if (!p.blob) continue;
+          if (!p.file) continue;
           // This somehow fix it?
-          const file = new File([p.blob], "upload.jpg", {
-            type: p.blob.type,
+          const file = new File([p.file], "upload.jpg", {
+            type: p.file.type,
           });
           const a = await client.v2.media.create({
             file,
@@ -119,11 +119,11 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
 
         for (const v of dt.videos) {
           if (DEBUG) console.log("uploading video", v);
-          if (!v.blob) {
+          if (!v.file) {
             continue;
           }
-          const file = new File([v.blob], "upload.mp4", {
-            type: v.blob.type,
+          const file = new File([v.file], "upload.mp4", {
+            type: v.file.type,
           });
           const a = await client.v2.media.create({
             file,
