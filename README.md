@@ -24,9 +24,10 @@ An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 ## Supported platforms
 
-- 🦣 Mastodon
-- ☁️ Bluesky
-- Ⓜ️ Misskey
+- 🦣 [Mastodon](https://joinmastodon.org/)
+- ☁️ [Bluesky](https://bsky.app/)
+- Ⓜ️ [Misskey](https://misskey-hub.net/)
+- 🇩 [Discord](https://discord.com/) (Webhook)
 
 ## Documentation
 
