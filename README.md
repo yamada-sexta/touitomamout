@@ -26,7 +26,7 @@ An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 - 🦣 Mastodon
 - ☁️ Bluesky
-- Ⓜ️ Misskey (WIP)
+- Ⓜ️ Misskey
 
 ## Documentation
 
