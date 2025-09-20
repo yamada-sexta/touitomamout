@@ -1,18 +1,10 @@
 {
   "name": "touitomamout",
-  "version": "1.9.1",
+  "version": "2.0.0",
   "description": "An easy way to synchronize your Twitter's tweets to Mastodon & Bluesky posts.",
   "scripts": {
     "lint": "eslint src/ --ext .ts",
-    "lint:fix": "eslint src/ --ext .ts --fix",
-    "test": "vitest",
-    "prebuild": "bash scripts/build-info.sh",
-    "build": "vite build",
-    "predeploy": "npm ci && npm run build",
-    "pm2": "bash deployment/pm2.sh",
-    "pm2:update": "bash deployment/pm2.sh --update",
-    "commitlint": "commitlint --edit",
-    "prepare": "husky"
+    "lint:fix": "eslint src/ --ext .ts --fix"
   },
   "engines": {
     "node": ">=18.0.0"
