@@ -19,7 +19,7 @@ import {
   TwitterHandle,
 } from "./env";
 import { MisskeySynchronizerFactory } from "sync/platforms/misskey/missky-sync";
-import { WebhookSynchronizerFactory } from "sync/webhooks/webhook-sync";
+import { DiscordWebhookSynchronizerFactory } from "sync/platforms/discord-webhook/webhook-sync";
 
 let interval: NodeJS.Timeout | null = null;
 process.on("exit", (code) => {
@@ -61,7 +61,7 @@ const factories = [
   BlueskySynchronizerFactory,
   MastodonSynchronizerFactory,
   MisskeySynchronizerFactory,
-  WebhookSynchronizerFactory,
+  DiscordWebhookSynchronizerFactory,
 ] as const;
 
 const twitterClient = await createTwitterClient({
