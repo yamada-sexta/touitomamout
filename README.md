@@ -18,9 +18,10 @@ An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
 ## What's different about this Fork?
 
-- Build on bun reducing container size
+- Build on bun
 - Better default environment settings
 - Multi account support
+- More platforms
 
 ## Supported platforms
 
