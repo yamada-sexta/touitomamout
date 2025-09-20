@@ -16,7 +16,7 @@
 
 An easy way to synchronize your posts on 𝕏 to other social media platforms.
 
-## What's new?
+## What's different about this Fork?
 
 - Build on bun reducing container size
 - Better default environment settings
