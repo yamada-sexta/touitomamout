@@ -30,7 +30,7 @@ function formatForDiscord(tweet: Tweet): { content?: string; embeds: APIEmbed[] 
             : cleanedText,
         url: tweet.permanentUrl ?? `https://x.com/${tweet.username}/status/${tweet.id}`,
         footer: {
-            text: `❤️ ${tweet.likes ?? 0}   🔁 ${tweet.retweets ?? 0}   💬 ${tweet.replies ?? 0}   👀 ${tweet.views ?? 0} • ${new Date(tweet.timestamp || Date.now()).toLocaleString()}`
+            text: `❤️ ${tweet.likes ?? 0}   🔁 ${tweet.retweets ?? 0}   💬 ${tweet.replies ?? 0}   👀 ${tweet.views ?? 0} • ${new Date(tweet.timestamp ? tweet.timestamp * 1000 : Date.now()).toLocaleString()}`
         },
     };
 
