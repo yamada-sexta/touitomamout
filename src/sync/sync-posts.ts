@@ -13,16 +13,12 @@ import { logError, oraPrefixer } from "utils/logs";
 
 import { getPostStore } from "../utils/get-post-store";
 import type { TaggedSynchronizer } from "./synchronizer";
+import { toMetaTweet } from "types/meta-tweet";
 
 const MAX_TWEET = 200;
 
 const TweetMap = Schema.TweetMap;
 const TweetSynced = Schema.TweetSynced;
-
-export interface MetaTweet extends Tweet {
-    datetime: Date;
-    formattedText: string;
-}
 
 export async function syncPosts(args: {
     db: DBType;
@@ -72,6 +68,8 @@ export async function syncPosts(args: {
             } else {
                 cachedCounter = 0;
             }
+
+            const metaTweet = toMetaTweet(tweet);
             try {
                 for (const s of args.synchronizers) {
                     // Might have race condition if done in parallel
@@ -89,7 +87,7 @@ export async function syncPosts(args: {
                             platformId: s.platformId,
                             s: s.storeSchema,
                         });
-                        const syncRes = await s.syncPost({ log: platformLog, tweet, store });
+                        const syncRes = await s.syncPost({ log: platformLog, tweet:metaTweet, store });
                         const storeStr = syncRes ? JSON.stringify(syncRes.store) : "";
                         db.insert(TweetMap).values({
                             tweetId: tweet.id,

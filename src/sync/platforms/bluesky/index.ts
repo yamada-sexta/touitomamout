@@ -138,7 +138,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
         const replyPost =
           (await getPostFromTid(tweet.inReplyToStatusId)) ?? undefined;
 
-        const richText = new RichText({ text: tweet.text ?? "" });
+        const richText = new RichText({ text: tweet.formattedText });
         await richText.detectFacets(agent);
 
         const post: BlueskyPost = {
@@ -278,10 +278,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
           const richText = new RichText({ text: chunk });
           await richText.detectFacets(agent);
 
-          const timestampMs = BACKDATE_BLUESKY_POSTS && post.tweet.timestamp
-            ? post.tweet.timestamp * 1000
-            : Date.now();
-          const createdAt = new Date(timestampMs).toISOString();
+          const createdAt = (BACKDATE_BLUESKY_POSTS ? tweet.datetime : new Date(Date.now())).toISOString();
           const data: $Typed<AppBskyFeedPost.Record> = {
             $type: "app.bsky.feed.post",
             text: richText.text,
