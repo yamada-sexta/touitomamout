@@ -1,4 +1,4 @@
-import { Scraper } from "@the-convocation/twitter-scraper";
+import { Scraper, Tweet } from "@the-convocation/twitter-scraper";
 import { type DBType, Schema } from "db";
 import { eq, or } from "drizzle-orm";
 import {
@@ -18,6 +18,11 @@ const MAX_TWEET = 200;
 
 const TweetMap = Schema.TweetMap;
 const TweetSynced = Schema.TweetSynced;
+
+export interface MetaTweet extends Tweet {
+    datetime: Date;
+    formattedText: string;
+}
 
 export async function syncPosts(args: {
     db: DBType;
