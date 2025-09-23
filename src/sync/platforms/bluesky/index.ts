@@ -155,13 +155,13 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
         const quoteRecord: $Typed<AppBskyEmbedRecord.Main> | undefined =
           post.quotePost
             ? {
-                $type: "app.bsky.embed.record",
-                record: {
-                  $type: "com.atproto.repo.strongRef",
-                  cid: post.quotePost.cid,
-                  uri: post.quotePost.uri,
-                },
-              }
+              $type: "app.bsky.embed.record",
+              record: {
+                $type: "com.atproto.repo.strongRef",
+                cid: post.quotePost.cid,
+                uri: post.quotePost.uri,
+              },
+            }
             : undefined;
 
         let media:
@@ -277,10 +277,11 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
 
           const richText = new RichText({ text: chunk });
           await richText.detectFacets(agent);
-          const createdAt = new Date(
-            (BACKDATE_BLUESKY_POSTS ? post.tweet.timestamp : null) ||
-              Date.now(),
-          ).toISOString();
+
+          const timestampMs = BACKDATE_BLUESKY_POSTS && post.tweet.timestamp
+            ? post.tweet.timestamp * 1000
+            : Date.now();
+          const createdAt = new Date(timestampMs).toISOString();
           const data: $Typed<AppBskyFeedPost.Record> = {
             $type: "app.bsky.feed.post",
             text: richText.text,
@@ -310,13 +311,15 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
             );
           }
           log.text = `☁️ | post sending: ${getPostExcerpt(post.tweet.text ?? VOID)}`;
-          const createdPost = await agent.post({ ...data });
+          if (DEBUG) console.log("data", data)
+          const createdPost = await agent.post(data);
           oraProgress(
             log,
             { before: "☁️ | post sending: " },
             i,
             post.chunks.length,
           );
+          if (DEBUG) console.log("createdPost", createdPost)
           chunkReferences.push({
             cid: createdPost.cid,
             uri: createdPost.uri,
