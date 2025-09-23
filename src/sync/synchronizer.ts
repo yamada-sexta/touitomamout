@@ -2,7 +2,6 @@ import { Profile, Scraper as XClient } from "@the-convocation/twitter-scraper";
 import { DBType } from "db";
 import { Ora } from "ora";
 import { MetaTweet } from "types/meta-tweet";
-import { ValidPost } from "types/post";
 import * as z from "zod";
 
 type SyncArgs = { log: Ora };
