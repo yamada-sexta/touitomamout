@@ -87,7 +87,7 @@ export async function syncPosts(args: {
                             platformId: s.platformId,
                             s: s.storeSchema,
                         });
-                        const syncRes = await s.syncPost({ log: platformLog, tweet:metaTweet, store });
+                        const syncRes = await s.syncPost({ log: platformLog, tweet: metaTweet, store });
                         const storeStr = syncRes ? JSON.stringify(syncRes.store) : "";
                         await db.insert(TweetMap).values({
                             tweetId: tweet.id,
@@ -103,7 +103,7 @@ export async function syncPosts(args: {
                     platformLog.stop()
                 }
                 // Mark as synced
-                db.insert(TweetSynced)
+                await db.insert(TweetSynced)
                     .values({ tweetId: tweet.id, synced: 1 })
                     .onConflictDoUpdate({
                         target: TweetSynced.tweetId,
