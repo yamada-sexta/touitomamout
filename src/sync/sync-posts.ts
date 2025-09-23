@@ -89,7 +89,7 @@ export async function syncPosts(args: {
                         });
                         const syncRes = await s.syncPost({ log: platformLog, tweet:metaTweet, store });
                         const storeStr = syncRes ? JSON.stringify(syncRes.store) : "";
-                        db.insert(TweetMap).values({
+                        await db.insert(TweetMap).values({
                             tweetId: tweet.id,
                             platform: s.platformId,
                             platformStore: storeStr,
