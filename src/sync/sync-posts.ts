@@ -13,7 +13,7 @@ import { logError, oraPrefixer } from "utils/logs";
 
 import { getPostStore } from "../utils/get-post-store";
 import type { TaggedSynchronizer } from "./synchronizer";
-import { toMetaTweet } from "types/meta-tweet";
+import { toMetaPost } from "types/meta-tweet";
 
 const MAX_TWEET = 200;
 
@@ -69,7 +69,7 @@ export async function syncPosts(args: {
                 cachedCounter = 0;
             }
 
-            const metaTweet = toMetaTweet(tweet);
+            const metaTweet = toMetaPost(tweet);
             try {
                 for (const s of args.synchronizers) {
                     // Might have race condition if done in parallel

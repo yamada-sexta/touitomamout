@@ -2,9 +2,11 @@ import { Tweet } from "@the-convocation/twitter-scraper";
 import { decode } from "html-entities";
 import { ValidPost } from "./post";
 
-export interface MetaTweet extends ValidPost {
+export interface MetaPost extends ValidPost {
     datetime: Date;
-    formattedText: string;
+    // formattedText: string;
+    rawText?: string;
+    text: string;
 }
 
 export const formatTweetText = (tweet: Tweet): string => {
@@ -31,10 +33,11 @@ export const formatTweetText = (tweet: Tweet): string => {
  * @param tweet The original Tweet object from the scraper.
  * @returns A MetaTweet object with added `datetime` and `formattedText` fields.
  */
-export const toMetaTweet = (tweet: ValidPost): MetaTweet => {
+export const toMetaPost = (tweet: ValidPost): MetaPost => {
     return {
         ...tweet,
         datetime: new Date((tweet.timestamp ?? 0) * 1000),
-        formattedText: formatTweetText(tweet),
+        text: formatTweetText(tweet),
+        rawText: tweet.text
     };
 };
