@@ -1,4 +1,4 @@
-import { DEBUG, SYNC_MASTODON, TWITTER_PASSWORD, VOID } from "env";
+import { DEBUG, SYNC_MASTODON, VOID } from "env";
 import { createRestAPIClient } from "masto";
 import { MediaAttachment } from "masto/mastodon/entities/v1/index.js";
 import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
