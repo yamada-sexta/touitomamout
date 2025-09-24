@@ -42,16 +42,6 @@ export async function splitTweetTextCore({
 const addWordToChunk = (chunk: string, word: SplitterEntry) =>
   chunk + word.str + word.sep;
 
-/**
- * Builds chunks from the given splitter entries based on the specified criteria.
- *
- * @param {SplitterEntry[]} entries - The splitter entries to build chunks from.
- * @param {Platform} platform - The platform where the chunks will be used.
- * @param {string | undefined} quotedStatusId - The ID of the quoted status, if available.
- * @param {number} maxChunkSize - The maximum size of each chunk.
- * @param {string} quotedStatusLinkSection - The section of the quote link.
- * @returns {string[]} - An array of chunks generated from the splitter entries.
- */
 export const buildChunksFromSplitterEntries = ({
   entries,
   quotedStatusId,
@@ -60,7 +50,6 @@ export const buildChunksFromSplitterEntries = ({
   appendQuoteLink,
 }: {
   entries: SplitterEntry[];
-  // platform: Platform,
   appendQuoteLink: boolean;
   quotedStatusId: string | undefined;
   maxChunkSize: number;
@@ -73,7 +62,6 @@ export const buildChunksFromSplitterEntries = ({
     const currentChunkWithAddedWord = addWordToChunk(currentChunk, entry);
     const shouldAppendQuoteLink =
       chunks.length === 0 && appendQuoteLink && !!quotedStatusId;
-    // chunks.length === 0 && platform === Platform.MASTODON && !!quotedStatusId;
     const currentMaxChunkSize = shouldAppendQuoteLink
       ? maxChunkSize - quotedStatusLinkSection.length
       : maxChunkSize;

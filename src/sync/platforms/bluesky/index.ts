@@ -24,7 +24,7 @@ import { splitTextForBluesky } from "sync/platforms/bluesky/utils/split-text";
 import { getPostStore, getPostStoreStr } from "utils/get-post-store";
 import { logError, oraProgress } from "utils/logs";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
-import { downloadTweet } from "utils/tweet/download-tweet";
+// import { downloadTweet } from "utils/tweet/download-tweet";
 import z from "zod";
 
 import { SynchronizerFactory } from "../../synchronizer";
@@ -138,7 +138,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
         const replyPost =
           (await getPostFromTid(tweet.inReplyToStatusId)) ?? undefined;
 
-        const richText = new RichText({ text: tweet.formattedText });
+        const richText = new RichText({ text: tweet.text });
         await richText.detectFacets(agent);
 
         const post: BlueskyPost = {
@@ -148,8 +148,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
           quotePost,
           tweet,
         };
-
-        const dt = await downloadTweet(tweet);
+        
         const hasMedia = false;
 
         const quoteRecord: $Typed<AppBskyEmbedRecord.Main> | undefined =
@@ -171,12 +170,15 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
 
         const externalRecord = await getExternalEmbedding(richText, agent);
 
-        if (dt.videos.length >= 1 && dt.videos[0].file) {
+        const videos = await tweet.videoFiles();
+        const photos = await tweet.photoFiles();
+
+        if (videos.length >= 1 && videos[0].file) {
           log.text = `Uploading video to bluesky...`;
-          if (dt.videos.length > 1) {
-            log.warn(`Unable to upload all ${dt.videos.length} videos`);
+          if (videos.length > 1) {
+            log.warn(`Unable to upload all ${videos.length} videos`);
           }
-          const [video] = dt.videos;
+          const [video] = videos;
           try {
             const blob = await parseBlobForBluesky(video.file!);
             const uploadRes = await agent.uploadBlob(blob.blobData, {
@@ -189,8 +191,7 @@ export const BlueskySynchronizerFactory: SynchronizerFactory<
           } catch (e) {
             logError(log, e)`Error while uploading video to bluesky: ${e}`;
           }
-        } else if (dt.photos.length) {
-          const photos = dt.photos;
+        } else if (photos.length) {
           const photoRes: [
             ComAtprotoRepoUploadBlob.Response,
             twitter: Photo,

@@ -1,4 +1,4 @@
-import { DEBUG, SYNC_MASTODON, VOID } from "env";
+import { DEBUG, SYNC_MASTODON, TWITTER_PASSWORD, VOID } from "env";
 import { createRestAPIClient } from "masto";
 import { MediaAttachment } from "masto/mastodon/entities/v1/index.js";
 import { UpdateCredentialsParams } from "masto/mastodon/rest/v1/accounts.js";
@@ -6,7 +6,6 @@ import { splitTextForMastodon } from "sync/platforms/mastodon/text";
 import { getPostStore } from "utils/get-post-store";
 import { oraProgress } from "utils/logs";
 import { getPostExcerpt } from "utils/post/get-post-excerpt";
-import { downloadTweet } from "utils/tweet/download-tweet";
 import z from "zod";
 
 import { SynchronizerFactory } from "../../synchronizer";
@@ -85,7 +84,7 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
           mastodonUsername: username,
         });
 
-        const dt = await downloadTweet(tweet);
+        // const dt = await downloadTweet(tweet);
         const attachments: MediaAttachment[] = [];
 
         let inReplyToId: undefined | string = undefined;
@@ -101,7 +100,7 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
             [inReplyToId] = store.data.tootIds;
           }
         }
-        for (const p of dt.photos) {
+        for (const p of await tweet.photoFiles()) {
           if (DEBUG) console.log("uploading photo", p);
           if (!p.file) continue;
           // This somehow fix it?
@@ -117,7 +116,7 @@ export const MastodonSynchronizerFactory: SynchronizerFactory<
           if (DEBUG) console.log("uploaded");
         }
 
-        for (const v of dt.videos) {
+        for (const v of await tweet.videoFiles()) {
           if (DEBUG) console.log("uploading video", v);
           if (!v.file) {
             continue;

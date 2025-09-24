@@ -3,7 +3,7 @@ import z from "zod";
 import * as Misskey from 'misskey-js';
 import { DEBUG } from "env";
 import { handleRateLimit } from "./rate-limit";
-import { downloadTweet } from "utils/tweet/download-tweet";
+// import { downloadTweet } from "utils/tweet/download-tweet";
 
 const KEYS = ["MISSKEY_INSTANCE", "MISSKEY_ACCESS_CODE"];
 const MisskeyStoreSchema = z.object({
@@ -86,13 +86,15 @@ export const MisskeySynchronizerFactory: SynchronizerFactory<typeof KEYS, typeof
 
                 return await runWithRateLimitRetry(async () => {
                     const mediaIds: string[] = []
-                    const dt = await downloadTweet(args.tweet);
-                    dt.photos.forEach(async p =>
+                    const t = args.tweet;
+                    // const dt = await downloadTweet(args.tweet);
+                    (await t.photoFiles()).forEach(async p =>
                         p.file ?
                             mediaIds.push(
                                 (await uploadMedia(p.file)).id
-                            ) : undefined)
-                    dt.videos.forEach(async v => v.file ?
+                            ) : undefined);
+
+                    (await t.videoFiles()).forEach(async v => v.file ?
                         mediaIds.push(((await uploadMedia(v.file)).id)) : undefined)
                     const res = await api.request("notes/create", {
                         text: args.tweet.text,

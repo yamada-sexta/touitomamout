@@ -1,10 +1,9 @@
 import { SynchronizerFactory } from "sync/synchronizer"
 import z from "zod";
 import { DEBUG } from "env";
-import { downloadTweet } from "utils/tweet/download-tweet";
 import { APIEmbed } from "discord-api-types/payloads";
 import { RESTPostAPIWebhookWithTokenJSONBody } from "discord-api-types/v10";
-import { Tweet } from "@the-convocation/twitter-scraper";
+import { MetaPost } from "types/meta-tweet";
 
 const KEYS = ["DISCORD_WEBHOOK_URL"] as const;
 
@@ -12,7 +11,7 @@ const WebhookStoreSchema = z.object({
     id: z.string()
 })
 
-function formatForDiscord(tweet: Tweet): { content?: string; embeds: APIEmbed[] } {
+function formatForDiscord(tweet: MetaPost): { content?: string; embeds: APIEmbed[] } {
     const embeds: APIEmbed[] = [];
 
     // const cleanedText = (tweet.text ?? "").replace(/https:\/\/t\.co\/\S+/g, "").trim();
@@ -30,7 +29,7 @@ function formatForDiscord(tweet: Tweet): { content?: string; embeds: APIEmbed[] 
             : cleanedText,
         url: tweet.permanentUrl ?? `https://x.com/${tweet.username}/status/${tweet.id}`,
         footer: {
-            text: `❤️ ${tweet.likes ?? 0}   🔁 ${tweet.retweets ?? 0}   💬 ${tweet.replies ?? 0}   👀 ${tweet.views ?? 0} • ${new Date(tweet.timestamp ? tweet.timestamp * 1000 : Date.now()).toLocaleString()}`
+            text: `❤️ ${tweet.likes ?? 0}   🔁 ${tweet.retweets ?? 0}   💬 ${tweet.replies ?? 0}   👀 ${tweet.views ?? 0} • ${tweet.datetime.toLocaleString()}`
         },
     };
 
